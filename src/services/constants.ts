@@ -6,7 +6,8 @@ export const REQUEST_STATUSES = {
 };
 
 export const BFF_URL = {
-  development: 'http://localhost:8080',
+  local: 'http://localhost:8080',
+  development: 'https://sss-erp-bff.oykos.me',
   staging: 'http://localhost:8080',
   production: 'http://localhost:8080',
 };
