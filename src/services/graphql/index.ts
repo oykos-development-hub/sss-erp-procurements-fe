@@ -3,11 +3,11 @@ import {getEnvironment} from '../get-environment';
 import publicProcurementArticleDelete from './procurementArticles/procurementArticleDelete.ts';
 import publicProcurementArticleInsert from './procurementArticles/procurementArticleInsert';
 import publicProcurementGetDetails from './procurements/publicProcurementGetDetails.ts';
-import deletePlan from './getPlans/queries/deletePublicProcurementPlan';
-import getPlansOverview from './getPlans/queries/getPlansOverview';
+import deletePlan from './plans/mutations/deletePublicProcurementPlan.ts';
+import getPlansOverview from './plans/queries/getPlansOverview.ts';
 import insertProcurementPlanItemLimits from './procurementPlanItemLimits/mutation/insertProcurementPlanItemLimit';
-import deletePublicProcurementPlan from './getPlans/queries/deletePublicProcurementPlan';
-import insertPublicProcurementPlan from './getPlans/queries/insertPublicProcurementPlan';
+import deletePublicProcurementPlan from './plans/mutations/deletePublicProcurementPlan.ts';
+import insertPublicProcurementPlan from './plans/mutations/insertPublicProcurementPlan.ts';
 import insertPublicProcurementPlanItem from './procurements/mutations/insertPublicProcurementPlanItem.ts';
 import getPublicProcurementPlanItemDetails from './procurements/queries/getPublicProcurementPlanItemDetails';
 import deletePublicProcurementPlanItem from './procurements/mutations/deletePublicProcurementPlanItem.ts';
@@ -24,14 +24,14 @@ import insertContractArticle from './contractArticles/mutations/insertContractAr
 import deleteContract from './procurementContractsOverview/mutations/deleteContract';
 
 export const GraphQL = {
-  fetch: (query: string): Promise<any> => {
+  fetch: (query: string, variables?: any): Promise<any> => {
     return fetch(BFF_URL[getEnvironment()], {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer sss',
+        'Content-Type': 'application/json', 
+        'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4MzM1NDgsImlhdCI6MTY5NDc3OTU0OCwiaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3NfdG9rZW4ifQ.LdTfgiZE22pjXbsV8LQ_iInKc2r4Wvm92thx7khfg-tpSs3NY4u6B0FZNob890d-sJtDVigsILgO3ZjVCTgib0HPVFzFGENu7fkD-nMgbKOUWvXOWF4iRLBplrwRVwS98GByNbCTuZkgdozUVHHlEnDAcUyNe2SJBGpio8M3MrU',
       },
-      body: JSON.stringify({query}),
+      body: JSON.stringify({query, variables}),
     })
       .then(response => response.json())
       .catch(error => console.error(error));

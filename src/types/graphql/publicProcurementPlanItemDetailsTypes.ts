@@ -3,7 +3,7 @@ import {PublicProcurementArticle, PublicProcurementArticleWithAmount} from './pu
 
 export interface ProcurementItem {
   id: number;
-  budget_indent: DropdownDataString;
+  budget_indent: DropdownDataNumber;
   plan: DropdownDataNumber;
   is_open_procurement: boolean;
   title: string;

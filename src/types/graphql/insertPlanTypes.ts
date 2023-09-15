@@ -1,5 +1,6 @@
 import {DropdownDataNumber} from '../dropdownData';
 import {ProcurementItem} from './publicProcurementPlanItemDetailsTypes';
+import {SingularResponse} from './utils';
 
 export interface PlanItem {
   id: number;
@@ -37,10 +38,6 @@ export interface PlanInsertParams {
 
 export interface PublicProcurementPlanInsertResponse {
   data: {
-    publicProcurementPlan_Insert: {
-      status?: string;
-      message?: string;
-      items: PlanItem[];
-    };
+    publicProcurementPlan_Insert: SingularResponse<PlanItem>
   };
 }

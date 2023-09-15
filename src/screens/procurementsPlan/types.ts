@@ -1,3 +1,4 @@
+import { DropdownDataNumber } from '../../types/dropdownData';
 import {MicroserviceProps} from '../../types/micro-service-props';
 
 export interface ProcurementsPlanPageProps {
@@ -12,6 +13,6 @@ export interface ProcurementsPlanModalProps {
   selectedItem?: any;
   open: boolean;
   onClose: () => void;
-  dropdownData?: any;
+  dropdownData: DropdownDataNumber[];
   navigate: (path: any) => void;
 }

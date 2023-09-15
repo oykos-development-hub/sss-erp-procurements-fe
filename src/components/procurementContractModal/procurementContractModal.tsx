@@ -2,7 +2,7 @@ import React, {useMemo, useEffect} from 'react';
 import {Dropdown, Modal, Input, Datepicker} from 'client-library';
 import {FormWrapper} from './styles';
 import {ProcurementContractModalProps} from './types';
-import useGetPlansOverview from '../../services/graphql/getPlans/hooks/useGetPlans';
+import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
 import {Filters, SubTitle} from '../../shared/styles';
 import useInsertProcurementContract from '../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
 import {parseDate} from '../../utils/dateUtils';

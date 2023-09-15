@@ -3,11 +3,12 @@ import React, {useEffect, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {ProcurementsPlanModalProps} from '../../screens/procurementsPlan/types';
 import {yearsForDropdown} from '../../services/constants';
-import useInsertPublicProcurementPlan from '../../services/graphql/getPlans/mutations/useInsertPublicProcurementPlan';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
 import {FormWrapper} from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
+import { DropdownDataNumber } from '../../types/dropdownData';
 
 const initialValues = {
   id: 0,
@@ -65,8 +66,9 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         year: values?.year?.title,
         is_pre_budget: values?.is_pre_budget?.id === 1 ? true : false,
         title: budgetIndentFlag + '-' + 'Plan za ' + values?.year.title,
-        pre_budget_id: values?.pre_budget_id?.id || 0,
-        date_of_publishing: values?.date_of_publishing || '',
+        pre_budget_id: values?.pre_budget_id?.id || null,
+        date_of_publishing: values?.date_of_publishing || null,
+        date_of_closing: values?.date_of_closing || null,
       };
 
       insertPlan(payload, async planID => {
@@ -74,7 +76,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
           for (const item of planDetails.items) {
             const insertItem = {
               id: 0,
-              budget_indent_id: item.budget_indent.id,
+              budget_indent_id: item.budget_indent.id || null,
               plan_id: planID,
               is_open_procurement: item.is_open_procurement,
               title: item.title,
@@ -124,7 +126,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   }, [selectedItem]);
 
   const filteredArray = dropdownData.filter(
-    (obj: {id: string; title: string}) => obj.title.includes(selectedYear.title) || obj.title.includes('None'),
+    (obj: DropdownDataNumber) => obj.title.includes(selectedYear.title) || obj.title.includes('None'),
   );
 
   return (

@@ -1,13 +1,15 @@
+import { DropdownDataNumber } from '../dropdownData';
+import { Response } from './utils';
+
 export interface PlanOverviewResponse {
-  status: string;
-  message: string;
-  total: number;
-  items: PlanItem[];
+  data: {
+    publicProcurementPlans_Overview: Response<PlanItem>
+  }
 }
 
 export interface PlanItem {
   id: number;
-  pre_budget_plan: PreBudgetPlan;
+  pre_budget_plan: DropdownDataNumber;
   is_pre_budget: boolean;
   active: boolean;
   year: number;
@@ -21,14 +23,8 @@ export interface PlanItem {
   status: string;
   items: {
     id: string;
-    budget_indent: {
-      id: string;
-      title: string;
-    };
-    plan: {
-      id: string;
-      title: string;
-    };
+    budget_indent: DropdownDataNumber;
+    plan: DropdownDataNumber;
     is_open_procurement: boolean;
     title: string;
     article_type: string;
@@ -38,26 +34,15 @@ export interface PlanItem {
     date_of_awarding: string;
     created_at: string;
     updated_at: string;
-    file_id: string;
+    file_id: number;
     articles: Article[];
   }[];
 }
 
-export interface PreBudgetPlan {
-  id: string;
-  title: string;
-}
-
 export interface Article {
-  id: string;
-  budget_indent: {
-    id: string;
-    title: string;
-  };
-  public_procurement: {
-    id: string;
-    title: string;
-  };
+  id: number;
+  budget_indent: DropdownDataNumber;
+  public_procurement: DropdownDataNumber;
   title: string;
   description: string;
   net_price: number;

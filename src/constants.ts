@@ -1,5 +1,10 @@
 import {DropdownDataNumber} from './types/dropdownData';
 
+export enum UserRole {
+  ADMIN = 1,
+  USER = 2,
+}
+
 export const pdvOptions: DropdownDataNumber[] = [
   {id: 0, title: '0 %'},
   {id: 7, title: '7 %'},

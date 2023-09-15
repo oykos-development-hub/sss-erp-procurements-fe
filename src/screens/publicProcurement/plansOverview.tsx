@@ -15,9 +15,9 @@ import {
 } from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {ProcurementsPlanModal} from '../../components/procurementsPlanModal/procurementsPlanModal';
-import useGetPlansOverview from '../../services/graphql/getPlans/hooks/useGetPlans';
-import useDeletePublicProcurementPlan from '../../services/graphql/getPlans/mutations/useDeletePublicProcurementPlan';
-import useInsertPublicProcurementPlan from '../../services/graphql/getPlans/mutations/useInsertPublicProcurementPlan';
+import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
+import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
@@ -36,6 +36,7 @@ import {
   YearWrapper,
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
+import { UserRole } from '../../constants';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -44,7 +45,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const [showShareModal, setShowShareModal] = useState(false);
   const [showRevertModal, setShowRevertModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const isAdmin = context?.contextMain?.role_id === 123;
+  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
   const tableHeads: TableHead[] = [
     {title: 'ID', accessor: 'id', type: 'text'},
     {title: 'Godina', accessor: 'year', type: 'text'},
@@ -157,9 +158,9 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
           id: item.id,
           title: item.title,
         };
-      });
+      }) || [];
 
-    filteredData?.unshift({id: 0, title: 'None'});
+    filteredData.unshift({id: 0, title: 'None'});
     return filteredData;
   }, [tableData]);
   const handleChange = (value: any, name: string) => {

@@ -19,6 +19,7 @@ import {
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
+import { UserRole } from '../../constants';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -82,7 +83,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   const {publicProcurement, refetch: refetchData} = usePublicProcurementGetDetails(procurementID);
   const {mutate: deleteProcurementArticle} = useProcurementArticleDelete();
   const {planDetails} = usePublicProcurementPlanDetails(planID);
-  const isAdmin = context?.contextMain?.role_id === 123;
+  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
 
   const selectedItem = useMemo(() => {
     return publicProcurement?.articles?.find((item: any) => item?.id === selectedItemId);

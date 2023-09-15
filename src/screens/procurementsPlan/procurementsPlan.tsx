@@ -2,7 +2,7 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon} from 'client-library';
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
-import useInsertPublicProcurementPlan from '../../services/graphql/getPlans/mutations/useInsertPublicProcurementPlan';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
@@ -25,6 +25,7 @@ import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
+import { UserRole } from '../../constants';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -41,7 +42,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const planID = url.split('/').pop();
   const pathname = url.substring(0, url.lastIndexOf('/'));
 
-  const isAdmin = context?.contextMain?.role_id === 123;
+  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
   // const organizationUnit = context?.contextMain.organization_units_list?.find(
   //   (unit: OrganizationUnit) => unit.id === Number(url?.split('/').at(-1)),
   // );
