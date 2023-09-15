@@ -8,7 +8,7 @@ import useInsertPublicProcurementPlanItem from '../../services/graphql/procureme
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
 import {FormWrapper} from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
-import { DropdownDataNumber } from '../../types/dropdownData';
+import {DropdownDataNumber} from '../../types/dropdownData';
 
 const initialValues = {
   id: 0,

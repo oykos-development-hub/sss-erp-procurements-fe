@@ -38,6 +38,6 @@ export interface PlanInsertParams {
 
 export interface PublicProcurementPlanInsertResponse {
   data: {
-    publicProcurementPlan_Insert: SingularResponse<PlanItem>
+    publicProcurementPlan_Insert: SingularResponse<PlanItem>;
   };
 }

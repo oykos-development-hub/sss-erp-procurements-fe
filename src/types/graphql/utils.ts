@@ -10,6 +10,3 @@ export interface SingularResponse<T> {
   message: string;
   item: T;
 }
-
-
-

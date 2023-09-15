@@ -1,10 +1,10 @@
-import { DropdownDataNumber } from '../dropdownData';
-import { Response } from './utils';
+import {DropdownDataNumber} from '../dropdownData';
+import {Response} from './utils';
 
 export interface PlanOverviewResponse {
   data: {
-    publicProcurementPlans_Overview: Response<PlanItem>
-  }
+    publicProcurementPlans_Overview: Response<PlanItem>;
+  };
 }
 
 export interface PlanItem {

@@ -19,7 +19,7 @@ import {
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
-import { UserRole } from '../../constants';
+import {UserRole} from '../../constants';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;

@@ -36,7 +36,7 @@ import {
   YearWrapper,
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
-import { UserRole } from '../../constants';
+import {UserRole} from '../../constants';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -149,16 +149,17 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const {mutate: addArticle} = useProcurementArticleInsert();
 
   const initialValuesDropdownData = useMemo(() => {
-    const filteredData = tableData
-      ?.filter(data => {
-        return data.is_pre_budget && (data.status === 'Zaključen' || data.status === 'Objavljen');
-      })
-      .map(item => {
-        return {
-          id: item.id,
-          title: item.title,
-        };
-      }) || [];
+    const filteredData =
+      tableData
+        ?.filter(data => {
+          return data.is_pre_budget && (data.status === 'Zaključen' || data.status === 'Objavljen');
+        })
+        .map(item => {
+          return {
+            id: item.id,
+            title: item.title,
+          };
+        }) || [];
 
     filteredData.unshift({id: 0, title: 'None'});
     return filteredData;

@@ -8,7 +8,6 @@ const getPlansOverview = async ({
   size,
   is_pre_budget,
 }: GetPlansOverviewParams): Promise<PlanOverviewResponse['data']['publicProcurementPlans_Overview']> => {
-
   const query = `query PlansOverview($status: String, $year: String, $page: Int!, $size: Int!, $is_pre_budget: Boolean) {
     publicProcurementPlans_Overview(status: $status, year: $year, page: $page, size: $size, is_pre_budget: $is_pre_budget) {
         status 

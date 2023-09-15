@@ -28,8 +28,9 @@ export const GraphQL = {
     return fetch(BFF_URL[getEnvironment()], {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', 
-        'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4MzM1NDgsImlhdCI6MTY5NDc3OTU0OCwiaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3NfdG9rZW4ifQ.LdTfgiZE22pjXbsV8LQ_iInKc2r4Wvm92thx7khfg-tpSs3NY4u6B0FZNob890d-sJtDVigsILgO3ZjVCTgib0HPVFzFGENu7fkD-nMgbKOUWvXOWF4iRLBplrwRVwS98GByNbCTuZkgdozUVHHlEnDAcUyNe2SJBGpio8M3MrU',
+        'Content-Type': 'application/json',
+        Authorization:
+          'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4MzM1NDgsImlhdCI6MTY5NDc3OTU0OCwiaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3NfdG9rZW4ifQ.LdTfgiZE22pjXbsV8LQ_iInKc2r4Wvm92thx7khfg-tpSs3NY4u6B0FZNob890d-sJtDVigsILgO3ZjVCTgib0HPVFzFGENu7fkD-nMgbKOUWvXOWF4iRLBplrwRVwS98GByNbCTuZkgdozUVHHlEnDAcUyNe2SJBGpio8M3MrU',
       },
       body: JSON.stringify({query, variables}),
     })
