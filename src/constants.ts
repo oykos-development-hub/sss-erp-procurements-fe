@@ -2,26 +2,8 @@ import {DropdownDataNumber} from './types/dropdownData';
 
 export enum UserRole {
   ADMIN = 1,
-  MANAGER_OJ = 2,
-  OFFICIAL_FOR_PUBLIC_PROCUREMENTS = 3,
+  USER = 2,
 }
-
-export enum UserPermission {
-  VIEW_PLANS = 'VIEW_PLANS',
-  VIEW_PLAN_REQUESTS = 'VIEW_PLAN_REQUESTS',
-  FILL_PLANS = 'FILL_PLANS',
-  CREATE_PLANS = 'CREATE_PLANS',
-}
-
-const rolePermissionsMap = {
-  [UserRole.ADMIN]: [UserPermission.VIEW_PLANS, UserPermission.FILL_PLANS, UserPermission.CREATE_PLANS, UserPermission.VIEW_PLAN_REQUESTS],
-  [UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS]: [UserPermission.VIEW_PLANS, UserPermission.FILL_PLANS, UserPermission.CREATE_PLANS, UserPermission.VIEW_PLAN_REQUESTS],
-  [UserRole.MANAGER_OJ]: [UserPermission.VIEW_PLANS, UserPermission.FILL_PLANS],
-};
-
-export const checkPermission = (role: UserRole, permission: UserPermission) => {
-  return rolePermissionsMap[role]?.includes(permission) || false;
-};
 
 export const pdvOptions: DropdownDataNumber[] = [
   {id: 0, title: '0 %'},

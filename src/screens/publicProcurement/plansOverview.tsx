@@ -22,8 +22,8 @@ import {NotificationsModal} from '../../shared/notifications/notificationsModal'
 import ScreenWrapper from '../../shared/screenWrapper';
 import {PlanItem} from '../../types/graphql/getPlansTypes';
 import {ScreenProps} from '../../types/screen-props';
-import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
-import {TypeForPP, YearList, getPlanStatuses} from './constants';
+import {parseDate} from '../../utils/dateUtils';
+import {PlanStatusesForAdmin, PlanStatusesForManager, TypeForPP, YearList} from './constants';
 import {
   ButtonWrapper,
   Container,
@@ -35,7 +35,7 @@ import {
   YearWrapper,
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
-import {UserPermission, UserRole, checkPermission} from '../../constants';
+import {UserRole} from '../../constants';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -44,11 +44,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const [showShareModal, setShowShareModal] = useState(false);
   const [showRevertModal, setShowRevertModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-
-  const role = context?.contextMain?.role_id; // Get the role from context
-  const planStatuses = getPlanStatuses(role);
-  const canCreatePlan = checkPermission(role, UserPermission.CREATE_PLANS);
-
+  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
   const tableHeads: TableHead[] = [
     {title: 'ID', accessor: 'id', type: 'text'},
     {title: 'Godina', accessor: 'year', type: 'text'},
@@ -67,7 +63,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       type: 'custom',
       renderContents: (date_of_publishing: any) => {
         return (
-          <Typography variant="bodyMedium" content={date_of_publishing ? parseDate(date_of_publishing) : ''} />
+          <Typography variant="bodyMedium" content={date_of_publishing ? parseDate(date_of_publishing, true) : ''} />
         );
       },
     },
@@ -106,7 +102,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       accessor: 'updated_at',
       type: 'custom',
       renderContents: (updated_at: any) => {
-        return <Typography variant="bodyMedium" content={updated_at ? parseDate(updated_at) : ''} />;
+        return <Typography variant="bodyMedium" content={updated_at ? parseDate(updated_at, true) : ''} />;
       },
     },
     {
@@ -125,7 +121,9 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       title: 'Zahtjevi',
       accessor: 'requests',
       type: 'custom',
-      shouldRender: checkPermission(role, UserPermission.VIEW_PLAN_REQUESTS),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      shouldRender: isAdmin ? true : false,
     },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
@@ -191,21 +189,16 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const handleShare = async () => {
-    if (!selectedItem) return;
-
     try {
       const payload = {
-        id: selectedItem.id,
-        title: selectedItem.title,
-        active: selectedItem.active,
-        date_of_closing: selectedItem.date_of_closing,
-        date_of_publishing: parseDateForBackend(new Date()) as string,
-        year: selectedItem.year.toString(),
-        is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id,
-        serial_number: selectedItem.serial_number,
+        ...selectedItem,
+        year: selectedItem?.year,
+        is_pre_budget: selectedItem?.is_pre_budget,
+        title: selectedItem?.title,
+        pre_budget_id: selectedItem?.pre_budget_plan?.id || 0,
+        date_of_publishing: parseDate(new Date(), true),
       };
-      insertPlan(payload, () => {
+      insertPlan(payload as any, () => {
         refetchData();
         context.alert.success('Uspješno ste poslali plan organizacionim jedinicama na pregled.');
         setShowShareModal(false);
@@ -216,22 +209,16 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const handleRevert = async () => {
-    if (!selectedItem) return;
-
     try {
       const payload = {
-        id: selectedItem.id,
-        title: selectedItem.title,
-        active: selectedItem.active,
-        date_of_closing: selectedItem?.date_of_closing,
-        date_of_publishing: undefined,
-        year: selectedItem.year.toString(),
-        is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id,
-        serial_number: selectedItem.serial_number,
+        ...selectedItem,
+        year: selectedItem?.year,
+        is_pre_budget: selectedItem?.is_pre_budget,
+        title: selectedItem?.title,
+        pre_budget_id: selectedItem?.id,
+        date_of_publishing: '',
       };
-      
-      insertPlan(payload, () => {
+      insertPlan(payload as any, () => {
         refetchData();
         context.alert.success('Organizacione jedinice vise ne mogu vidjeti ovaj plan.');
         setShowRevertModal(false);
@@ -384,7 +371,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             <YearWrapper>
               <Dropdown
                 label={<Typography variant="bodySmall" content="STATUS:" />}
-                options={planStatuses}
+                options={isAdmin ? PlanStatusesForAdmin : PlanStatusesForManager}
                 name="status"
                 value={form?.status || null}
                 onChange={handleChange as any}
@@ -392,7 +379,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
               />
             </YearWrapper>
           </DropdownsWrapper>
-          {canCreatePlan && (
+          {isAdmin && (
             <ButtonWrapper>
               <Button
                 variant="secondary"
@@ -405,7 +392,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
 
         <div>
           <Table
-            tableHeads={role === UserRole.ADMIN || role === UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS ? tableHeads : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')}
+            tableHeads={isAdmin ? tableHeads : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')}
             data={tableData || []}
             onRowClick={row => {
               context.navigation.navigate(`/procurements/plans/${row.id.toString()}`);

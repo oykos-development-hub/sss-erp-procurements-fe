@@ -31,9 +31,9 @@ export interface PlanInsertParams {
   year: string;
   title: string;
   serial_number: string;
-  date_of_publishing?: string;
-  date_of_closing?: string;
-  file_id?: number;
+  date_of_publishing: string;
+  date_of_closing: string;
+  file_id: number;
 }
 
 export interface PublicProcurementPlanInsertResponse {

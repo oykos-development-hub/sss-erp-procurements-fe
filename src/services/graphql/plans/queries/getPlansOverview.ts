@@ -18,6 +18,7 @@ const query = `query PlansOverview($status: String, $year: String, $page: Int!, 
             status
             date_of_publishing
             date_of_closing
+            created_at
             updated_at
             file_id
             items {
