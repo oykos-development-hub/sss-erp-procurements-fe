@@ -1,10 +1,4 @@
-import {GraphQL} from '../..';
-import {PlanInsertParams, PublicProcurementPlanInsertResponse} from '../../../../types/graphql/insertPlanTypes';
-
-const insertPublicProcurementPlan = async (
-  data: PlanInsertParams,
-): Promise<PublicProcurementPlanInsertResponse['data']['publicProcurementPlan_Insert']> => {
-  const query = `mutation($data: PublicProcurementPlanInsertMutation!) {
+const insertPublicProcurementPlanMutation = `mutation($data: PublicProcurementPlanInsertMutation!) {
     publicProcurementPlan_Insert(data: $data) {
         status 
         message 
@@ -65,9 +59,4 @@ const insertPublicProcurementPlan = async (
     }
 }`;
 
-  const response = await GraphQL.fetch(query, {data});
-
-  return response?.data?.publicProcurementPlan_Insert || {};
-};
-
-export default insertPublicProcurementPlan;
+export default insertPublicProcurementPlanMutation;

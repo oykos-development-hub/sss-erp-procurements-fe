@@ -2,9 +2,7 @@ import {DropdownDataNumber} from '../dropdownData';
 import {Response} from './utils';
 
 export interface PlanOverviewResponse {
-  data: {
-    publicProcurementPlans_Overview: Response<PlanItem>;
-  };
+  publicProcurementPlans_Overview: Response<PlanItem>;
 }
 
 export interface PlanItem {
@@ -12,7 +10,7 @@ export interface PlanItem {
   pre_budget_plan: DropdownDataNumber;
   is_pre_budget: boolean;
   active: boolean;
-  year: number;
+  year: string;
   title: string;
   serial_number: string;
   date_of_publishing: string;
@@ -50,6 +48,7 @@ export interface Article {
 }
 
 export interface GetPlansOverviewParams {
+  fetch?: any;
   status: string;
   year: string;
   page: number;

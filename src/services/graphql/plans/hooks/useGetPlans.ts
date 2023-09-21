@@ -1,16 +1,16 @@
 import {useEffect, useState} from 'react';
-import {GraphQL} from '../..';
-import {GetPlansOverviewParams, PlanItem} from '../../../../types/graphql/getPlansTypes';
+import {GetPlansOverviewParams, PlanItem, PlanOverviewResponse} from '../../../../types/graphql/getPlansTypes';
+import getPlansOverview from '../queries/getPlansOverview';
+import useAppContext from '../../../../context/useAppContext';
 
 const useGetPlansOverview = ({status, year, page, size, is_pre_budget}: GetPlansOverviewParams) => {
-  const [getPlans, setgetPlans] = useState<PlanItem[]>();
+  const [getPlans, setGetPlans] = useState<PlanItem[]>();
   const [loading, setLoading] = useState(true);
+  const {fetch} = useAppContext();
 
   const GetPlans = async () => {
-    const response = await GraphQL.getPlansOverview({status, year, page, size, is_pre_budget});
-    const plans = response?.items;
-
-    setgetPlans(plans);
+    const response: PlanOverviewResponse = await fetch(getPlansOverview, {status, year, page, size, is_pre_budget});
+    setGetPlans(response?.publicProcurementPlans_Overview.items);
     setLoading(false);
   };
 

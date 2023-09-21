@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../../types/dropdownData';
+import {PlanItem} from '../../types/graphql/getPlansTypes';
 import {MicroserviceProps} from '../../types/micro-service-props';
 
 export interface ProcurementsPlanPageProps {
@@ -10,7 +11,7 @@ export interface ProcurementsPlanModalProps {
   //add types here
   alert: any;
   fetch: () => void;
-  selectedItem?: any;
+  selectedItem?: PlanItem;
   open: boolean;
   onClose: () => void;
   dropdownData: DropdownDataNumber[];

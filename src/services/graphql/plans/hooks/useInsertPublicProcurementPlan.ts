@@ -1,17 +1,19 @@
 import {useState} from 'react';
-import {GraphQL} from '../..';
 import {REQUEST_STATUSES} from '../../../constants';
-import {PlanInsertParams} from '../../../../types/graphql/insertPlanTypes';
+import {PlanInsertParams, PublicProcurementPlanInsertResponse} from '../../../../types/graphql/insertPlanTypes';
+import insertPublicProcurementPlanMutation from '../mutations/insertPublicProcurementPlan';
+import useAppContext from '../../../../context/useAppContext';
 
 const useInsertPublicProcurementPlan = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const insertPlan = async (data: PlanInsertParams, onSuccess?: (id: number) => void, onError?: () => void) => {
     setLoading(true);
-    const response = await GraphQL.insertPublicProcurementPlan(data);
+    const response: PublicProcurementPlanInsertResponse = await fetch(insertPublicProcurementPlanMutation, {data});
 
-    if (response.status === REQUEST_STATUSES.success) {
-      onSuccess && onSuccess(response?.item.id);
+    if (response.publicProcurementPlan_Insert.status === REQUEST_STATUSES.success) {
+      onSuccess && onSuccess(response.publicProcurementPlan_Insert.item.id);
     } else {
       onError && onError();
     }

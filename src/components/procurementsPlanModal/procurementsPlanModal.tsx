@@ -1,5 +1,5 @@
 import {Dropdown, Modal} from 'client-library';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {ProcurementsPlanModalProps} from '../../screens/procurementsPlan/types';
 import {yearsForDropdown} from '../../services/constants';
@@ -8,20 +8,10 @@ import useInsertPublicProcurementPlanItem from '../../services/graphql/procureme
 import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
 import {FormWrapper} from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
-import {DropdownDataNumber} from '../../types/dropdownData';
-
-const initialValues = {
-  id: 0,
-  pre_budget_id: {id: 0, title: ''},
-  is_pre_budget: undefined,
-  active: false,
-  year: {id: 0, title: ''},
-  title: '',
-  serial_number: '',
-  date_of_publishing: '',
-  date_of_closing: '',
-  file_id: 0,
-};
+import {DropdownDataBoolean, DropdownDataNumber} from '../../types/dropdownData';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
+import { IS_PRE_BUDGET_OPTIONS } from './constants';
 
 export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   alert,
@@ -38,34 +28,31 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     formState: {errors},
     reset,
     watch,
-  } = useForm({defaultValues: initialValues});
-
-  const yearOptions = useMemo(
-    () => yearsForDropdown().map(year => ({id: year.id.toString(), title: year.title.toString()})),
-    [],
-  );
-
-  const budgetIndent = watch('is_pre_budget');
-  const selectedYear = watch('year');
-  const initialValuesId = watch('pre_budget_id');
-  let budgetIndentFlag = '';
-  if (budgetIndent) {
-    budgetIndentFlag = budgetIndent['title'];
-  }
+  } = useForm({
+    resolver: yupResolver(planModalConfirmationSchema),
+    defaultValues: {
+      pre_budget_id: null,
+    },
+  });
+  
+  const [budgetIndent, initialValuesId, selectedYear] = watch(['is_pre_budget', 'pre_budget_id', 'year']);
 
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
   const {mutate: insertProcurement} = useInsertPublicProcurementPlanItem();
   const {mutate: addArticle} = useProcurementArticleInsert();
 
-  const {planDetails} = usePublicProcurementPlanDetails(initialValuesId?.id);
+  const {planDetails} = usePublicProcurementPlanDetails(initialValuesId?.id || 0);
 
   const onSubmit = async (values: any) => {
     try {
       const payload = {
-        ...values,
+        id: values?.id,
+        active: values?.active,
+        serial_number: values.serial_number,
+        file_id: values.file_id,
         year: values?.year?.title,
-        is_pre_budget: values?.is_pre_budget?.id === 1 ? true : false,
-        title: budgetIndentFlag + '-' + 'Plan za ' + values?.year.title,
+        is_pre_budget: values?.is_pre_budget?.id,
+        title: values?.budgetIndent?.title + '-' + 'Plan za ' + values?.year.title,
         pre_budget_id: values?.pre_budget_id?.id || null,
         date_of_publishing: values?.date_of_publishing || null,
         date_of_closing: values?.date_of_closing || null,
@@ -73,32 +60,30 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
 
       insertPlan(payload, async planID => {
         if (planDetails) {
-          for (const item of planDetails.items) {
-            const insertItem = {
-              id: 0,
-              budget_indent_id: item.budget_indent.id || null,
-              plan_id: planID,
-              is_open_procurement: item.is_open_procurement,
-              title: item.title,
-              article_type: item.article_type,
-              status: item.status,
-              file_id: item.file_id,
-            };
-            await insertProcurement(insertItem as any, async procurementID => {
-              for (const article of item.articles) {
-                const insertArticle = {
-                  id: 0,
-                  budget_indent_id: article?.budget_indent?.id ?? 0,
-                  public_procurement_id: procurementID,
-                  title: article?.title,
-                  description: article?.description,
-                  net_price: article?.net_price,
-                  vat_percentage: article?.vat_percentage,
-                };
-                await addArticle(insertArticle as any);
-              }
-            });
-          }
+          const insertItem = {
+            id: 0,
+            budget_indent_id: planDetails.item.budget_indent.id || null,
+            plan_id: planID,
+            is_open_procurement: planDetails.item.is_open_procurement,
+            title: planDetails.item.title,
+            article_type: planDetails.item.article_type,
+            status: planDetails.item.status,
+            file_id: planDetails.item.file_id,
+          };
+          await insertProcurement(insertItem, async procurementID => {
+            for (const article of planDetails.item.articles) {
+              const insertArticle = {
+                id: 0,
+                budget_indent_id: article?.budget_indent?.id ?? 0,
+                public_procurement_id: procurementID,
+                title: article?.title,
+                description: article?.description,
+                net_price: article?.net_price,
+                vat_percentage: article?.vat_percentage,
+              };
+              await addArticle(insertArticle);
+            }
+          });
         }
 
         fetch();
@@ -115,18 +100,21 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     if (selectedItem) {
       reset({
         ...selectedItem,
-        year: {id: Number(selectedItem?.year), title: selectedItem?.year},
+        year: {id: +selectedItem?.year, title: selectedItem?.year},
         is_pre_budget: {
-          id: selectedItem?.is_pre_budget === true ? 1 : 2,
-          title: selectedItem?.is_pre_budget === true ? 'Predbudžetsko' : 'Postbudžetsko',
+          id: selectedItem?.is_pre_budget,
+          title: selectedItem?.is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko',
         },
-        pre_budget_id: {id: selectedItem?.pre_budget_id, title: selectedItem?.pre_budget_id},
+        pre_budget_id:
+          selectedItem?.pre_budget_plan.id !== 0
+            ? {id: selectedItem.pre_budget_plan.id, title: selectedItem.pre_budget_plan.title}
+            : null,
       });
     }
   }, [selectedItem]);
 
   const filteredArray = dropdownData.filter(
-    (obj: DropdownDataNumber) => obj.title.includes(selectedYear.title) || obj.title.includes('None'),
+    (obj: DropdownDataNumber) => obj.title.includes(selectedYear?.title) || obj.title.includes('None'),
   );
 
   return (
@@ -141,14 +129,13 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
           <Controller
             name="year"
             control={control}
-            rules={{required: 'Ovo polje je obavezno'}}
             render={({field: {onChange, name, value}}) => (
               <Dropdown
                 onChange={onChange}
-                value={value}
+                value={value as any}
                 name={name}
                 label="GODINA:"
-                options={yearOptions}
+                options={yearsForDropdown()}
                 error={errors.year?.message as string}
               />
             )}
@@ -156,7 +143,6 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
 
           <Controller
             name="is_pre_budget"
-            rules={{required: 'Ovo polje je obavezno'}}
             control={control}
             render={({field: {onChange, name, value}}) => {
               return (
@@ -165,15 +151,9 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                   value={value as any}
                   name={name}
                   label="VRSTA:"
-                  options={[
-                    {
-                      id: 1,
-                      title: 'Predbudžetsko',
-                    },
-                    {id: 2, title: 'Postbudžetsko'},
-                  ]}
+                  options={IS_PRE_BUDGET_OPTIONS}
                   error={errors.is_pre_budget?.message as string}
-                  isDisabled={selectedItem ? true : false}
+                  isDisabled={!!selectedItem}
                 />
               );
             }}
@@ -189,8 +169,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                   name={name}
                   label="POČETNE VRIJEDNOSTI:"
                   options={filteredArray}
-                  isDisabled={selectedItem || budgetIndentFlag === 'Predbudžetsko' ? true : false}
-                  error={errors.pre_budget_id?.message as string}
+                  isDisabled={!!selectedItem || budgetIndent?.id}
                 />
               );
             }}

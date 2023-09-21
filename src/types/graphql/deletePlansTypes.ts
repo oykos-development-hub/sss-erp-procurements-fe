@@ -1,8 +1,5 @@
-export interface DeletePlan {
-  data: {
-    publicProcurementPlan_Delete: {
-      status?: string;
-      message?: string;
-    };
-  };
+import {SingularResponse} from './utils';
+
+export interface PublicProcurementPlanDeleteResponse {
+  publicProcurementPlan_Delete: SingularResponse<null>;
 }

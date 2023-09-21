@@ -8,7 +8,7 @@ const usePublicProcurementPlanDetails = (id: number) => {
 
   const fetchPlanDetails = async () => {
     const response = await GraphQL.getPublicProcurementPlanDetails(id);
-    const details = response?.items?.[0];
+    const details = response?.item;
     setPlanDetails(details);
     setLoading(false);
   };

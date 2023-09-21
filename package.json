@@ -44,13 +44,17 @@
     }
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.1",
+    "@types/yup": "^0.32.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
-    "react-router-dom": "^6.10.0"
+    "react-router-dom": "^6.10.0",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@oykos-development/devkit-react-ts-styled-components": "^1.7.1",
+    "@types/node": "^20.6.3",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/styled-components": "^5.1.26",

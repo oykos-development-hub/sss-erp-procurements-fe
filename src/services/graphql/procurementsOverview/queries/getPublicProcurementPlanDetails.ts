@@ -8,7 +8,7 @@ const getPublicProcurementPlanDetails = async (
     publicProcurementPlan_Details(id: ${id}) {
         status 
         message
-        items {
+        item {
             id
             pre_budget_plan {
                 id

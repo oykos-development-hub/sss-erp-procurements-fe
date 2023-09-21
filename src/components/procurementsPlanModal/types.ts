@@ -1,3 +1,4 @@
+import {DropdownDataNumber} from '../../types/dropdownData';
 import {OrganizationUnit} from '../../types/graphql/organizationUnitsTypes';
 
 export interface LimitsModalProps {
@@ -7,4 +8,10 @@ export interface LimitsModalProps {
   procurementId: number;
   navigate: any;
   organizationUnits: OrganizationUnit[];
+}
+
+export interface ProcurementPlanModalFormType {
+  year: DropdownDataNumber;
+  is_pre_budget: DropdownDataNumber;
+  pre_budget_id: DropdownDataNumber | null;
 }

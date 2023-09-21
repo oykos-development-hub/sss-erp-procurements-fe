@@ -1,15 +1,19 @@
 import {useState} from 'react';
-import {GraphQL} from '../..';
 import {REQUEST_STATUSES} from '../../../constants';
+import useAppContext from '../../../../context/useAppContext';
+import {deletePlanMutation} from '../mutations/deletePublicProcurementPlan';
+import {PublicProcurementPlanDeleteResponse} from '../../../../types/graphql/deletePlansTypes';
 
 const useDeletePublicProcurementPlan = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const deletePlan = async (id: number, onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
-    const response = await GraphQL.deletePublicProcurementPlan(id);
 
-    if (response.status === REQUEST_STATUSES.success) {
+    const response: PublicProcurementPlanDeleteResponse = await fetch(deletePlanMutation, {id});
+
+    if (response.publicProcurementPlan_Delete.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {
       onError && onError();

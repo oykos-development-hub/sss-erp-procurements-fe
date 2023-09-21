@@ -9,9 +9,9 @@ export interface ProcurementItem {
   title: string;
   article_type: string;
   status: string;
-  serial_number: string;
-  date_of_publishing: string;
-  date_of_awarding: string;
+  serial_number?: string;
+  date_of_publishing?: string;
+  date_of_awarding?: string;
   created_at: string;
   updated_at: string;
   file_id: number;
@@ -21,8 +21,9 @@ export interface ProcurementItem {
 export interface ProcurementItemForOrganizationUnit extends Omit<ProcurementItem, 'articles'> {
   articles: PublicProcurementArticleWithAmount[];
 }
-export interface ProcurementItemInsert extends Omit<ProcurementItem, 'budget_indent' | 'plan' | 'articles'> {
-  budget_indent_id: number;
+export interface ProcurementItemInsert
+  extends Omit<ProcurementItem, 'budget_indent' | 'plan' | 'articles' | 'created_at' | 'updated_at'> {
+  budget_indent_id: number | null;
   plan_id: number;
 }
 
@@ -69,7 +70,7 @@ export interface ProcurementPlanDetails {
   created_at: string;
   updated_at: string;
   file_id: number;
-  items: ProcurementItem[];
+  item: ProcurementItem;
 }
 
 export interface ProcurementPlanDetailsGetResponse {
@@ -77,7 +78,7 @@ export interface ProcurementPlanDetailsGetResponse {
     publicProcurementPlan_Details: {
       status?: string;
       message?: string;
-      items: ProcurementPlanDetails[];
+      item: ProcurementPlanDetails;
     };
   };
 }
