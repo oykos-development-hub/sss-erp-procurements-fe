@@ -52,7 +52,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         file_id: values.file_id,
         year: values?.year?.title,
         is_pre_budget: values?.is_pre_budget?.id,
-        title: values?.budgetIndent?.title + '-' + 'Plan za ' + values?.year.title,
+        title: values?.is_pre_budget?.title + '-' + 'Plan za ' + values?.year.title,
         pre_budget_id: values?.pre_budget_id?.id || null,
         date_of_publishing: values?.date_of_publishing || null,
         date_of_closing: values?.date_of_closing || null,
