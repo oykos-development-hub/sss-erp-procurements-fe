@@ -16,7 +16,7 @@ export const tableHeads: TableHead[] = [
     accessor: 'date_of_signing',
     type: 'custom',
     renderContents: (date_of_signing: string) => {
-      return <Typography variant="bodySmall" content={date_of_signing ? parseDate(date_of_signing, false) : ''} />;
+      return <Typography variant="bodySmall" content={date_of_signing ? parseDate(date_of_signing) : ''} />;
     },
   },
   {
@@ -24,7 +24,7 @@ export const tableHeads: TableHead[] = [
     accessor: 'date_of_expiry',
     type: 'custom',
     renderContents: (date_of_expiry: string) => {
-      return <Typography variant="bodySmall" content={date_of_expiry ? parseDate(date_of_expiry, false) : ''} />;
+      return <Typography variant="bodySmall" content={date_of_expiry ? parseDate(date_of_expiry) : ''} />;
     },
   },
   {

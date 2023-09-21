@@ -11,7 +11,7 @@ import useProcurementArticleInsert from '../../services/graphql/procurementArtic
 import {DropdownDataBoolean, DropdownDataNumber} from '../../types/dropdownData';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
-import { IS_PRE_BUDGET_OPTIONS } from './constants';
+import {IS_PRE_BUDGET_OPTIONS} from './constants';
 
 export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   alert,
@@ -34,7 +34,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
       pre_budget_id: null,
     },
   });
-  
+
   const [budgetIndent, initialValuesId, selectedYear] = watch(['is_pre_budget', 'pre_budget_id', 'year']);
 
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
@@ -60,30 +60,32 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
 
       insertPlan(payload, async planID => {
         if (planDetails) {
-          const insertItem = {
-            id: 0,
-            budget_indent_id: planDetails.item.budget_indent.id || null,
-            plan_id: planID,
-            is_open_procurement: planDetails.item.is_open_procurement,
-            title: planDetails.item.title,
-            article_type: planDetails.item.article_type,
-            status: planDetails.item.status,
-            file_id: planDetails.item.file_id,
-          };
-          await insertProcurement(insertItem, async procurementID => {
-            for (const article of planDetails.item.articles) {
-              const insertArticle = {
-                id: 0,
-                budget_indent_id: article?.budget_indent?.id ?? 0,
-                public_procurement_id: procurementID,
-                title: article?.title,
-                description: article?.description,
-                net_price: article?.net_price,
-                vat_percentage: article?.vat_percentage,
-              };
-              await addArticle(insertArticle);
-            }
-          });
+          for (const item of planDetails.items) {
+            const insertItem = {
+              id: 0,
+              budget_indent_id: item.budget_indent.id || null,
+              plan_id: planID,
+              is_open_procurement: item.is_open_procurement,
+              title: item.title,
+              article_type: item.article_type,
+              status: item.status,
+              file_id: item.file_id,
+            };
+            await insertProcurement(insertItem, async procurementID => {
+              for (const article of item.articles) {
+                const insertArticle = {
+                  id: 0,
+                  budget_indent_id: article?.budget_indent?.id ?? 0,
+                  public_procurement_id: procurementID,
+                  title: article?.title,
+                  description: article?.description,
+                  net_price: article?.net_price,
+                  vat_percentage: article?.vat_percentage,
+                };
+                await addArticle(insertArticle);
+              }
+            });
+          }
         }
 
         fetch();

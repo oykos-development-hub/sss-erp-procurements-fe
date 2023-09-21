@@ -29,11 +29,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
   const item = useMemo(() => {
     return selectedItem
       ? {
-        ...selectedItem,
-        public_procurement_id: selectedItem?.public_procurement_id || procurementId,
-        vat_percentage: {id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %`},
-        total_price: '',
-      }
+          ...selectedItem,
+          public_procurement_id: selectedItem?.public_procurement_id || procurementId,
+          vat_percentage: {id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %`},
+          total_price: '',
+        }
       : {...initialValues, public_procurement_id: procurementId};
   }, [selectedItem]);
 

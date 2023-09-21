@@ -70,7 +70,7 @@ export interface ProcurementPlanDetails {
   created_at: string;
   updated_at: string;
   file_id: number;
-  item: ProcurementItem;
+  items: ProcurementItem[];
 }
 
 export interface ProcurementPlanDetailsGetResponse {

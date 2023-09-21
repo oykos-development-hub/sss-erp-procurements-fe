@@ -180,7 +180,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
       year: planDetails?.year,
       title: planDetails?.title,
       serial_number: planDetails?.serial_number,
-      date_of_publishing: parseDate(planDetails?.date_of_publishing, true),
+      date_of_publishing: parseDate(planDetails?.date_of_publishing),
       date_of_closing: dateOfClosing,
       file_id: planDetails?.file_id,
       created_at: planDetails?.created_at,

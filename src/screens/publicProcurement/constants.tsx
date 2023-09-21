@@ -1,8 +1,6 @@
 import {ReactNode} from 'react';
 import {DropdownDataNumber} from '../../types/dropdownData';
-import {parseDate} from '../../utils/dateUtils';
-import {TableHead, Typography, Badge} from 'client-library';
-import {StatusTextWrapper} from './styles';
+import {UserRole} from '../../constants';
 
 export interface ValueType {
   id: number | string | boolean;
@@ -50,3 +48,15 @@ export const PlanStatusesForManager: DropdownDataNumber[] = [
   {id: 5, title: 'Objavljen'},
   {id: 6, title: 'Sve'},
 ];
+
+export const getPlanStatuses = (role: UserRole) => {
+  switch (role) {
+    case UserRole.ADMIN:
+    case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
+      return PlanStatusesForAdmin;
+    case UserRole.MANAGER_OJ:
+      return PlanStatusesForManager;
+    default:
+      return []; // Default case, if role does not match any of the above
+  }
+};

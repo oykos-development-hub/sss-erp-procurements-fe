@@ -1,4 +1,4 @@
-import { DropdownDataBoolean } from '../../types/dropdownData';
+import {DropdownDataBoolean} from '../../types/dropdownData';
 
 export const IS_PRE_BUDGET_OPTIONS: DropdownDataBoolean[] = [
   {
@@ -6,7 +6,7 @@ export const IS_PRE_BUDGET_OPTIONS: DropdownDataBoolean[] = [
     title: 'Predbudžetsko',
   },
   {
-    id: false, 
-    title: 'Postbudžetsko'
+    id: false,
+    title: 'Postbudžetsko',
   },
 ];

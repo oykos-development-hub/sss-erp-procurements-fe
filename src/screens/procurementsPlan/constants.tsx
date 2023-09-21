@@ -103,7 +103,7 @@ export const tableHeads: TableHead[] = [
     title: 'Datum objavljivanja',
     accessor: 'date_of_publishing',
     renderContents: (date: any) => {
-      return <Typography variant="bodyMedium" content={date ? parseDate(date, true) : ''} />;
+      return <Typography variant="bodyMedium" content={date ? parseDate(date) : ''} />;
     },
   },
   // {
