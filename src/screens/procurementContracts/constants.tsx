@@ -63,7 +63,7 @@ export const yearsForDropdown = (maxOffset: number) => {
   const allYears = [];
   allYears.push({id: '', title: 'Sve'});
   for (let x = 0; x < maxOffset; x++) {
-    allYears.push({id: Number(thisYear - x), title: (thisYear - x).toString()});
+    allYears.push({id: (thisYear - x).toString(), title: (thisYear - x).toString()});
   }
   return allYears;
 };
