@@ -1,5 +1,6 @@
 import {DropdownDataNumber} from '../dropdownData';
 import {PublicProcurementArticle} from './publicProcurementArticlesTypes';
+import {Response} from './utils';
 
 export interface PublicProcurement {
   id: number;
@@ -19,11 +20,5 @@ export interface PublicProcurement {
 }
 
 export interface PublicProcurementGetDetailsResponse {
-  data: {
-    publicProcurementPlanItem_Details: {
-      status?: string;
-      message?: string;
-      items?: PublicProcurement[];
-    };
-  };
+  publicProcurementPlanItem_Details: Response<PublicProcurement>;
 }

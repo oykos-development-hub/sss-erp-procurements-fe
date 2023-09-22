@@ -1,3 +1,5 @@
+import {Response} from './utils';
+
 export interface Supplier {
   id: number;
   title?: string;
@@ -14,14 +16,7 @@ export interface GetSupplier {
 }
 
 export interface SuppliersOverviewResponse {
-  data: {
-    suppliers_Overview: {
-      status?: string;
-      message?: string;
-      total?: string;
-      items?: Supplier[];
-    };
-  };
+  suppliers_Overview: Response<Supplier>;
 }
 
 export interface SupplierInsertResponse {

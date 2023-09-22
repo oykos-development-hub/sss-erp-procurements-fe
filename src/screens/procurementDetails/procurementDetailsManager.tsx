@@ -1,19 +1,20 @@
-import {Button, MicroserviceProps, TableHead, Typography} from 'client-library';
-import React, {useEffect, useMemo, useState} from 'react';
+import { Button, MicroserviceProps, TableHead, Typography } from 'client-library';
+import React, { useEffect, useMemo, useState } from 'react';
 import useProcurementOrganizationUnitArticleInsert from '../../services/graphql/organizationUnitPublicProcurements/hooks/usePublicProcurementOrganizationUnitArticleInsert';
 import useGetProcurementPlanItemLimits from '../../services/graphql/procurementPlanItemLimits/hooks/useGetProcurementPlanItemLimit';
 import ScreenWrapper from '../../shared/screenWrapper';
-import {CustomDivider, Filters, Header, MainTitle, SectionBox, SubTitle, TableContainer} from '../../shared/styles';
-import {AmountInput, Column, FormControls, FormFooter, Plan, Price} from './styles';
-import usePublicProcurementPlanItemDetailsOverview from '../../services/graphql/procurements/hooks/usePublicProcurementPlanItemDetails';
+import { CustomDivider, Filters, Header, MainTitle, SectionBox, SubTitle, TableContainer } from '../../shared/styles';
+import { AmountInput, Column, FormControls, FormFooter, Plan, Price } from './styles';
+import usePublicProcurementPlanItemDetailsOverview from '../../services/graphql/procurements/hooks/useProcurementPlanItemDetails';
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
-import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
+import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
+import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
 }
 
-export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = ({context}) => {
+export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = ({ context }) => {
   const url = context.navigation.location.pathname;
   const planID = url.split('/').at(-3);
 
@@ -22,37 +23,36 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const organizationUnitId = 2;
-  const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementID);
-  const {planDetails} = usePublicProcurementPlanDetails(planID);
+  const { data: procurementPlanLimits } = useGetProcurementPlanItemLimits(procurementID);
+  const { planDetails } = usePublicProcurementPlanDetails(planID);
   const [requestSuccessCount, setRequestSuccessCount] = useState<number>(0);
   const [requestErrorCount, setRequestErrorCount] = useState<number>(0);
 
   const [isDisabled, setIsDisabled] = useState(true);
-  const {mutate: insertOrganizationUnitArticle} = useProcurementOrganizationUnitArticleInsert();
+  const { mutate: insertOrganizationUnitArticle } = useProcurementOrganizationUnitArticleInsert();
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
-    const {value} = event.target;
+    const { value } = event.target;
     const updatedArticles = [...filteredArticles];
     const index = updatedArticles.findIndex(item => item.id === row.id);
 
     if (index !== -1) {
-      const updatedItem = {...updatedArticles[index], amount: Number(value)};
+      const updatedItem = { ...updatedArticles[index], amount: Number(value) };
       updatedArticles[index] = updatedItem;
       setFilteredArticles(updatedArticles);
     }
   };
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID, organizationUnitId);
+  const { procurements } = useGetOrganizationUnitPublicProcurements(planID, organizationUnitId);
 
-  const {procurementDetails} = usePublicProcurementPlanItemDetailsOverview(procurementID);
+  const { publicProcurement } = usePublicProcurementGetDetails(procurementID);
 
   const procurement = useMemo(() => {
     const procurement: any = procurements?.find((item: any) => Number(item?.id) === Number(procurementID));
-    if (procurementDetails) {
-      const item = procurementDetails[0];
+    if (publicProcurement) {
       return {
-        ...item,
-        articles: item?.articles.map((article: any) => {
+        ...publicProcurement,
+        articles: publicProcurement?.articles.map((article: any) => {
           return {
             ...article,
             amount:
@@ -62,7 +62,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         }),
       };
     }
-  }, [procurementDetails, procurements]);
+  }, [publicProcurement, procurements]);
 
   const tableHeads: TableHead[] = [
     {
@@ -134,7 +134,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       return sum + total;
     }, 0) || 0;
 
-  const desiredItem = procurementPlanLimits?.find((item: {organization_unit: any}) => {
+  const desiredItem = procurementPlanLimits?.find((item: { organization_unit: any }) => {
     return item.organization_unit.id === organizationUnitId;
   });
 
@@ -200,7 +200,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         <MainTitle
           variant="bodyMedium"
           content={`NABAVKA BROJ. ${procurement?.title || ''} / KONTO: ${procurement?.budget_indent?.title || ''}`}
-          style={{marginBottom: 0}}
+          style={{ marginBottom: 0 }}
         />
         <CustomDivider />
         <Header>
@@ -222,7 +222,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
           <Typography
             content={procurement?.plan?.id === 1 ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}
             variant="bodyMedium"
-            style={{fontWeight: 600}}
+            style={{ fontWeight: 600 }}
           />
         </Plan>
         <TableContainer tableHeads={tableHeads} data={filteredArticles || []} />

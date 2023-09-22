@@ -1,12 +1,12 @@
-import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
-import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon} from 'client-library';
-import React, {useMemo, useState} from 'react';
-import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
+import { Tab } from '@oykos-development/devkit-react-ts-styled-components';
+import { Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon } from 'client-library';
+import React, { useMemo, useState } from 'react';
+import { PublicProcurementModal } from '../../components/pocurementsModal/newPublicProcurementModal';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
-import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
-import {NotificationsModal} from '../../shared/notifications/notificationsModal';
+import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
+import { NotificationsModal } from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {
   Controls,
@@ -18,16 +18,16 @@ import {
   SubTitle,
   TableContainer,
 } from '../../shared/styles';
-import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
-import {parseDate} from '../../utils/dateUtils';
-import {planDetailsTabs, tableHeads} from './constants';
-import {RequestsPage} from './requests';
-import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
-import {ProcurementsPlanPageProps} from './types';
-import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
-import {UserRole} from '../../constants';
+import { ProcurementItem } from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import { parseDate } from '../../utils/dateUtils';
+import { planDetailsTabs, tableHeads } from './constants';
+import { RequestsPage } from './requests';
+import { Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper } from './styles';
+import { ProcurementsPlanPageProps } from './types';
+import { ProcurementContractModal } from '../../components/procurementContractModal/procurementContractModal';
+import { UserRole } from '../../constants';
 
-export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
+export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({ context }) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
@@ -48,8 +48,8 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   // );
   const organizationUnit = 2;
 
-  const {planDetails, fetch} = usePublicProcurementPlanDetails(planID);
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID, organizationUnit);
+  const { planDetails, fetch } = usePublicProcurementPlanDetails(planID);
+  const { procurements } = useGetOrganizationUnitPublicProcurements(planID, organizationUnit);
 
   function mergeArrays(firstArray: any, secondArray: any) {
     for (let i = 0; i < firstArray?.items?.length; i++) {
@@ -84,7 +84,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     return mergedResult?.items;
   }, [planDetails, procurements]);
 
-  const {mutate: insertPlan} = useInsertPublicProcurementPlan();
+  const { mutate: insertPlan } = useInsertPublicProcurementPlan();
 
   const totalNet =
     procurementsPlansTableData?.reduce((total: number, item: any) => {
@@ -108,7 +108,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
       return total + itemTotalPrice;
     }, 0) || 0;
 
-  const {mutate} = useDeletePublicProcurementPlanItem();
+  const { mutate } = useDeletePublicProcurementPlanItem();
 
   const selectedItem = useMemo(() => {
     return procurementsPlansTableData?.find((item: ProcurementItem) => item.id === selectedItemId);
@@ -224,11 +224,11 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 ? `PLAN ZA ${planDetails?.year} - ${planDetails?.is_pre_budget ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}`
                 : 'ZAHTJEVI'
             }
-            style={{marginBottom: 0}}
+            style={{ marginBottom: 0 }}
           />
           {isAdmin && <StyledTabs tabs={planDetailsTabs} activeTab={activeTab} onChange={onTabChange} />}
         </TitleTabsWrapper>
-        <CustomDivider style={{marginTop: 0}} />
+        <CustomDivider style={{ marginTop: 0 }} />
         {activeTab === 1 ? (
           <>
             <Header>

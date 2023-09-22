@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
+import {SingularResponse} from './utils';
 
 export interface PublicProcurementArticleParams {
   id: number;
@@ -38,21 +39,9 @@ export interface OrganizationUnitArticle {
 }
 
 export interface PublicProcurementArticleInsertResponse {
-  data: {
-    publicProcurementPlanItemArticle_Insert: {
-      status?: string;
-      message?: string;
-      items?: PublicProcurementArticle[];
-    };
-  };
+  publicProcurementPlanItemArticle_Insert: SingularResponse<PublicProcurementArticle>;
 }
 
 export interface PublicProcurementArticleDeleteResponse {
-  data: {
-    publicProcurementPlanItemArticle_Delete: {
-      status?: string;
-      message?: string;
-      items?: PublicProcurementArticle[];
-    };
-  };
+  publicProcurementPlanItemArticle_Delete: SingularResponse<PublicProcurementArticle>;
 }

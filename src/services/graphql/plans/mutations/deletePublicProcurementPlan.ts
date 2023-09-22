@@ -1,4 +1,4 @@
-export const deletePlanMutation = `mutation($id: Int!) {
+const deletePlanMutation = `mutation($id: Int!) {
   publicProcurementPlan_Delete(id: $id) {
       message
       status

@@ -1,10 +1,15 @@
 import {useState} from 'react';
-import {GraphQL} from '../..';
-import {ProcurementOrganizationUnitArticlesInsertParams} from '../../../../types/graphql/procurementOrganizationUnitArticlesOverview';
+import {
+  ProcurementOrganizationUnitArticlesInsertParams,
+  ProcurementOrganizationUnitArticlesInsertResponse,
+} from '../../../../types/graphql/procurementOrganizationUnitArticlesOverview';
 import {REQUEST_STATUSES} from '../../../constants';
+import useAppContext from '../../../../context/useAppContext';
+import mutation from '../mutations/publicProcurementOrganizationUnitArticleInsert';
 
 const useProcurementOrganizationUnitArticleInsert = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const insertOrganizationUnitArticle = async (
     data: ProcurementOrganizationUnitArticlesInsertParams,
@@ -12,9 +17,12 @@ const useProcurementOrganizationUnitArticleInsert = () => {
     onError?: () => void,
   ) => {
     setLoading(true);
-    const response = await GraphQL.procurementOrganizationUnitArticleInsert(data);
-    if (response.status === REQUEST_STATUSES.success && response.items) {
-      onSuccess && onSuccess(response.items[0].id);
+    const response: ProcurementOrganizationUnitArticlesInsertResponse = await fetch(mutation, data);
+    if (
+      response.publicProcurementOrganizationUnitArticle_Insert.status === REQUEST_STATUSES.success &&
+      response.publicProcurementOrganizationUnitArticle_Insert.item
+    ) {
+      onSuccess && onSuccess(response.publicProcurementOrganizationUnitArticle_Insert.item.id);
     } else {
       onError && onError();
     }

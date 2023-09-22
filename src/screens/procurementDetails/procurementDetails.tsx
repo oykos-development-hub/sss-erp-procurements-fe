@@ -1,10 +1,10 @@
-import {Button, EditIconTwo, MicroserviceProps, TableHead, Theme, TrashIconTwo, Typography} from 'client-library';
-import React, {useMemo, useState} from 'react';
-import {ArticleModal} from '../../components/articleModal/articleModal';
-import {LimitsModal} from '../../components/limitsModal/limitsModal';
-import useProcurementArticleDelete from '../../services/graphql/procurementArticles/useProcurementArticleDelete';
-import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/usePublicProcurementGetDetails';
-import {NotificationsModal} from '../../shared/notifications/notificationsModal';
+import { Button, EditIconTwo, MicroserviceProps, TableHead, Theme, TrashIconTwo, Typography } from 'client-library';
+import React, { useMemo, useState } from 'react';
+import { ArticleModal } from '../../components/articleModal/articleModal';
+import { LimitsModal } from '../../components/limitsModal/limitsModal';
+import useProcurementArticleDelete from '../../services/graphql/procurementArticles/hooks/useProcurementArticleDelete';
+import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
+import { NotificationsModal } from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {
   Controls,
@@ -16,16 +16,16 @@ import {
   SubTitle,
   TableContainer,
 } from '../../shared/styles';
-import {Column, FormControls, FormFooter, Plan, Price} from './styles';
-import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
-import usePublicProcurementPlanDetails from '../../services/graphql/procurementsOverview/hooks/usePublicProcurementPlanDetails';
-import {UserRole} from '../../constants';
+import { Column, FormControls, FormFooter, Plan, Price } from './styles';
+import { PublicProcurement } from '../../types/graphql/publicProcurementTypes';
+import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
+import { UserRole } from '../../constants';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
 }
 
-export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({context}) => {
+export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({ context }) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -77,12 +77,12 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
-    {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
+    { title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions' },
   ];
 
-  const {publicProcurement, refetch: refetchData} = usePublicProcurementGetDetails(procurementID);
-  const {mutate: deleteProcurementArticle} = useProcurementArticleDelete();
-  const {planDetails} = usePublicProcurementPlanDetails(planID);
+  const { publicProcurement, refetch: refetchData } = usePublicProcurementGetDetails(procurementID);
+  const { mutate: deleteProcurementArticle } = useProcurementArticleDelete();
+  const { planDetails } = usePublicProcurementPlanDetails(planID);
   const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
 
   const selectedItem = useMemo(() => {
@@ -160,10 +160,9 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       <SectionBox>
         <MainTitle
           variant="bodyMedium"
-          content={`NABAVKA BROJ. ${publicProcurement?.title || ''} / KONTO: ${
-            publicProcurement?.budget_indent?.title || ''
-          }`}
-          style={{marginBottom: 0}}
+          content={`NABAVKA BROJ. ${publicProcurement?.title || ''} / KONTO: ${publicProcurement?.budget_indent?.title || ''
+            }`}
+          style={{ marginBottom: 0 }}
         />
         <CustomDivider />
         <Header>
@@ -196,7 +195,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           <Typography
             content={publicProcurement?.plan?.title?.includes('Pred') ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}
             variant="bodyMedium"
-            style={{fontWeight: 600}}
+            style={{ fontWeight: 600 }}
           />
         </Plan>
         <TableContainer

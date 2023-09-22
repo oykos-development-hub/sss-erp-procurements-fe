@@ -1,5 +1,5 @@
-const procurementPlanItemInsertMutation = `mutation {
-  publicProcurementPlanItem_Insert(data: $data) {
+const organizationUnitArticleDetailsQuery = `query OrganizationUnitPublicProcurementsArticles($plan_id: Int!, $organization_unit_id: Int!) {
+  publicProcurementOrganizationUnitArticles_Details(plan_id: $plan_id, organization_unit_id: $organization_unit_id) {
       status 
       message
       items {
@@ -24,20 +24,24 @@ const procurementPlanItemInsertMutation = `mutation {
           file_id
           articles {
               id
-              budget_indent {
+              amount
+              status
+              is_rejected
+              rejected_description
+              organization_unit {
                   id
                   title
               }
-              public_procurement {
+              public_procurement_article {
                   id
                   title
+                  net_price
+                  vat_percentage
+                  description
               }
-              title
-              description
-              net_price
-              vat_percentage
           }
       }
-  }}`;
+  }
+}`;
 
-export default procurementPlanItemInsertMutation;
+export default organizationUnitArticleDetailsQuery;

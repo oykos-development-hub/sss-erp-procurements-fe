@@ -1,5 +1,7 @@
 import {DropdownDataNumber, DropdownDataString} from '../dropdownData';
 import {PublicProcurementArticle, PublicProcurementArticleWithAmount} from './publicProcurementArticlesTypes';
+import {PublicProcurement} from './publicProcurementTypes';
+import {Response, SingularResponse} from './utils';
 
 export interface ProcurementItem {
   id: number;
@@ -28,32 +30,15 @@ export interface ProcurementItemInsert
 }
 
 export interface ProcurementPlanItemDetailsGetResponse {
-  data: {
-    publicProcurementPlanItem_Details: {
-      status?: string;
-      message?: string;
-      items: ProcurementItem[];
-    };
-  };
+  publicProcurementPlanItem_Details: SingularResponse<PublicProcurement>;
 }
 
-export interface ProcurementPlanItemDetailsInsertResponse {
-  data: {
-    publicProcurementPlanItem_Insert: {
-      status?: string;
-      message?: string;
-      items: ProcurementItem[];
-    };
-  };
+export interface ProcurementPlanItemInsertResponse {
+  publicProcurementPlanItem_Insert: SingularResponse<ProcurementItem>;
 }
 
 export interface ProcurementPlanItemDetailsDeleteResponse {
-  data: {
-    publicProcurementPlanItem_Delete: {
-      status?: string;
-      message?: string;
-    };
-  };
+  publicProcurementPlanItem_Delete: SingularResponse<null>;
 }
 
 export interface ProcurementPlanDetails {
@@ -74,11 +59,5 @@ export interface ProcurementPlanDetails {
 }
 
 export interface ProcurementPlanDetailsGetResponse {
-  data: {
-    publicProcurementPlan_Details: {
-      status?: string;
-      message?: string;
-      item: ProcurementPlanDetails;
-    };
-  };
+  publicProcurementPlan_Details: SingularResponse<ProcurementPlanDetails>;
 }

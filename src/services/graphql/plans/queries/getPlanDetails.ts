@@ -1,9 +1,8 @@
-const plansOverviewQuery = `query PlansOverview($status: String, $year: String, $page: Int!, $size: Int!, $is_pre_budget: Boolean) {
-    publicProcurementPlans_Overview(status: $status, year: $year, page: $page, size: $size, is_pre_budget: $is_pre_budget) {
+const planDetailsQuery = `query {
+    publicProcurementPlan_Details(id: $id) {
         status 
         message
-        total 
-        items {
+        item {
             id
             pre_budget_plan {
                 id
@@ -15,9 +14,9 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
             title
             status
             serial_number
-            status
             date_of_publishing
             date_of_closing
+            created_at
             updated_at
             file_id
             items {
@@ -60,4 +59,4 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
     }
 }`;
 
-export default plansOverviewQuery;
+export default planDetailsQuery;

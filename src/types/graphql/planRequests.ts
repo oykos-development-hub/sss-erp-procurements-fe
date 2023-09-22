@@ -1,5 +1,6 @@
 import {DropdownDataNumber} from '../dropdownData';
 import {OrganizationUnitArticle} from './publicProcurementArticlesTypes';
+import { Response } from './utils';
 
 export interface RequestArticle {
   amount: number;
@@ -12,11 +13,5 @@ export interface RequestArticle {
 }
 
 export interface PublicProcurementOrganizationUnitArticlesOverviewResponse {
-  data: {
-    publicProcurementOrganizationUnitArticles_Overview: {
-      status?: string;
-      message?: string;
-      items: RequestArticle[];
-    };
-  };
+  publicProcurementOrganizationUnitArticles_Overview: Response<RequestArticle>;
 }

@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
+import {Response, SingularResponse} from './utils';
 
 export interface ProcurementContract {
   id: number;
@@ -33,14 +34,7 @@ export interface GetProcurementContractParams {
 }
 
 export interface ProcurementContractsGetResponse {
-  data: {
-    publicProcurementContracts_Overview: {
-      status?: string;
-      message?: string;
-      total?: string;
-      items?: ProcurementContract[];
-    };
-  };
+  publicProcurementContracts_Overview: Response<ProcurementContract>;
 }
 
 export interface ContractDeleteResponse {
@@ -53,11 +47,5 @@ export interface ContractDeleteResponse {
 }
 
 export interface ProcurementContractsInsertResponse {
-  data: {
-    publicProcurementContracts_Insert: {
-      status?: string;
-      message?: string;
-      items?: ProcurementContract[];
-    };
-  };
+  publicProcurementContracts_Insert: SingularResponse<ProcurementContract>;
 }

@@ -1,10 +1,15 @@
 import {useState} from 'react';
-import {GraphQL} from '../../index';
 import {REQUEST_STATUSES} from '../../../constants';
-import {ProcurementContractInsert} from '../../../../types/graphql/procurementContractsTypes';
+import {
+  ProcurementContractInsert,
+  ProcurementContractsInsertResponse,
+} from '../../../../types/graphql/procurementContractsTypes';
+import useAppContext from '../../../../context/useAppContext';
+import mutation from '../mutations/insertContract';
 
 const useInsertProcurementContract = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const insertContract = async (
     data: ProcurementContractInsert,
@@ -12,11 +17,11 @@ const useInsertProcurementContract = () => {
     onError?: () => void,
   ) => {
     setLoading(true);
-    const response = await GraphQL.insertProcurementContract(data);
+    const response: ProcurementContractsInsertResponse = await fetch(mutation, {data});
 
-    if (response.status === REQUEST_STATUSES.success) {
-      const contractID = response?.items?.[0]?.id;
-      onSuccess && onSuccess(Number(contractID));
+    if (response.publicProcurementContracts_Insert.status === REQUEST_STATUSES.success) {
+      const contractID = response?.publicProcurementContracts_Insert.item?.id;
+      onSuccess && onSuccess(contractID);
     } else {
       onError && onError();
     }

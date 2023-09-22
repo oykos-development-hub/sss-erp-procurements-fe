@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
+import {Response} from './utils';
 
 export interface ProcurementPlanItemLimit {
   id: number;
@@ -25,11 +26,5 @@ export interface ProcurementPlanItemLimitInsertResponse {
 }
 
 export interface ProcurementPlanItemLimitGetResponse {
-  data: {
-    publicProcurementPlanItem_Limits: {
-      status?: string;
-      message?: string;
-      items?: ProcurementPlanItemLimit;
-    };
-  };
+  publicProcurementPlanItem_Limits: Response<ProcurementPlanItemLimit>;
 }

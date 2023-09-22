@@ -1,3 +1,5 @@
+import {Response, SingularResponse} from './utils';
+
 export interface ProcurementOrganizationUnitArticlesItem {
   id: number;
   amount: number;
@@ -25,13 +27,7 @@ export interface ProcurementOrganizationUnitArticlesInsertParams {
 }
 
 export interface ProcurementOrganizationUnitArticlesInsertResponse {
-  data: {
-    publicProcurementOrganizationUnitArticle_Insert: {
-      status?: string;
-      message?: string;
-      items?: ProcurementOrganizationUnitArticlesItem[];
-    };
-  };
+  publicProcurementOrganizationUnitArticle_Insert: SingularResponse<ProcurementOrganizationUnitArticlesItem>;
 }
 export interface ProcurementOrganizationUnitArticlesResponse {
   data: {

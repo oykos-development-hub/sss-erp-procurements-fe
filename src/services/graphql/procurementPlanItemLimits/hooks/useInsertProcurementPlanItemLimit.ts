@@ -1,10 +1,15 @@
 import {useState} from 'react';
-import {GraphQL} from '../../index';
 import {REQUEST_STATUSES} from '../../../constants';
-import {ProcurementPlanItemLimitInsert} from '../../../../types/graphql/procurementPlanItemLimits';
+import {
+  ProcurementPlanItemLimitGetResponse,
+  ProcurementPlanItemLimitInsert,
+} from '../../../../types/graphql/procurementPlanItemLimits';
+import mutation from '../mutation/insertProcurementPlanItemLimit';
+import useAppContext from '../../../../context/useAppContext';
 
 const useInsertProcurementPlanItemLimit = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const insertProcurementPlanItemLimits = async (
     data: ProcurementPlanItemLimitInsert,
@@ -12,8 +17,8 @@ const useInsertProcurementPlanItemLimit = () => {
     onError?: () => void,
   ) => {
     setLoading(true);
-    const response = await GraphQL.insertProcurementPlanItemLimits(data);
-    if (response.status === REQUEST_STATUSES.success) {
+    const response: ProcurementPlanItemLimitGetResponse = await fetch(mutation, {data});
+    if (response.publicProcurementPlanItem_Limits.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {
       onError && onError();

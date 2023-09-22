@@ -1,14 +1,17 @@
 import {useEffect, useState} from 'react';
-import {GraphQL} from '../../index';
+import query from '../queries/getProcurementPlanItemLimits';
+import useAppContext from '../../../../context/useAppContext';
+import {ProcurementPlanItemLimitGetResponse} from '../../../../types/graphql/procurementPlanItemLimits';
 
 const useGetProcurementPlanItemLimits = (id: number) => {
   const [procurementPlanLimits, setProcurementPlanLimits] = useState<any>();
   const [loading, setLoading] = useState(true);
+  const {fetch} = useAppContext();
 
   const getProcurementPlanItemLimit = async () => {
-    const response = await GraphQL.getProcurementPlanItemLimit(id);
+    const response: ProcurementPlanItemLimitGetResponse = await fetch(query, {id});
 
-    setProcurementPlanLimits(response?.items);
+    setProcurementPlanLimits(response?.publicProcurementPlanItem_Limits.items);
     setLoading(false);
   };
 

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {REQUEST_STATUSES} from '../../../constants';
 import {PlanInsertParams, PublicProcurementPlanInsertResponse} from '../../../../types/graphql/insertPlanTypes';
-import insertPublicProcurementPlanMutation from '../mutations/insertPublicProcurementPlan';
+import mutation from '../mutations/insertPublicProcurementPlan';
 import useAppContext from '../../../../context/useAppContext';
 
 const useInsertPublicProcurementPlan = () => {
@@ -10,7 +10,7 @@ const useInsertPublicProcurementPlan = () => {
 
   const insertPlan = async (data: PlanInsertParams, onSuccess?: (id: number) => void, onError?: () => void) => {
     setLoading(true);
-    const response: PublicProcurementPlanInsertResponse = await fetch(insertPublicProcurementPlanMutation, {data});
+    const response: PublicProcurementPlanInsertResponse = await fetch(mutation, {data});
 
     if (response.publicProcurementPlan_Insert.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess(response.publicProcurementPlan_Insert.item.id);

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {GetPlansOverviewParams, PlanItem, PlanOverviewResponse} from '../../../../types/graphql/getPlansTypes';
-import getPlansOverview from '../queries/getPlansOverview';
+import query from '../queries/getPlansOverview';
 import useAppContext from '../../../../context/useAppContext';
 
 const useGetPlansOverview = ({status, year, page, size, is_pre_budget}: GetPlansOverviewParams) => {
@@ -9,7 +9,7 @@ const useGetPlansOverview = ({status, year, page, size, is_pre_budget}: GetPlans
   const {fetch} = useAppContext();
 
   const GetPlans = async () => {
-    const response: PlanOverviewResponse = await fetch(getPlansOverview, {status, year, page, size, is_pre_budget});
+    const response: PlanOverviewResponse = await fetch(query, {status, year, page, size, is_pre_budget});
     setGetPlans(response?.publicProcurementPlans_Overview.items);
     setLoading(false);
   };

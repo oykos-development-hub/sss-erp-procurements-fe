@@ -1,13 +1,8 @@
 import {ProcurementItemForOrganizationUnit} from './publicProcurementPlanItemDetailsTypes';
+import {Response} from './utils';
 
 export interface PublicProcurementOrganizationUnitArticlesResponse {
-  data: {
-    publicProcurementOrganizationUnitArticles_Details: {
-      status?: string;
-      message?: string;
-      items?: ProcurementItemForOrganizationUnit[];
-    };
-  };
+  publicProcurementOrganizationUnitArticles_Details: Response<ProcurementItemForOrganizationUnit>;
 }
 
 export interface PublicProcurementOrganizationUnitArticlesParams {

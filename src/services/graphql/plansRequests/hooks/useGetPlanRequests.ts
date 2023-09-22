@@ -1,17 +1,24 @@
 import {useEffect, useState} from 'react';
-import {GraphQL} from '../..';
-import {RequestArticle} from '../../../../types/graphql/planRequests';
+import {
+  PublicProcurementOrganizationUnitArticlesOverviewResponse,
+  RequestArticle,
+} from '../../../../types/graphql/planRequests';
+import useAppContext from '../../../../context/useAppContext';
+import query from '../queries/getRequests';
 
 const useGetPublicProcurementPlanRequests = (ids: number[]) => {
   const [requests, setRequests] = useState<RequestArticle[]>([]);
   const [loading, setLoading] = useState(true);
+  const {fetch} = useAppContext();
 
   const fetchRequests = async () => {
-    let items: any = [];
+    const items: RequestArticle[] = [];
     for (const id of ids) {
-      const response = await GraphQL.getPublicProcurementPlanRequests(id);
-      const requests = response?.items;
-      items = [...items, ...requests];
+      const response: PublicProcurementOrganizationUnitArticlesOverviewResponse = await fetch(query, {
+        procurement_id: id,
+      });
+      const requests = response?.publicProcurementOrganizationUnitArticles_Overview.items;
+      items.push(...requests);
     }
     setRequests(items);
 

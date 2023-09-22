@@ -1,16 +1,17 @@
 import {useState} from 'react';
-import {GraphQL} from '../../index';
 import {REQUEST_STATUSES} from '../../../constants';
-import {ContractArticleInsert} from '../../../../types/graphql/contractsArticlesTypes';
+import {ContractArticleInsert, ContractArticlesInsertResponse} from '../../../../types/graphql/contractsArticlesTypes';
+import useAppContext from '../../../../context/useAppContext';
 
 const useInsertContractArticle = () => {
   const [loading, setLoading] = useState(false);
+  const {fetch} = useAppContext();
 
   const insertContractArticle = async (data: ContractArticleInsert, onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
-    const response = await GraphQL.insertContractArticle(data);
+    const response: ContractArticlesInsertResponse = await fetch(insertContractArticle, {data});
 
-    if (response.status === REQUEST_STATUSES.success) {
+    if (response.publicProcurementContractArticle_Insert.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {
       onError && onError();
