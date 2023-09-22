@@ -46,6 +46,7 @@ export const TableHeader = styled.div`
 export const DropdownsWrapper = styled.div`
   display: flex;
   align-items: center;
+  flex-grow: 2;
 `;
 
 export const IconsWrapper = styled.div`
@@ -65,7 +66,7 @@ export const IconsWrapper = styled.div`
 
 export const YearWrapper = styled.div`
   margin-right: 10px;
-  width: 320px;
+  flex-grow: 1;
 `;
 
 export const AlertWrapper = styled.div`
@@ -77,4 +78,7 @@ export const AlertWrapper = styled.div`
 
 export const ButtonWrapper = styled.div`
   margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
 `;
