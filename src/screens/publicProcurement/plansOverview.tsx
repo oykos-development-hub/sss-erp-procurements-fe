@@ -135,7 +135,11 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     is_pre_budget: {id: null, title: 'Odaberite vrstu'},
   });
 
-  const {data: tableData, refetchData} = useGetPlansOverview({
+  const {
+    data: tableData,
+    refetchData,
+    loading,
+  } = useGetPlansOverview({
     ...form,
     is_pre_budget: form?.is_pre_budget?.id,
     year: form?.year?.id,
@@ -408,6 +412,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
                 ? tableHeads
                 : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')
             }
+            isLoading={loading}
             data={tableData || []}
             onRowClick={row => {
               context.navigation.navigate(`/procurements/plans/${row.id.toString()}`);

@@ -20,7 +20,11 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
   // const [selectedYear, setSelectedYear] = useState();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {data: tableData, refetchData} = useProcurementContracts({
+  const {
+    data: tableData,
+    refetchData,
+    loading,
+  } = useProcurementContracts({
     id: 0,
     procurement_id: 0,
     supplier_id: selectedSupplier,
@@ -115,6 +119,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
           <Table
             tableHeads={tableHeads}
             data={filteredTableData || []}
+            isLoading={loading}
             onRowClick={row => {
               context.navigation.navigate(`/procurements/contracts/${row.id.toString()}/signed`);
               context.breadcrumbs.add({
