@@ -18,7 +18,7 @@ export const ProcurementContractsFilters: React.FC<ProcurementContractFiltersPro
   searchQuery,
 }) => {
   const {control, watch} = useForm({defaultValues: initialValues});
-  const years = yearsForDropdown();
+  const years = yearsForDropdown(10);
 
   const suppliersOptions = useMemo(() => {
     const options = suppliers.map((supplier: Supplier) => ({

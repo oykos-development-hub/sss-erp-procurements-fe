@@ -11,19 +11,6 @@ const getCurrentYear = () => {
   return new Date().getFullYear();
 };
 
-const getYearList = () => {
-  const currentYear = getCurrentYear();
-  const years = [];
-  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    years.push(i.toString());
-  }
-  return years;
-};
-
-export const YearList = getYearList()
-  .map(year => ({id: year, title: year}))
-  .reverse();
-
 export const TypeForPP = [
   {id: true, title: 'Predbudžetsko'},
   {id: false, title: 'Postbudžetsko'},

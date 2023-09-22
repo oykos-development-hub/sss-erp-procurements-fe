@@ -14,16 +14,14 @@ import {
 } from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {ProcurementsPlanModal} from '../../components/procurementsPlanModal/procurementsPlanModal';
-import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
-import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
-import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
+
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {PlanItem} from '../../types/graphql/getPlansTypes';
 import {ScreenProps} from '../../types/screen-props';
 import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
-import {TypeForPP, YearList, getPlanStatuses} from './constants';
+import {TypeForPP, getPlanStatuses} from './constants';
 import {
   ButtonWrapper,
   Container,
@@ -36,6 +34,10 @@ import {
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/useProcurementArticleInsert';
 import {UserPermission, UserRole, checkPermission} from '../../constants';
+import {yearsForDropdown} from '../procurementContracts/constants';
+import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
+import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -367,7 +369,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             <YearWrapper>
               <Dropdown
                 label={<Typography variant="bodySmall" content="GODINA:" />}
-                options={YearList as any}
+                options={yearsForDropdown(5)}
                 name="year"
                 value={form?.year || null}
                 onChange={handleChange}

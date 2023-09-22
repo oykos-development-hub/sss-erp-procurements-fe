@@ -58,24 +58,10 @@ const getCurrentYear = () => {
   return new Date().getFullYear();
 };
 
-const getYearList = () => {
-  const currentYear = getCurrentYear();
-  const years = [];
-  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    years.push(i.toString());
-  }
-  return years;
-};
-
-export const YearList = getYearList()
-  .map(year => ({id: year, title: year}))
-  .reverse();
-
-export const yearsForDropdown = () => {
-  const maxOffset = 10;
+export const yearsForDropdown = (maxOffset: number) => {
   const thisYear = new Date().getFullYear();
   const allYears = [];
-  allYears.push({id: 0, title: 'Sve'});
+  allYears.push({id: null, title: 'Sve'});
   for (let x = 0; x < maxOffset; x++) {
     allYears.push({id: Number(thisYear - x), title: (thisYear - x).toString()});
   }
