@@ -1,6 +1,6 @@
-import { Button, Datepicker, Dropdown, Input, MicroserviceProps, TableHead, Typography } from 'client-library';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import {Button, Datepicker, Dropdown, Input, MicroserviceProps, TableHead, Typography} from 'client-library';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
 import useGetOrganizationUnitPublicProcurements from '../../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useInsertProcurementContract from '../../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
@@ -8,9 +8,9 @@ import useProcurementContracts from '../../../services/graphql/procurementContra
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
 import ScreenWrapper from '../../../shared/screenWrapper';
-import { CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer } from '../../../shared/styles';
-import { parseDate } from '../../../utils/dateUtils';
-import { Column, FormControls, FormFooter, Plan, Price } from './styles';
+import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
+import {parseDate} from '../../../utils/dateUtils';
+import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -20,14 +20,14 @@ const initialValues = {
   serial_number: '',
   date_of_signing: '',
   date_of_expiry: '',
-  supplier: { id: 0, title: '' },
+  supplier: {id: 0, title: ''},
 };
 
-export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context }) => {
+export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
 
-  const { data: contractData } = useProcurementContracts({
+  const {data: contractData} = useProcurementContracts({
     id: contractID,
     procurement_id: 0,
     supplier_id: 0,
@@ -50,20 +50,20 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
     handleSubmit,
     reset,
     register,
-    formState: { errors },
+    formState: {errors},
     control,
     watch,
-  } = useForm({ defaultValues: defaultValuesData });
+  } = useForm({defaultValues: defaultValuesData});
 
   useEffect(() => {
     reset(defaultValuesData);
   }, [defaultValuesData, reset]);
 
-  const { publicProcurement } = usePublicProcurementGetDetails(procurementID);
+  const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
   const planID = publicProcurement?.plan?.id;
 
   const organizationUnitID = 2; // Will get from context
-  const { procurements } = useGetOrganizationUnitPublicProcurements(planID as number, organizationUnitID);
+  const {procurements} = useGetOrganizationUnitPublicProcurements(planID as number, organizationUnitID);
 
   useEffect(() => {
     if (procurements) {
@@ -93,21 +93,21 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
     const netPrice = parseFloat(article?.public_procurement_article.net_price);
     const articleTotalPrice = article.amount
       ? Number(article.amount || 1) *
-      (netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100)
+        (netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100)
       : netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100;
 
     return sum + articleTotalPrice;
   }, 0);
 
-  const { data: suppliers } = useGetSuppliers({ id: 0, search: '' });
-  const supplierOptions = useMemo(() => suppliers?.map(item => ({ id: item?.id, title: item?.title })), [suppliers]);
+  const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
+  const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
   const handleInputChangeAmount = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
-    const { value } = event.target;
+    const {value} = event.target;
     setFilteredArticles(articles =>
       articles.map(article => {
         if (article.id === row.id) {
-          return { ...article, amount: Number(value) };
+          return {...article, amount: Number(value)};
         }
         return article;
       }),
@@ -115,7 +115,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
   };
 
   const handleInputChangeNetValue = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
-    const { value } = event.target;
+    const {value} = event.target;
     setFilteredArticles(articles =>
       articles.map(article => {
         if (article.id === row.id) {
@@ -194,8 +194,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
     },
   ];
 
-  const { mutate: insertContract } = useInsertProcurementContract();
-  const { mutate: insertContractArticle } = useInsertContractArticle();
+  const {mutate: insertContract} = useInsertProcurementContract();
+  const {mutate: insertContractArticle} = useInsertContractArticle();
 
   const handleSave = async () => {
     try {
@@ -226,7 +226,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
                 (Number(item?.public_procurement_article?.net_price) +
                   (Number(item?.public_procurement_article?.net_price) *
                     Number(item?.public_procurement_article?.vat_percentage)) /
-                  100)
+                    100)
               )
                 ?.toFixed(2)
                 .toString(),
@@ -259,14 +259,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
         <MainTitle
           variant="bodyMedium"
           content={`DETALJI UGOVORA: ${contract?.serial_number}`}
-          style={{ marginBottom: 0 }}
+          style={{marginBottom: 0}}
         />
         <CustomDivider />
 
-        <Filters style={{ marginTop: '1.5rem' }}>
+        <Filters style={{marginTop: '1.5rem'}}>
           <Column>
             <Input
-              {...register('serial_number', { required: 'Ovo polje je obavezno' })}
+              {...register('serial_number', {required: 'Ovo polje je obavezno'})}
               label={'ŠIFRA UGOVORA:'}
               error={errors?.serial_number?.message as string}
             />
@@ -282,7 +282,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
                     ? true
                     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
               }}
-              render={({ field: { onChange, name, value } }) => (
+              render={({field: {onChange, name, value}}) => (
                 <Datepicker
                   onChange={onChange}
                   label="DATUM ZAKLJUČENJA UGOVORA:"
@@ -304,7 +304,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
                     ? true
                     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
               }}
-              render={({ field: { onChange, name, value } }) => (
+              render={({field: {onChange, name, value}}) => (
                 <Datepicker
                   onChange={onChange}
                   label="DATUM ZAVRŠETKA UGOVORA:"
@@ -317,13 +317,13 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
           </Column>
         </Filters>
 
-        <Filters style={{ marginTop: '10px' }}>
+        <Filters style={{marginTop: '10px'}}>
           <Column>
             <Controller
               name="supplier"
               control={control}
-              rules={{ validate: value => (value?.title === '' ? 'Izaberi dobavljača' : true) }}
-              render={({ field: { onChange, name, value } }) => {
+              rules={{validate: value => (value?.title === '' ? 'Izaberi dobavljača' : true)}}
+              render={({field: {onChange, name, value}}) => {
                 return (
                   <Dropdown
                     onChange={onChange}
@@ -339,7 +339,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
           </Column>
         </Filters>
 
-        <Filters style={{ marginTop: '44px' }}>
+        <Filters style={{marginTop: '44px'}}>
           <Column>
             <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PDV-A" />
             <Price variant="bodySmall" content={`€ ${totalPDV?.toFixed(2)}`} />
@@ -351,7 +351,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({ context })
         </Filters>
 
         <Plan>
-          <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{ fontWeight: 600 }} />
+          <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
         <TableContainer tableHeads={tableHeads} data={filteredArticles || []} />
       </SectionBox>

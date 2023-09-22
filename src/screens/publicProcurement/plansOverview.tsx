@@ -12,16 +12,16 @@ import {
   TableHead,
   Badge,
 } from 'client-library';
-import { useEffect, useMemo, useState } from 'react';
-import { ProcurementsPlanModal } from '../../components/procurementsPlanModal/procurementsPlanModal';
+import {useEffect, useMemo, useState} from 'react';
+import {ProcurementsPlanModal} from '../../components/procurementsPlanModal/procurementsPlanModal';
 
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
-import { NotificationsModal } from '../../shared/notifications/notificationsModal';
+import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
-import { PlanItem } from '../../types/graphql/getPlansTypes';
-import { ScreenProps } from '../../types/screen-props';
-import { parseDate, parseDateForBackend } from '../../utils/dateUtils';
-import { TypeForPP, getPlanStatuses } from './constants';
+import {PlanItem} from '../../types/graphql/getPlansTypes';
+import {ScreenProps} from '../../types/screen-props';
+import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
+import {TypeForPP, getPlanStatuses} from './constants';
 import {
   ButtonWrapper,
   Container,
@@ -33,13 +33,13 @@ import {
   YearWrapper,
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import { UserPermission, UserRole, checkPermission } from '../../constants';
-import { yearsForDropdown } from '../procurementContracts/constants';
+import {UserPermission, UserRole, checkPermission} from '../../constants';
+import {yearsForDropdown} from '../procurementContracts/constants';
 import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
 import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 
-export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) => {
+export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -52,8 +52,8 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
   const canCreatePlan = checkPermission(role, UserPermission.CREATE_PLANS);
 
   const tableHeads: TableHead[] = [
-    { title: 'ID', accessor: 'id', type: 'text' },
-    { title: 'Godina', accessor: 'year', type: 'text' },
+    {title: 'ID', accessor: 'id', type: 'text'},
+    {title: 'Godina', accessor: 'year', type: 'text'},
     {
       title: 'Vrsta',
       accessor: 'is_pre_budget',
@@ -62,7 +62,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
         return <Typography variant="bodyMedium" content={is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko'} />;
       },
     },
-    { title: 'Naslov', accessor: 'title', type: 'text' },
+    {title: 'Naslov', accessor: 'title', type: 'text'},
     {
       title: 'Datum kreiranja',
       accessor: 'date_of_publishing',
@@ -80,7 +80,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
           let totalValue = 0;
           items.forEach(item => {
             if (item && item.articles && item.articles.length > 0) {
-              item.articles.forEach((article: { net_price: string; vat_percentage: string }) => {
+              item.articles.forEach((article: {net_price: string; vat_percentage: string}) => {
                 if (article && article.net_price) {
                   const price =
                     Number(article.net_price) + (Number(article.net_price) * Number(article.vat_percentage)) / 100;
@@ -127,14 +127,14 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
       type: 'custom',
       shouldRender: checkPermission(role, UserPermission.VIEW_PLAN_REQUESTS),
     },
-    { title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions' },
+    {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
   const [form, setForm] = useState<any>({
     status: '',
-    year: { id: '', title: 'Odaberite godinu' },
+    year: {id: '', title: 'Odaberite godinu'},
     page: 1,
     size: 100,
-    is_pre_budget: { id: null, title: 'Odaberite vrstu' },
+    is_pre_budget: {id: null, title: 'Odaberite vrstu'},
   });
 
   const {
@@ -148,10 +148,10 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
     status: form?.status?.id,
   });
 
-  const { mutate: deletePlan } = useDeletePublicProcurementPlan();
-  const { mutate: insertProcurement } = useInsertPublicProcurementPlanItem();
-  const { mutate: insertPlan } = useInsertPublicProcurementPlan();
-  const { mutate: addArticle } = useProcurementArticleInsert();
+  const {mutate: deletePlan} = useDeletePublicProcurementPlan();
+  const {mutate: insertProcurement} = useInsertPublicProcurementPlanItem();
+  const {mutate: insertPlan} = useInsertPublicProcurementPlan();
+  const {mutate: addArticle} = useProcurementArticleInsert();
 
   const initialValuesDropdownData = useMemo(() => {
     const filteredData =
@@ -166,7 +166,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({ context }) =
           };
         }) || [];
 
-    filteredData.unshift({ id: 0, title: 'None' });
+    filteredData.unshift({id: 0, title: 'None'});
     return filteredData;
   }, [tableData]);
   const handleChange = (value: any, name: string) => {

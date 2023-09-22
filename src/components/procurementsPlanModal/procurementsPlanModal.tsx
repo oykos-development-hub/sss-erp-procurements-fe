@@ -1,17 +1,17 @@
-import { Dropdown, Modal } from 'client-library';
-import React, { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { ProcurementsPlanModalProps } from '../../screens/procurementsPlan/types';
-import { yearsForDropdown } from '../../services/constants';
+import {Dropdown, Modal} from 'client-library';
+import React, {useEffect} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {ProcurementsPlanModalProps} from '../../screens/procurementsPlan/types';
+import {yearsForDropdown} from '../../services/constants';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import { FormWrapper } from './styles';
+import {FormWrapper} from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import { DropdownDataBoolean, DropdownDataNumber } from '../../types/dropdownData';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { planModalConfirmationSchema } from '../../screens/publicProcurement/validationSchema';
-import { IS_PRE_BUDGET_OPTIONS } from './constants';
+import {DropdownDataBoolean, DropdownDataNumber} from '../../types/dropdownData';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
+import {IS_PRE_BUDGET_OPTIONS} from './constants';
 
 export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   alert,
@@ -25,7 +25,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: {errors},
     reset,
     watch,
   } = useForm({
@@ -37,11 +37,11 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
 
   const [budgetIndent, initialValuesId, selectedYear] = watch(['is_pre_budget', 'pre_budget_id', 'year']);
 
-  const { mutate: insertPlan } = useInsertPublicProcurementPlan();
-  const { mutate: insertProcurement } = useInsertPublicProcurementPlanItem();
-  const { mutate: addArticle } = useProcurementArticleInsert();
+  const {mutate: insertPlan} = useInsertPublicProcurementPlan();
+  const {mutate: insertProcurement} = useInsertPublicProcurementPlanItem();
+  const {mutate: addArticle} = useProcurementArticleInsert();
 
-  const { planDetails } = usePublicProcurementPlanDetails(initialValuesId?.id || 0);
+  const {planDetails} = usePublicProcurementPlanDetails(initialValuesId?.id || 0);
 
   const onSubmit = async (values: any) => {
     try {
@@ -102,14 +102,14 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     if (selectedItem) {
       reset({
         ...selectedItem,
-        year: { id: +selectedItem?.year, title: selectedItem?.year },
+        year: {id: +selectedItem?.year, title: selectedItem?.year},
         is_pre_budget: {
           id: selectedItem?.is_pre_budget,
           title: selectedItem?.is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko',
         },
         pre_budget_id:
           selectedItem?.pre_budget_plan.id !== 0
-            ? { id: selectedItem.pre_budget_plan.id, title: selectedItem.pre_budget_plan.title }
+            ? {id: selectedItem.pre_budget_plan.id, title: selectedItem.pre_budget_plan.title}
             : null,
       });
     }
@@ -131,7 +131,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
           <Controller
             name="year"
             control={control}
-            render={({ field: { onChange, name, value } }) => (
+            render={({field: {onChange, name, value}}) => (
               <Dropdown
                 onChange={onChange}
                 value={value as any}
@@ -146,7 +146,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
           <Controller
             name="is_pre_budget"
             control={control}
-            render={({ field: { onChange, name, value } }) => {
+            render={({field: {onChange, name, value}}) => {
               return (
                 <Dropdown
                   onChange={onChange}
@@ -163,7 +163,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
           <Controller
             name="pre_budget_id"
             control={control}
-            render={({ field: { onChange, name, value } }) => {
+            render={({field: {onChange, name, value}}) => {
               return (
                 <Dropdown
                   onChange={onChange}

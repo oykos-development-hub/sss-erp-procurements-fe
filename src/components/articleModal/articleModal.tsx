@@ -1,10 +1,10 @@
-import { Dropdown, Input, Modal, Theme } from 'client-library';
-import React, { useEffect, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { dropdownBudgetIndentOptions, pdvOptions } from '../../constants';
+import {Dropdown, Input, Modal, Theme} from 'client-library';
+import React, {useEffect, useMemo} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {dropdownBudgetIndentOptions, pdvOptions} from '../../constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import { FormWrapper, Row } from './styles';
-import { formatData } from './utils';
+import {FormWrapper, Row} from './styles';
+import {formatData} from './utils';
 
 const initialValues = {
   id: 0,
@@ -25,29 +25,29 @@ interface ArticleModalProps {
   alert?: any;
 }
 
-export const ArticleModal: React.FC<ArticleModalProps> = ({ selectedItem, open, onClose, procurementId, alert }) => {
+export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, onClose, procurementId, alert}) => {
   const item = useMemo(() => {
     return selectedItem
       ? {
-        ...selectedItem,
-        public_procurement_id: selectedItem?.public_procurement_id || procurementId,
-        vat_percentage: { id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %` },
-        total_price: '',
-      }
-      : { ...initialValues, public_procurement_id: procurementId };
+          ...selectedItem,
+          public_procurement_id: selectedItem?.public_procurement_id || procurementId,
+          vat_percentage: {id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %`},
+          total_price: '',
+        }
+      : {...initialValues, public_procurement_id: procurementId};
   }, [selectedItem]);
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: {errors},
     reset,
     setValue,
     watch,
-  } = useForm({ defaultValues: item || initialValues });
+  } = useForm({defaultValues: item || initialValues});
 
-  const { mutate: addArticle } = useProcurementArticleInsert();
+  const {mutate: addArticle} = useProcurementArticleInsert();
 
   const netPrice = watch('net_price');
   const pdv = watch('vat_percentage');
@@ -98,7 +98,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ selectedItem, open, 
             <Controller
               name="budget_indent"
               control={control}
-              render={({ field: { onChange, name, value } }) => {
+              render={({field: {onChange, name, value}}) => {
                 return (
                   <Dropdown
                     onChange={onChange}
@@ -112,19 +112,19 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ selectedItem, open, 
               }}
             />
             <Input
-              {...register('title', { required: 'Ovo polje je obavezno' })}
+              {...register('title', {required: 'Ovo polje je obavezno'})}
               label="OPIS PREDMETA NABAVKE:"
               error={errors.title?.message as string}
             />
           </Row>
           <Row>
             <Input
-              {...register('description', { required: 'Ovo polje je obavezno' })}
+              {...register('description', {required: 'Ovo polje je obavezno'})}
               label="BITNE KARAKTERISTIKE PREDMETA NABAVKE:"
               error={errors.description?.message as string}
             />
             <Input
-              {...register('net_price', { required: 'Ovo polje je obavezno' })}
+              {...register('net_price', {required: 'Ovo polje je obavezno'})}
               label="JEDINIČNA CIJENA BEZ PDV-A (Vrijednost neto):"
               error={errors.net_price?.message as string}
               leftContent={<div>€</div>}
@@ -133,12 +133,12 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ selectedItem, open, 
           <Row>
             <Controller
               name="vat_percentage"
-              rules={{ required: 'Ovo polje je obavezno' }}
+              rules={{required: 'Ovo polje je obavezno'}}
               control={control}
-              render={({ field: { onChange, name, value } }) => {
+              render={({field: {onChange, name, value}}) => {
                 const pdvValue = (Number(netPrice) * Number(pdv?.id)) / 100;
                 const valueToShow = pdvValue
-                  ? { id: value?.id, title: `${value.title}   (${pdvValue.toFixed(2)} €)` }
+                  ? {id: value?.id, title: `${value.title}   (${pdvValue.toFixed(2)} €)`}
                   : value;
                 return (
                   <Dropdown
@@ -155,7 +155,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({ selectedItem, open, 
             <Input
               {...register('total_price')}
               label="JEDINIČNA CIJENA SA PDV-OM:"
-              leftContent={<div style={{ color: Theme?.palette?.gray300 }}>€</div>}
+              leftContent={<div style={{color: Theme?.palette?.gray300}}>€</div>}
               disabled
             />
           </Row>
