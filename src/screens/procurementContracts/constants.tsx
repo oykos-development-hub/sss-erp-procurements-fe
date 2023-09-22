@@ -61,7 +61,7 @@ const getCurrentYear = () => {
 export const yearsForDropdown = (maxOffset: number) => {
   const thisYear = new Date().getFullYear();
   const allYears = [];
-  allYears.push({id: null, title: 'Sve'});
+  allYears.push({id: '', title: 'Sve'});
   for (let x = 0; x < maxOffset; x++) {
     allYears.push({id: Number(thisYear - x), title: (thisYear - x).toString()});
   }
