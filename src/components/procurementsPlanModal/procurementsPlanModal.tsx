@@ -8,7 +8,7 @@ import useInsertPublicProcurementPlanItem from '../../services/graphql/procureme
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import {FormWrapper} from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {DropdownDataBoolean, DropdownDataNumber} from '../../types/dropdownData';
+import {DropdownDataNumber} from '../../types/dropdownData';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
 import {IS_PRE_BUDGET_OPTIONS} from './constants';
@@ -71,12 +71,12 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
               status: item.status,
               file_id: item.file_id,
             };
-            await insertProcurement(insertItem, async procurementID => {
+            await insertProcurement(insertItem, async procurement => {
               for (const article of item.articles) {
                 const insertArticle = {
                   id: 0,
                   budget_indent_id: article?.budget_indent?.id ?? 0,
-                  public_procurement_id: procurementID,
+                  public_procurement_id: procurement.id,
                   title: article?.title,
                   description: article?.description,
                   net_price: article?.net_price,

@@ -25,7 +25,7 @@ import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
-import {UserRole} from '../../constants';
+import {UserPermission, UserRole, checkPermission} from '../../constants';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -39,10 +39,12 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const alert = context?.alert;
   const url = context.navigation.location.pathname;
 
-  const planID = url.split('/').pop();
+  const planID = +url.split('/').pop();
   const pathname = url.substring(0, url.lastIndexOf('/'));
 
   const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
+  const role = context?.contextMain?.role_id; // Get the role from context
+
   // const organizationUnit = context?.contextMain.organization_units_list?.find(
   //   (unit: OrganizationUnit) => unit.id === Number(url?.split('/').at(-1)),
   // );
@@ -198,7 +200,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   };
 
   const navigateToDetailsScreen = (row: any) => {
-    if (isAdmin) {
+    if ([UserRole.ADMIN, UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS].includes(role)) {
       context.navigation.navigate(`/procurements/plans/${planID}/procurement-details/${row.id.toString()}`);
       context.breadcrumbs.add({
         name: `Nabavka Broj. ${row?.title || ''} / Konto: ${row?.budget_indent?.title || ''}`,
@@ -226,7 +228,9 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
             }
             style={{marginBottom: 0}}
           />
-          {isAdmin && <StyledTabs tabs={planDetailsTabs} activeTab={activeTab} onChange={onTabChange} />}
+          {checkPermission(role, UserPermission.VIEW_PLANS_REQUESTS) && (
+            <StyledTabs tabs={planDetailsTabs} activeTab={activeTab} onChange={onTabChange} />
+          )}
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {activeTab === 1 ? (
@@ -242,7 +246,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                   <Price variant="bodySmall" content={`€ ${totalPrice?.toFixed(2)}`} />
                 </Column>
               </Filters>
-              {isAdmin && (
+              {checkPermission(role, UserPermission.CREATE_PROCUREMENT) && (
                 <Controls>
                   <Button
                     content="Nova nabavka"
@@ -337,7 +341,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 context.breadcrumbs.remove();
               }}
             />
-            {!isAdmin && (
+            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) && (
               <Button
                 content="Pošalji"
                 variant="primary"

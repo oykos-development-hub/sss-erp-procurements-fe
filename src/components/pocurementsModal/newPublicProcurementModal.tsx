@@ -5,6 +5,7 @@ import {Controller, useForm} from 'react-hook-form';
 import {dropdownArticleTypeOptions, dropdownBudgetIndentOptions, dropdownProcurementTypeOptions} from '../../constants';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import {FormGroup, ModalContentWrapper} from './styles';
+import useAppContext from '../../context/useAppContext';
 
 const initialValues = {
   id: 0,
@@ -15,8 +16,8 @@ const initialValues = {
   article_type: '',
   status: 'U toku',
   serial_number: '',
-  date_of_publishing: '',
-  date_of_awarding: '',
+  date_of_publishing: undefined,
+  date_of_awarding: undefined,
   file_id: 0,
 };
 
@@ -40,6 +41,8 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
   navigate,
   planID,
 }) => {
+  const {breadcrumbs} = useAppContext();
+
   let title = '';
 
   const {
@@ -62,17 +65,21 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         ...values,
         budget_indent_id: values?.budget_indent_id?.id,
         is_open_procurement: values?.is_open_procurement?.id === 1 ? true : false,
-        title: values?.budget_indent_id?.id,
+        title: values?.budget_indent_id?.id.toString(),
         article_type: values?.article_type?.title,
         plan_id: planID,
         status: values?.status,
       };
 
-      mutate(payload, id => {
+      mutate(payload, item => {
         fetch();
         alert.success('Uspješno ste dodali javnu nabavku.');
         onClose();
-        navigate(`/procurements/plans/${payload.plan_id}/procurement-details/${id}`);
+        breadcrumbs.add({
+          name: `Nabavka Broj. ${item.title || ''} / Konto: ${item.budget_indent?.title || ''}`,
+          to: `/procurements/plans/${planID}/procurement-details/${item.id.toString()}`,
+        });
+        navigate(`/procurements/plans/${item.plan.id}/procurement-details/${item.id}`);
       });
     } catch (e) {
       console.log(e);

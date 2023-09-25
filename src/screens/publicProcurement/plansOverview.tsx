@@ -125,7 +125,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       title: 'Zahtjevi',
       accessor: 'requests',
       type: 'custom',
-      shouldRender: checkPermission(role, UserPermission.VIEW_PLAN_REQUESTS),
+      shouldRender: checkPermission(role, UserPermission.VIEW_PLANS_REQUESTS),
     },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];

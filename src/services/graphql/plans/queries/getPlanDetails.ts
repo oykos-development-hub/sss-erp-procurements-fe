@@ -1,4 +1,4 @@
-const planDetailsQuery = `query {
+const planDetailsQuery = `query PlanDetails($id: Int!) {
     publicProcurementPlan_Details(id: $id) {
         status 
         message

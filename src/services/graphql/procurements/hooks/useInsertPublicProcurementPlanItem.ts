@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {
+  ProcurementItem,
   ProcurementItemInsert,
   ProcurementPlanItemInsertResponse,
 } from '../../../../types/graphql/publicProcurementPlanItemDetailsTypes';
@@ -13,14 +14,14 @@ const useInsertPublicProcurementPlanItem = () => {
 
   const insertProcurement = async (
     data: ProcurementItemInsert,
-    onSuccess?: (id: number) => void,
+    onSuccess?: (item: ProcurementItem) => void,
     onError?: () => void,
   ) => {
     setLoading(true);
     const response: ProcurementPlanItemInsertResponse = await fetch(mutation, {data});
 
     if (response.publicProcurementPlanItem_Insert.status === REQUEST_STATUSES.success) {
-      onSuccess && onSuccess(response?.publicProcurementPlanItem_Insert.item.id);
+      onSuccess && onSuccess(response?.publicProcurementPlanItem_Insert.item);
     } else {
       onError && onError();
     }
