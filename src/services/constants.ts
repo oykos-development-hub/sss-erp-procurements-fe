@@ -1,3 +1,5 @@
+import {DropdownDataString} from '../types/dropdownData';
+
 export const MICRO_SERVICE_SLUG = 'procurements';
 
 export enum REQUEST_STATUSES {
@@ -13,14 +15,14 @@ export const BFF_URL = {
   production: 'http://localhost:8080',
 };
 
-export const getYear = new Date().getFullYear();
-
-export const yearsForDropdown = () => {
-  const maxOffset = 10;
-  const thisYear = new Date().getFullYear();
-  const allYears = [];
-  for (let x = 0; x <= maxOffset; x++) {
-    allYears.push(thisYear - x);
-  }
-  return allYears.map(year => ({id: year, title: year.toString()}));
+export const yearsForDropdown = (maxOffset = 10, isFilter = true, nextYears = 0): DropdownDataString[] => {
+  const thisYear = new Date().getFullYear() + nextYears;
+  const allYears: DropdownDataString[] = isFilter ? [{id: '', title: 'Sve'}] : [];
+  allYears.push(
+    ...Array.from({length: maxOffset}, (_, index) => {
+      const yearValue = thisYear - index;
+      return {id: yearValue.toString(), title: `${yearValue}`};
+    }),
+  );
+  return allYears;
 };

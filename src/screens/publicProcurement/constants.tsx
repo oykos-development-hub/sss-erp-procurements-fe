@@ -1,5 +1,5 @@
 import {ReactNode} from 'react';
-import {DropdownDataNumber} from '../../types/dropdownData';
+import {DropdownDataNumber, DropdownDataString} from '../../types/dropdownData';
 import {UserRole} from '../../constants';
 
 export interface ValueType {
@@ -17,33 +17,33 @@ export const TypeForPP = [
   {id: null, title: 'Sve'},
 ];
 
-export const PlanStatusesForAdmin: DropdownDataNumber[] = [
-  {id: 1, title: 'U toku'},
-  {id: 2, title: 'Poslat'},
-  {id: 3, title: 'Zaključen'},
-  {id: 4, title: 'Konvertovan'},
-  {id: 5, title: 'Objavljen'},
-  {id: 6, title: 'Sve'},
+export const PlanStatusesForAdmin: DropdownDataString[] = [
+  {id: '', title: 'Sve'},
+  {id: 'U toku', title: 'U toku'},
+  {id: 'Poslat', title: 'Poslat'},
+  {id: 'Zaključen', title: 'Zaključen'},
+  {id: 'Konvertovan', title: 'Konvertovan'},
+  {id: 'Objavljen', title: 'Objavljen'},
 ];
 
-export const PlanStatusesForManager: DropdownDataNumber[] = [
-  {id: 1, title: 'Obradi'},
-  {id: 2, title: 'Na čekanju'},
-  {id: 3, title: 'Odobren'},
-  {id: 4, title: 'Odbijen'},
-  {id: 5, title: 'Zaključen'},
-  {id: 5, title: 'Objavljen'},
-  {id: 6, title: 'Sve'},
+export const PlanStatusesForManager: DropdownDataString[] = [
+  {id: '', title: 'Sve'},
+  {id: 'Obradi', title: 'Obradi'},
+  {id: 'Na čekanju', title: 'Na čekanju'},
+  {id: 'Odobren', title: 'Odobren'},
+  {id: 'Odbijen', title: 'Odbijen'},
+  {id: 'Zaključen', title: 'Zaključen'},
+  {id: 'Objavljen', title: 'Objavljen'},
 ];
 
 export const getPlanStatuses = (role: UserRole) => {
   switch (role) {
-    case UserRole.ADMIN:
-    case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
-      return PlanStatusesForAdmin;
-    case UserRole.MANAGER_OJ:
-      return PlanStatusesForManager;
-    default:
-      return []; // Default case, if role does not match any of the above
+  case UserRole.ADMIN:
+  case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
+    return PlanStatusesForAdmin;
+  case UserRole.MANAGER_OJ:
+    return PlanStatusesForManager;
+  default:
+    return []; // Default case, if role does not match any of the above
   }
 };

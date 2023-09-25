@@ -53,17 +53,3 @@ export const tableHeads: TableHead[] = [
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
 ];
-
-const getCurrentYear = () => {
-  return new Date().getFullYear();
-};
-
-export const yearsForDropdown = (maxOffset: number) => {
-  const thisYear = new Date().getFullYear();
-  const allYears = [];
-  allYears.push({id: '', title: 'Sve'});
-  for (let x = 0; x < maxOffset; x++) {
-    allYears.push({id: (thisYear - x).toString(), title: (thisYear - x).toString()});
-  }
-  return allYears;
-};

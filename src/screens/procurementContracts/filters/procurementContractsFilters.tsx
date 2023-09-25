@@ -4,7 +4,7 @@ import {Dropdown, Input, SearchIcon, Theme} from 'client-library';
 import {Wrapper} from './styles';
 import {ProcurementContractFiltersProps} from '../types';
 import {Supplier} from '../../../types/graphql/suppliersTypes';
-import {yearsForDropdown} from '../constants';
+import {yearsForDropdown} from '../../../services/constants';
 
 const initialValues = {
   supplier_id: {id: 0, title: 'Sve'},
@@ -18,7 +18,7 @@ export const ProcurementContractsFilters: React.FC<ProcurementContractFiltersPro
   searchQuery,
 }) => {
   const {control, watch} = useForm({defaultValues: initialValues});
-  const years = yearsForDropdown(10);
+  const years = yearsForDropdown();
 
   const suppliersOptions = useMemo(() => {
     const options = suppliers.map((supplier: Supplier) => ({

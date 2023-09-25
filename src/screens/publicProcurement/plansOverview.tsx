@@ -34,10 +34,10 @@ import {
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {UserPermission, UserRole, checkPermission} from '../../constants';
-import {yearsForDropdown} from '../procurementContracts/constants';
 import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
 import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
+import {yearsForDropdown} from '../../services/constants';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -145,7 +145,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     ...form,
     is_pre_budget: form?.is_pre_budget?.id,
     year: form?.year?.id,
-    status: form?.status?.id,
+    status: form?.status.id,
   });
 
   const {mutate: deletePlan} = useDeletePublicProcurementPlan();

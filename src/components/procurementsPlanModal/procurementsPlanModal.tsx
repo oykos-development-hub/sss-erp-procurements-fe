@@ -137,7 +137,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                 value={value as any}
                 name={name}
                 label="GODINA:"
-                options={yearsForDropdown()}
+                options={yearsForDropdown(10, false, 1)}
                 error={errors.year?.message as string}
               />
             )}
