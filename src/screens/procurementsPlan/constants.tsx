@@ -294,8 +294,3 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
     type: 'tableActions',
   },
 ];
-
-export const planDetailsTabs = [
-  {id: 1, title: 'Pregled', routeName: 'overview', disabled: false},
-  {id: 2, title: 'Zahtjevi', routeName: 'requests', disabled: false},
-];

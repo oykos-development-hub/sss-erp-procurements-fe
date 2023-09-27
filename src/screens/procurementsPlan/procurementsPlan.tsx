@@ -20,7 +20,7 @@ import {
 } from '../../shared/styles';
 import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {parseDate} from '../../utils/dateUtils';
-import {planDetailsTabs, tableHeads} from './constants';
+import {tableHeads} from './constants';
 import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
@@ -229,7 +229,14 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
             style={{marginBottom: 0}}
           />
           {checkPermission(role, UserPermission.VIEW_PLANS_REQUESTS) && (
-            <StyledTabs tabs={planDetailsTabs} activeTab={activeTab} onChange={onTabChange} />
+            <StyledTabs
+              tabs={[
+                {id: 1, title: 'Pregled', routeName: 'overview', disabled: false},
+                {id: 2, title: 'Zahtjevi', routeName: 'requests', disabled: true},
+              ]}
+              activeTab={activeTab}
+              onChange={onTabChange}
+            />
           )}
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
