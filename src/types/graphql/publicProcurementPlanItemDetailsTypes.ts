@@ -30,7 +30,7 @@ export interface ProcurementItemInsert
 }
 
 export interface ProcurementPlanItemDetailsGetResponse {
-  publicProcurementPlanItem_Details: SingularResponse<PublicProcurement>;
+  publicProcurementPlanItem_Details: Response<PublicProcurement>;
 }
 
 export interface ProcurementPlanItemInsertResponse {

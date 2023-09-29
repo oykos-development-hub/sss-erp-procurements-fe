@@ -14,8 +14,8 @@ const usePublicProcurementGetDetails = (id: number) => {
     setLoading(true);
     const response: ProcurementPlanItemDetailsGetResponse = await fetch(query, {id});
     if (response.publicProcurementPlanItem_Details.status === REQUEST_STATUSES.success) {
-      response?.publicProcurementPlanItem_Details.item &&
-        setPublicProcurement(response?.publicProcurementPlanItem_Details.item);
+      response?.publicProcurementPlanItem_Details.items &&
+        setPublicProcurement(response.publicProcurementPlanItem_Details?.items[0]);
       onSuccess && onSuccess();
     } else {
       onError && onError();

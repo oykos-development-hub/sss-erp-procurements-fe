@@ -1,4 +1,4 @@
-const planItemLimitsQuery = `query {
+const planItemLimitsQuery = `query ProcurementLimits($procurement_id: Int) {
   publicProcurementPlanItem_Limits(procurement_id: $procurement_id) {
       status 
       message

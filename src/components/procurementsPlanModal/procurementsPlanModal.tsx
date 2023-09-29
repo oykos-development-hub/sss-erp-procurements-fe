@@ -79,7 +79,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                   public_procurement_id: procurement.id,
                   title: article?.title,
                   description: article?.description,
-                  net_price: article?.net_price,
+                  net_price: +article?.net_price,
                   vat_percentage: article?.vat_percentage,
                 };
                 await addArticle(insertArticle);

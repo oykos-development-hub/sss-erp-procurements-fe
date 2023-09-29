@@ -1,10 +1,9 @@
-const procurementDetailsQuery = `query {
+const procurementDetailsQuery = `query ProcurementDetails($id: Int!) {
     publicProcurementPlanItem_Details(id: $id) {
         message
-        status
         status 
         message
-        item {
+        items {
             id
             budget_indent {
                 id
