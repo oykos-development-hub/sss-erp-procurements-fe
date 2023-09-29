@@ -1,3 +1,5 @@
+import {Response} from './utils';
+
 export interface OrganizationUnit {
   id: number;
   parent_id?: number;
@@ -12,13 +14,7 @@ export interface OrganizationUnit {
 }
 
 export interface OrganizationUnitsResponse {
-  data: {
-    organizationUnits: {
-      status?: string;
-      message?: string;
-      items?: OrganizationUnit[];
-    };
-  };
+  organizationUnits: Response<OrganizationUnit>;
 }
 
 export interface OrganizationUnitInsertResponse {

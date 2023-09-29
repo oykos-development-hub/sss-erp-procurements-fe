@@ -7,7 +7,7 @@ export interface PublicProcurementArticleParams {
   public_procurement_id: number;
   title: string;
   description: string;
-  net_price: string;
+  net_price: number;
   vat_percentage: string;
 }
 
@@ -17,7 +17,7 @@ export interface PublicProcurementArticle {
   public_procurement: DropdownDataNumber;
   title: string;
   description: string;
-  net_price: string;
+  net_price: number;
   vat_percentage: string;
 }
 

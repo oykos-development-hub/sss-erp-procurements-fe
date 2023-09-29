@@ -1,30 +1,29 @@
 import {DropdownDataNumber} from '../dropdownData';
-import {Response} from './utils';
+import {OrganizationUnit} from './organizationUnitsTypes';
+import {Response, SingularResponse} from './utils';
 
 export interface ProcurementPlanItemLimit {
-  id: number;
+  id?: number;
   limit: string;
-  organization_unit: DropdownDataNumber;
-  public_procurement: DropdownDataNumber;
+  organization_unit?: DropdownDataNumber;
+  public_procurement?: DropdownDataNumber;
 }
 
 export interface ProcurementPlanItemLimitInsert {
-  id: number;
+  id?: number;
   organization_unit_id: number;
   public_procurement_id: number;
   limit: string;
 }
 
 export interface ProcurementPlanItemLimitInsertResponse {
-  data: {
-    publicProcurementPlanItemLimit_Insert: {
-      status?: string;
-      message?: string;
-      items?: ProcurementPlanItemLimit[];
-    };
-  };
+  publicProcurementPlanItemLimit_Insert: SingularResponse<ProcurementPlanItemLimit>;
 }
 
 export interface ProcurementPlanItemLimitGetResponse {
   publicProcurementPlanItem_Limits: Response<ProcurementPlanItemLimit>;
+}
+
+export interface OrganizationUnitWithLimit extends OrganizationUnit {
+  limit: ProcurementPlanItemLimit;
 }

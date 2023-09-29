@@ -99,8 +99,8 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
     }, 0) || 0;
 
   const findIdForOrganisationUnit = () => {
-    const desiredItem = procurementPlanLimits?.find((item: {organization_unit: any}) => {
-      return item.organization_unit.id === organizationUnitId;
+    const desiredItem = procurementPlanLimits?.find(item => {
+      return item?.organization_unit?.id === organizationUnitId;
     });
 
     if (desiredItem) {

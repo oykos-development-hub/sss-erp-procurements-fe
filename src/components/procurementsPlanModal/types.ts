@@ -7,7 +7,7 @@ export interface LimitsModalProps {
   onClose: (refetch?: any, message?: any) => void;
   procurementId: number;
   navigate: any;
-  organizationUnits: OrganizationUnit[];
+  organizationUnitList: OrganizationUnit[];
 }
 
 export interface ProcurementPlanModalFormType {

@@ -1,8 +1,9 @@
 import {useState} from 'react';
 import {REQUEST_STATUSES} from '../../../constants';
 import {
-  ProcurementPlanItemLimitGetResponse,
+  ProcurementPlanItemLimit,
   ProcurementPlanItemLimitInsert,
+  ProcurementPlanItemLimitInsertResponse,
 } from '../../../../types/graphql/procurementPlanItemLimits';
 import mutation from '../mutation/insertProcurementPlanItemLimit';
 import useAppContext from '../../../../context/useAppContext';
@@ -13,15 +14,15 @@ const useInsertProcurementPlanItemLimit = () => {
 
   const insertProcurementPlanItemLimits = async (
     data: ProcurementPlanItemLimitInsert,
-    onSuccess?: () => void,
-    onError?: () => void,
+    onSuccess?: (item: ProcurementPlanItemLimit) => void,
+    onError?: (message: string) => void,
   ) => {
     setLoading(true);
-    const response: ProcurementPlanItemLimitGetResponse = await fetch(mutation, {data});
-    if (response.publicProcurementPlanItem_Limits.status === REQUEST_STATUSES.success) {
-      onSuccess && onSuccess();
+    const response: ProcurementPlanItemLimitInsertResponse = await fetch(mutation, {data});
+    if (response.publicProcurementPlanItemLimit_Insert.status === REQUEST_STATUSES.success) {
+      onSuccess && onSuccess(response.publicProcurementPlanItemLimit_Insert.item);
     } else {
-      onError && onError();
+      onError && onError(response.publicProcurementPlanItemLimit_Insert.message);
     }
     setLoading(false);
   };

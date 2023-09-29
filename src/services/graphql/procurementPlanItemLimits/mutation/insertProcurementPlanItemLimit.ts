@@ -1,8 +1,8 @@
-const planItemLimitInsertMutation = `mutation {
+const planItemLimitInsertMutation = `mutation($data: PublicProcurementPlanItemLimitInsertMutation!) {
     publicProcurementPlanItemLimit_Insert(data: $data) {
-        status
-        message
-        items {
+        status 
+        message 
+        item {
             id
             organization_unit {
                 id
@@ -14,7 +14,7 @@ const planItemLimitInsertMutation = `mutation {
             }
             limit
         }
-      }
-    }`;
+    }
+}`;
 
 export default planItemLimitInsertMutation;

@@ -20,6 +20,7 @@ import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import {UserRole} from '../../constants';
+import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -33,6 +34,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   const procurementID = context.navigation.location.pathname.split('/').pop();
   const url = context.navigation.location.pathname;
   const planID = context.navigation.location.pathname.split('/').at(-3);
+  const {organizationUnits} = useGetOrganizationUnits();
 
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
 
@@ -258,7 +260,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         onClose={refetch => handleCloseLimitModal(refetch)}
         procurementId={procurementID}
         navigate={context?.navigation.navigate}
-        organizationUnits={context?.contextMain?.organization_units_list}
+        organizationUnitList={organizationUnits}
       />
     </ScreenWrapper>
   );

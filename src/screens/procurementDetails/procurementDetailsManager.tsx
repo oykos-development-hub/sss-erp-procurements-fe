@@ -133,11 +133,11 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       return sum + total;
     }, 0) || 0;
 
-  const desiredItem = procurementPlanLimits?.find((item: {organization_unit: any}) => {
-    return item.organization_unit.id === organizationUnitId;
+  const desiredItem = procurementPlanLimits?.find(item => {
+    return item?.organization_unit?.id === organizationUnitId;
   });
 
-  limit = parseFloat(desiredItem?.limit);
+  limit = parseFloat(desiredItem?.limit || '0');
 
   const handleSave = async () => {
     if (totalPrice > limit) {
