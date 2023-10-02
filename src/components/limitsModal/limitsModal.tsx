@@ -83,7 +83,7 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
       rightButtonOnClick={onSubmit}
       content={
         <FormWrapper>
-          {unitsWithLimits?.map((unit) => (
+          {unitsWithLimits?.map(unit => (
             <Row key={`limit.${unit?.id}`}>
               <LabelWrapper>
                 <Typography variant="bodySmall" content={<b>ORGANIZACIONA JEDINICA:</b>} />

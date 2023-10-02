@@ -5,8 +5,7 @@ import {dropdownBudgetIndentOptions, pdvOptions} from '../../constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {FormWrapper, Row} from './styles';
 import {yupResolver} from '@hookform/resolvers/yup';
-import { articleModalConfirmationSchema } from './validationSchema.ts';
-
+import {articleModalConfirmationSchema} from './validationSchema.ts';
 
 interface ArticleModalProps {
   selectedItem?: any;
@@ -104,11 +103,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
                 );
               }}
             />
-            <Input
-              {...register('title')}
-              label="NAZIV PREDMETA NABAVKE:"
-              error={errors.title?.message as string}
-            />
+            <Input {...register('title')} label="NAZIV PREDMETA NABAVKE:" error={errors.title?.message as string} />
           </Row>
           <Row>
             <Input
