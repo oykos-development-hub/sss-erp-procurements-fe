@@ -1,4 +1,4 @@
-const articleInsertMutation = `mutation {
+const articleInsertMutation = `mutation($data: PublicProcurementPlanItemArticleInsertMutation!) {
   publicProcurementPlanItemArticle_Insert(data: $data) {
       status
       message

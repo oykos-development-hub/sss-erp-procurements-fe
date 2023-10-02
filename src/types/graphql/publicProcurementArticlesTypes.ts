@@ -2,7 +2,7 @@ import {DropdownDataNumber} from '../dropdownData';
 import {SingularResponse} from './utils';
 
 export interface PublicProcurementArticleParams {
-  id: number;
+  id?: number;
   budget_indent_id: number;
   public_procurement_id: number;
   title: string;
@@ -17,7 +17,7 @@ export interface PublicProcurementArticle {
   public_procurement: DropdownDataNumber;
   title: string;
   description: string;
-  net_price: number;
+  net_price: string;
   vat_percentage: string;
 }
 

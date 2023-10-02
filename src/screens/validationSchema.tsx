@@ -15,3 +15,5 @@ export const dropdownDataBooleanSchema = yup
   })
   .required('Ovo polje je obavezno')
   .default(undefined);
+
+export const stringRequiredSchema = yup.string().required('Ovo polje je obavezno').default(undefined);
