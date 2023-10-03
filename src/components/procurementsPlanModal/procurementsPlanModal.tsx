@@ -31,7 +31,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   } = useForm({
     resolver: yupResolver(planModalConfirmationSchema),
     defaultValues: {
-      pre_budget_id: null,
+      pre_budget_id: undefined,
     },
   });
 
@@ -53,9 +53,9 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         year: values?.year?.title,
         is_pre_budget: values?.is_pre_budget?.id,
         title: values?.is_pre_budget?.title + '-' + 'Plan za ' + values?.year.title,
-        pre_budget_id: values?.pre_budget_id?.id || null,
-        date_of_publishing: values?.date_of_publishing || null,
-        date_of_closing: values?.date_of_closing || null,
+        pre_budget_id: values?.pre_budget_id?.id || undefined,
+        date_of_publishing: values?.date_of_publishing || undefined,
+        date_of_closing: values?.date_of_closing || undefined,
       };
 
       insertPlan(payload, async planID => {
@@ -110,7 +110,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         pre_budget_id:
           selectedItem?.pre_budget_plan.id !== 0
             ? {id: selectedItem.pre_budget_plan.id, title: selectedItem.pre_budget_plan.title}
-            : null,
+            : undefined,
       });
     }
   }, [selectedItem]);

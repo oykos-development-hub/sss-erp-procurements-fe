@@ -25,9 +25,8 @@ export interface PlanItemInsert extends Omit<PlanItem, 'pre_budget_plan' | 'plan
 
 export interface PlanInsertParams {
   id: number;
-  pre_budget_id: number;
+  pre_budget_id?: number;
   is_pre_budget: boolean;
-  active: boolean;
   year: string;
   title: string;
   serial_number: string;

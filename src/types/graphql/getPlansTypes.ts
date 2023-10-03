@@ -9,7 +9,6 @@ export interface PlanItem {
   id: number;
   pre_budget_plan: DropdownDataNumber;
   is_pre_budget: boolean;
-  active: boolean;
   year: string;
   title: string;
   serial_number: string;
@@ -17,7 +16,7 @@ export interface PlanItem {
   date_of_closing: string;
   created_at: string;
   updated_at: string;
-  file_id: string;
+  file_id: number;
   status: string;
   items: {
     id: string;

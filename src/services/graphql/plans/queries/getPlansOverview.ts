@@ -10,7 +10,6 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
                 title
             }
             is_pre_budget
-            active
             year
             title
             status

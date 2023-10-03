@@ -201,12 +201,11 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       const payload = {
         id: selectedItem.id,
         title: selectedItem.title,
-        active: selectedItem.active,
         date_of_closing: selectedItem.date_of_closing,
         date_of_publishing: parseDateForBackend(new Date()) as string,
         year: selectedItem.year.toString(),
         is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id,
+        pre_budget_id: selectedItem.pre_budget_plan.id || undefined,
         serial_number: selectedItem.serial_number,
       };
       insertPlan(payload, () => {
@@ -226,12 +225,11 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       const payload = {
         id: selectedItem.id,
         title: selectedItem.title,
-        active: selectedItem.active,
         date_of_closing: selectedItem?.date_of_closing,
         date_of_publishing: undefined,
         year: selectedItem.year.toString(),
         is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id,
+        pre_budget_id: selectedItem.pre_budget_plan.id || undefined,
         serial_number: selectedItem.serial_number,
       };
 
@@ -284,19 +282,20 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const handleConvert = async () => {
+    if (!selectedItem) return;
     try {
       const payload = {
         ...selectedItem,
         id: 0,
-        year: selectedItem?.year,
+        year: selectedItem.year,
         is_pre_budget: false,
-        title: 'Postbudzetski' + '-' + 'Plan za ' + selectedItem?.year,
-        pre_budget_id: selectedItem?.id,
+        title: 'Postbudzetski' + '-' + 'Plan za ' + selectedItem.year,
+        pre_budget_id: selectedItem.id || undefined,
         date_of_publishing: '',
         date_of_closing: '',
       };
 
-      insertPlan(payload as any, async planID => {
+      insertPlan(payload, async planID => {
         if (selectedItem) {
           for (const item of selectedItem.items) {
             const insertItem = {

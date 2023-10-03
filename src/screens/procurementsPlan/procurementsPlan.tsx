@@ -179,7 +179,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     if (!planDetails) return;
     const payload = {
       id: planDetails?.id,
-      pre_budget_id: planDetails?.pre_budget_plan?.id || 0,
+      pre_budget_id: planDetails?.pre_budget_plan?.id || undefined,
       is_pre_budget: planDetails?.is_pre_budget,
       active: planDetails?.active,
       year: planDetails?.year,
