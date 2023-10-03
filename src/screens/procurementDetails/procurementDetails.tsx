@@ -82,7 +82,11 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
 
-  const {publicProcurement, refetch: refetchData} = usePublicProcurementGetDetails(procurementID);
+  const {
+    publicProcurement,
+    refetch: refetchData,
+    loading: isLoadingProcurementDetails,
+  } = usePublicProcurementGetDetails(procurementID);
   const {mutate: deleteProcurementArticle} = useProcurementArticleDelete();
   const {planDetails} = usePublicProcurementPlanDetails(planID);
   const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
@@ -202,6 +206,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           />
         </Plan>
         <TableContainer
+          isLoading={isLoadingProcurementDetails}
           tableHeads={
             (isAdmin && planDetails?.status === 'Zaključen') || (isAdmin && planDetails?.status === 'Objavljen')
               ? tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')

@@ -77,7 +77,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handle
   const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
   const organizationUnits: OrganizationUnit[] = context?.contextMain?.organization_units_list;
   const unitIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
-  const {requests} = useGetPublicProcurementPlanRequests(unitIds);
+  const {requests, loading: isLoadingPlanRequests} = useGetPublicProcurementPlanRequests(unitIds);
 
   const [dateOfClosing, setDateOfClosing] = useState<Date | string>('');
 
@@ -116,6 +116,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handle
         />
       </DropdowWrapper>
       <Table
+        isLoading={isLoadingPlanRequests}
         data={tableData || []}
         tableHeads={tableHeadsRequests}
         onRowClick={row => {

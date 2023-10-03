@@ -28,7 +28,8 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   const [requestErrorCount, setRequestErrorCount] = useState<number>(0);
 
   const [isDisabled, setIsDisabled] = useState(true);
-  const {mutate: insertOrganizationUnitArticle} = useProcurementOrganizationUnitArticleInsert();
+  const {mutate: insertOrganizationUnitArticle, loading: isLoadingInsertOUArticleMutate} =
+    useProcurementOrganizationUnitArticleInsert();
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
@@ -42,9 +43,12 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       setFilteredArticles(updatedArticles);
     }
   };
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID, organizationUnitId);
+  const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
+    planID,
+    organizationUnitId,
+  );
 
-  const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
+  const {publicProcurement, loading: isLoadingOUProcurementDetails} = usePublicProcurementGetDetails(procurementID);
 
   const procurement = useMemo(() => {
     const procurement: any = procurements?.find((item: any) => Number(item?.id) === Number(procurementID));
@@ -224,7 +228,11 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
             style={{fontWeight: 600}}
           />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={filteredArticles || []} />
+        <TableContainer
+          tableHeads={tableHeads}
+          data={filteredArticles || []}
+          isLoading={isLoadingOUProcurements || isLoadingOUProcurementDetails}
+        />
       </SectionBox>
 
       <FormFooter>
@@ -266,6 +274,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
               <Button
                 content="Sačuvaj izmjene"
                 variant="primary"
+                isLoading={isLoadingInsertOUArticleMutate}
                 onClick={() => {
                   handleSave();
                   setIsEdit(false);

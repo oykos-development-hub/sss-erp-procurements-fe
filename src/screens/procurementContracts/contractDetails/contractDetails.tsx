@@ -27,7 +27,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
 
-  const {data: contractData} = useProcurementContracts({
+  const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
     procurement_id: 0,
     supplier_id: 0,
@@ -194,8 +194,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     },
   ];
 
-  const {mutate: insertContract} = useInsertProcurementContract();
-  const {mutate: insertContractArticle} = useInsertContractArticle();
+  const {mutate: insertContract, loading: isLoadingContractMutate} = useInsertProcurementContract();
+  const {mutate: insertContractArticle, loading: isLoadingContractArticleMutate} = useInsertContractArticle();
 
   const handleSave = async () => {
     try {
@@ -353,7 +353,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={filteredArticles || []} />
+        <TableContainer
+          isLoading={isLoadingProcurementContracts}
+          tableHeads={tableHeads}
+          data={filteredArticles || []}
+        />
       </SectionBox>
 
       <FormFooter>
@@ -366,7 +370,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               context.breadcrumbs.remove();
             }}
           />
-          <Button content="Sačuvaj ugovor" variant="primary" onClick={handleSubmit(handleSave)} />
+          <Button
+            content="Sačuvaj ugovor"
+            variant="primary"
+            onClick={handleSubmit(handleSave)}
+            isLoading={isLoadingContractMutate || isLoadingContractArticleMutate}
+          />
         </FormControls>
       </FormFooter>
     </ScreenWrapper>

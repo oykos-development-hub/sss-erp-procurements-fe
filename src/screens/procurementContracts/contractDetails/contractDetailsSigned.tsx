@@ -21,7 +21,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     supplier_id: 0,
   });
 
-  const {data: contractArticles} = useContractArticles(contractID);
+  const {data: contractArticles, loading: isLoadingContractArticles} = useContractArticles(contractID);
 
   useEffect(() => {
     if (contractArticles) {
@@ -147,7 +147,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={contractArticles || []} />
+        <TableContainer tableHeads={tableHeads} data={contractArticles || []} isLoading={isLoadingContractArticles} />
       </SectionBox>
 
       <FormFooter>

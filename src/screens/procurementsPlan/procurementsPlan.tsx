@@ -50,8 +50,11 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   // );
   const organizationUnit = 2;
 
-  const {planDetails, fetch} = usePublicProcurementPlanDetails(planID);
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID, organizationUnit);
+  const {planDetails, fetch, loading: isLoadingPlanDetails} = usePublicProcurementPlanDetails(planID);
+  const {procurements, loading: isLoadingProcurements} = useGetOrganizationUnitPublicProcurements(
+    planID,
+    organizationUnit,
+  );
 
   function mergeArrays(firstArray: any, secondArray: any) {
     for (let i = 0; i < firstArray?.items?.length; i++) {
@@ -264,6 +267,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               )}
             </Header>
             <TableContainer
+              isLoading={isLoadingPlanDetails || isLoadingProcurements}
               tableHeads={!isAdmin ? tableHeads.filter(item => item.accessor !== 'TABLE_ACTIONS') : tableHeads}
               data={procurementsPlansTableData || []}
               onRowClick={row => {

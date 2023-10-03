@@ -23,7 +23,10 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
     (unit: OrganizationUnit) => unit.id === Number(url?.split('/').at(-1)),
   );
   const planId = Number(url?.split('/').at(-3));
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planId, organizationUnit?.id);
+  const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
+    planId,
+    organizationUnit?.id,
+  );
   const [form, setForm] = useState({
     status: {id: 1, title: 'Na čekanju'},
     comment: '',
@@ -32,7 +35,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   const breadcrumbs = context?.breadcrumbs.get();
   const title = breadcrumbs?.[breadcrumbs?.length - 1]?.name;
 
-  const {mutate} = useProcurementOrganizationUnitArticleInsert();
+  const {mutate, loading: isLoadingArticleStatusMutate} = useProcurementOrganizationUnitArticleInsert();
 
   const articles = procurements?.map((item: any) => item?.articles).flat() || [];
 
@@ -112,6 +115,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
           </Column>
         </TotalValues>
         <Table
+          isLoading={isLoadingOUProcurements}
           data={procurements || []}
           tableHeads={tableHeadsOrganizationUnitProcurements}
           onRowClick={row => {
@@ -154,6 +158,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
             variant="primary"
             onClick={changeStatus}
             disabled={form?.status?.id === 1}
+            isLoading={isLoadingArticleStatusMutate}
           />
         </FormControls>
       </FormFooter>

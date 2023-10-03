@@ -17,7 +17,10 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
   const organizationUnitId = 2;
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(1);
   const planID = url.split('/').at(-3);
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID, organizationUnitId);
+  const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
+    planID,
+    organizationUnitId,
+  );
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
   const [procurement, setProcurement] = useState<any>();
   const breadcrumbs = context?.breadcrumbs.get();
@@ -156,7 +159,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
             style={{fontWeight: 600}}
           />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={filteredArticles || []} />
+        <TableContainer tableHeads={tableHeads} data={filteredArticles || []} isLoading={isLoadingOUProcurements} />
       </SectionBox>
 
       <FormFooter>
