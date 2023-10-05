@@ -106,18 +106,18 @@ export const tableHeads: TableHead[] = [
       return <Typography variant="bodyMedium" content={date ? parseDate(date) : ''} />;
     },
   },
-  // {
-  //   title: 'Status',
-  //   accessor: 'status',
-  //   type: 'custom',
-  //   renderContents: (status: any) => {
-  //     return (
-  //       <StatusTextWrapper>
-  //         <Badge content={<Typography content={status} variant="bodySmall" />} variant="primary" />
-  //       </StatusTextWrapper>
-  //     );
-  //   },
-  // },
+  {
+    title: 'Status',
+    accessor: 'status',
+    type: 'custom',
+    renderContents: (status: any) => {
+      return (
+        <StatusTextWrapper>
+          <Badge content={<Typography content={status} variant="bodySmall" />} variant="primary" />
+        </StatusTextWrapper>
+      );
+    },
+  },
   {
     title: '',
     accessor: 'TABLE_ACTIONS',
