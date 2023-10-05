@@ -20,6 +20,7 @@ const rolePermissionsMap = {
   [UserRole.ADMIN]: [
     UserPermission.VIEW_PLANS,
     UserPermission.FILL_PLANS,
+    UserPermission.CREATE_PLANS,
     UserPermission.SEND_PROCUREMENTS,
     UserPermission.VIEW_PLANS_REQUESTS,
     UserPermission.CREATE_PROCUREMENT,
