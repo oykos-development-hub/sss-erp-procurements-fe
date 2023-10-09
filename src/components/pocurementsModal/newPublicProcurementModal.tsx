@@ -67,7 +67,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         ...values,
         budget_indent_id: values?.budget_indent_id?.id,
         is_open_procurement: values?.is_open_procurement?.id === 1 ? true : false,
-        title: values?.budget_indent_id?.id.toString(),
+        title: orginalTitle,
         article_type: values?.article_type?.title,
         plan_id: planID,
         status: values?.status,
