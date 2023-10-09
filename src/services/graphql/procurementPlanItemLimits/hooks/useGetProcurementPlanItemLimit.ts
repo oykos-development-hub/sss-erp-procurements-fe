@@ -12,7 +12,7 @@ const useGetProcurementPlanItemLimits = (id: number) => {
   const {fetch} = useAppContext();
 
   const getProcurementPlanItemLimit = async () => {
-    const response: ProcurementPlanItemLimitGetResponse = await fetch(query, {id});
+    const response: ProcurementPlanItemLimitGetResponse = await fetch(query, {procurement_id: id});
 
     setProcurementPlanLimits(response?.publicProcurementPlanItem_Limits.items);
     setLoading(false);

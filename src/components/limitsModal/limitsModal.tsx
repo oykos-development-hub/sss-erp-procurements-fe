@@ -20,14 +20,15 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
   alert,
   organizationUnitList,
 }) => {
-  const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementId);
+  const {data: procurementPlanLimits, fetch: fetchProcurementLimits} = useGetProcurementPlanItemLimits(procurementId);
 
   const [unitsWithLimits, setUnitsWithLimits] = useState<OrganizationUnitWithLimit[]>([]); // Replace with your actual type
 
   useEffect(() => {
     const mergedList = organizationUnitList.map(unit => {
-      const foundLimit =
-        procurementPlanLimits?.find(limit => limit?.organization_unit?.id === unit?.id) || defaultLimitValues;
+      const foundLimit = procurementPlanLimits?.find(limit => limit?.organization_unit?.id === unit?.id) || {
+        ...defaultLimitValues,
+      };
 
       return {
         ...unit,
@@ -42,14 +43,18 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
 
   const handleChange = (unitId: number, value: string) => {
     setUnitsWithLimits(prevUnits => {
-      const newUnits = [...prevUnits];
-      const foundUnit = newUnits.find(unit => unit.id === unitId);
-
-      if (foundUnit) {
-        foundUnit.limit.limit = value;
-      }
-
-      return newUnits;
+      return prevUnits.map(unit => {
+        if (unit.id === unitId) {
+          return {
+            ...unit,
+            limit: {
+              ...unit.limit,
+              limit: value,
+            },
+          };
+        }
+        return unit;
+      });
     });
   };
 
@@ -62,13 +67,16 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
         limit: unit?.limit?.limit || '',
       };
 
-      return addLimits(payload);
+      if (payload.limit) {
+        return addLimits(payload);
+      }
     });
 
     try {
       await Promise.all(requests);
       alert.success('Uspješno ste dodali limit!');
-      onClose();
+      fetchProcurementLimits();
+      onClose(false);
     } catch (error) {
       alert.error('Greška pri dodavanju limita!');
     }
@@ -77,7 +85,7 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={() => onClose(false)}
       leftButtonText="Otkaži"
       rightButtonText="Sačuvaj"
       rightButtonOnClick={onSubmit}
