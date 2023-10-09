@@ -1,4 +1,7 @@
-import {DropdownDataNumber} from './types/dropdownData';
+import {useMemo} from 'react';
+import useGetCounts from './services/graphql/counts/hooks/useGetCounts';
+import {DropdownDataNumber, DropdownDataString} from './types/dropdownData';
+import {Count} from './types/graphql/countType';
 
 export enum UserRole {
   ADMIN = 1,
@@ -52,24 +55,15 @@ export const dropdownProcurementTypeOptions: DropdownDataNumber[] = [
   {id: 2, title: 'Jednostavna nabavka'},
 ];
 
-export const dropdownBudgetIndentOptions: DropdownDataNumber[] = [
-  {
-    id: 1,
-    title: 'indent 1',
-  },
-  {
-    id: 2,
-    title: 'indent 12',
-  },
-  {
-    id: 3,
-    title: 'indent 2',
-  },
-  {
-    id: 4,
-    title: 'indent 21',
-  },
-];
+export function generateDropdownOptions(counts: Count[]) {
+  return counts?.map(item => {
+    return {
+      id: item.id,
+      title: item.serial_number,
+      orginal_title: item.title,
+    };
+  });
+}
 
 export const dropdownArticleTypeOptions: DropdownDataNumber[] = [
   {id: 1, title: 'Roba'},

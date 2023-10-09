@@ -1,11 +1,12 @@
 import {Dropdown, Input, Modal, Theme} from 'client-library';
 import React, {useEffect, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {dropdownBudgetIndentOptions, pdvOptions} from '../../constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {FormWrapper, Row} from './styles';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {articleModalConfirmationSchema} from './validationSchema.ts';
+import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts.ts';
+import {generateDropdownOptions, pdvOptions} from '../../constants.ts';
 
 interface ArticleModalProps {
   selectedItem?: any;
@@ -43,6 +44,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
       });
     }
   }, [selectedItem]);
+
+  const {counts} = useGetCounts();
+  const dropdowncountsOptions = useMemo(() => {
+    return generateDropdownOptions(counts);
+  }, [counts]);
 
   const onSubmit = (data: any) => {
     const payload = {
@@ -97,7 +103,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
                     value={value as any}
                     name={name}
                     label="POD KONTO:"
-                    options={dropdownBudgetIndentOptions}
+                    options={dropdowncountsOptions}
                     error={errors.budget_indent?.message as string}
                   />
                 );

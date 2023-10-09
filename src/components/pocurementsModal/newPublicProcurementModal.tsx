@@ -1,11 +1,11 @@
 import {CheckIcon, Dropdown, Input, Modal, Theme} from 'client-library';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-
-import {dropdownArticleTypeOptions, dropdownBudgetIndentOptions, dropdownProcurementTypeOptions} from '../../constants';
+import {dropdownArticleTypeOptions, dropdownProcurementTypeOptions, generateDropdownOptions} from '../../constants';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import {FormGroup, ModalContentWrapper} from './styles';
 import useAppContext from '../../context/useAppContext';
+import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts';
 
 const initialValues = {
   id: 0,
@@ -43,22 +43,24 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
 }) => {
   const {breadcrumbs} = useAppContext();
 
-  let title = '';
-
   const {
     handleSubmit,
     control,
     formState: {errors},
     reset,
-    watch,
   } = useForm({defaultValues: initialValues});
 
   const {mutate} = useInsertPublicProcurementPlanItem();
-  const bugdgetIndent = watch('budget_indent_id');
-  if (bugdgetIndent) {
-    title = bugdgetIndent['id'];
-  }
+  const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
+  const {counts} = useGetCounts();
+  const dropdowncountsOptions = useMemo(() => {
+    return generateDropdownOptions(counts);
+  }, [counts]);
 
+  const handleDropdownOrginalName = (id: number) => {
+    const selectedItem = dropdowncountsOptions?.find(item => item.id === id);
+    setOrginalTitle(selectedItem?.orginal_title);
+  };
   const onSubmit = async (values: any) => {
     try {
       const payload = {
@@ -116,11 +118,14 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
               control={control}
               render={({field: {onChange, name, value}}) => (
                 <Dropdown
-                  onChange={onChange}
+                  onChange={selectedOption => {
+                    handleDropdownOrginalName(selectedOption.id as number);
+                    onChange(selectedOption);
+                  }}
                   value={value as any}
                   name={name}
                   label="KONTO:"
-                  options={dropdownBudgetIndentOptions}
+                  options={dropdowncountsOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.budget_indent_id?.message as string}
                 />
@@ -128,7 +133,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
             />
           </FormGroup>
           <FormGroup>
-            <Input label="NAZIV:" name="title" value={title} disabled={true} />
+            <Input label="NAZIV:" name="title" value={orginalTitle} disabled={true} />
           </FormGroup>
           <FormGroup>
             <Controller
