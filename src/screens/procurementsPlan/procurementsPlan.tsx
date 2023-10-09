@@ -232,7 +232,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
             <StyledTabs
               tabs={[
                 {id: 1, title: 'Pregled', routeName: 'overview', disabled: false},
-                {id: 2, title: 'Zahtjevi', routeName: 'requests', disabled: planDetails?.status!= 'Poslat'},
+                {id: 2, title: 'Zahtjevi', routeName: 'requests', disabled: planDetails?.status != 'Poslat'},
               ]}
               activeTab={activeTab}
               onChange={onTabChange}
