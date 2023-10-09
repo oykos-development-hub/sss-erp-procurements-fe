@@ -5,11 +5,6 @@ import {InlineText} from '../../shared/styles';
 
 export const tableHeads: TableHead[] = [
   {
-    title: 'Br.',
-    accessor: 'id',
-    type: 'text',
-  },
-  {
     title: 'Vrsta',
     accessor: 'article_type',
     type: 'text',
@@ -195,11 +190,6 @@ export const tableHeadsRequests: TableHead[] = [
 ];
 
 export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
-  {
-    title: 'Br.',
-    accessor: 'id',
-    type: 'text',
-  },
   {
     title: 'Vrsta',
     accessor: 'article_type',

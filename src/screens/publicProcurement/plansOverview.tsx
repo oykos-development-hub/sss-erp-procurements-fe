@@ -52,7 +52,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const canCreatePlan = checkPermission(role, UserPermission.CREATE_PLANS);
 
   const tableHeads: TableHead[] = [
-    {title: 'ID', accessor: 'id', type: 'text'},
     {title: 'Godina', accessor: 'year', type: 'text'},
     {
       title: 'Vrsta',
