@@ -17,7 +17,7 @@ export interface ProcurementOrganizationUnitArticlesItem {
 }
 
 export interface ProcurementOrganizationUnitArticlesInsertParams {
-  id: number;
+  id?: number;
   public_procurement_article_id: number;
   organization_unit_id: number;
   amount: number;

@@ -4,7 +4,7 @@ import useAppContext from '../../../../context/useAppContext';
 import query from '../queries/getOrganizationUnitPublicProcurements';
 import {PublicProcurementOrganizationUnitArticlesResponse} from '../../../../types/graphql/organizationUnitPublicProcurements';
 
-const useGetOrganizationUnitPublicProcurements = (plan_id: number, organization_unit_id: number) => {
+const useGetOrganizationUnitPublicProcurements = (plan_id: number, organization_unit_id?: number) => {
   const [procurements, setProcurements] = useState<ProcurementItemForOrganizationUnit[]>();
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();

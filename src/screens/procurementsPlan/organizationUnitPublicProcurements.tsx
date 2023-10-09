@@ -19,13 +19,12 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   context,
 }) => {
   const url = context?.navigation.location.pathname;
-  const organizationUnit = context?.contextMain.organization_units_list?.find(
-    (unit: OrganizationUnit) => unit.id === Number(url?.split('/').at(-1)),
-  );
-  const planId = Number(url?.split('/').at(-3));
+  const planId = +url?.split('/').at(-3);
+  const organizationUnitId = +url?.split('/').at(-1);
+
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
     planId,
-    organizationUnit?.id,
+    organizationUnitId,
   );
   const [form, setForm] = useState({
     status: {id: 1, title: 'Na čekanju'},

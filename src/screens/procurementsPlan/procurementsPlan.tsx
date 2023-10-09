@@ -40,20 +40,17 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const url = context.navigation.location.pathname;
 
   const planID = +url.split('/').pop();
+  const organizationUnitID = +url?.split('/').at(-1);
+
   const pathname = url.substring(0, url.lastIndexOf('/'));
 
   const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
   const role = context?.contextMain?.role_id; // Get the role from context
 
-  // const organizationUnit = context?.contextMain.organization_units_list?.find(
-  //   (unit: OrganizationUnit) => unit.id === Number(url?.split('/').at(-1)),
-  // );
-  const organizationUnit = 2;
-
   const {planDetails, fetch, loading: isLoadingPlanDetails} = usePublicProcurementPlanDetails(planID);
   const {procurements, loading: isLoadingProcurements} = useGetOrganizationUnitPublicProcurements(
     planID,
-    organizationUnit,
+    organizationUnitID,
   );
 
   function mergeArrays(firstArray: any, secondArray: any) {

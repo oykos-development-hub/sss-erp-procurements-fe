@@ -61,9 +61,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
   const planID = publicProcurement?.plan?.id;
+  const organizationUnitId = context?.contextMain?.organization_unit?.id;
 
-  const organizationUnitID = 2; // Will get from context
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID as number, organizationUnitID);
+  const {procurements} = useGetOrganizationUnitPublicProcurements(planID as number, organizationUnitId);
 
   useEffect(() => {
     if (procurements) {

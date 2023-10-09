@@ -8,6 +8,7 @@ import {AmountInput, Column, FormControls, FormFooter, Plan, Price} from './styl
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
+import useGetPublicProcurementOUArticles from '../../services/graphql/plansRequests/hooks/useGetProcurementOUArticles';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -16,12 +17,12 @@ interface ProcurementDetailsPageProps {
 export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = ({context}) => {
   const url = context.navigation.location.pathname;
   const planID = url.split('/').at(-3);
+  const organizationUnitId = context?.contextMain?.organization_unit?.id;
 
   const procurementID = url.split('/').at(-1);
   let limit = 0;
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const organizationUnitId = 2;
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementID);
   const {planDetails} = usePublicProcurementPlanDetails(planID);
   const [requestSuccessCount, setRequestSuccessCount] = useState<number>(0);
@@ -48,19 +49,18 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     organizationUnitId,
   );
 
+  const {articles: filledArticles} = useGetPublicProcurementOUArticles(+procurementID);
+
   const {publicProcurement, loading: isLoadingOUProcurementDetails} = usePublicProcurementGetDetails(procurementID);
 
   const procurement = useMemo(() => {
-    const procurement: any = procurements?.find((item: any) => Number(item?.id) === Number(procurementID));
     if (publicProcurement) {
       return {
         ...publicProcurement,
-        articles: publicProcurement?.articles.map((article: any) => {
+        articles: publicProcurement?.articles.map(article => {
           return {
             ...article,
-            amount:
-              procurement?.articles.find((item: any) => item?.public_procurement_article?.id === article?.id)?.amount ||
-              0,
+            amount: filledArticles?.find(item => item?.public_procurement_article.id === article?.id)?.amount || 0,
           };
         }),
       };
@@ -146,41 +146,30 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   const handleSave = async () => {
     if (totalPrice > limit) {
       context.alert.error('Prekoračili ste limit.');
-    } else {
-      const updatedItems = filteredArticles.map((item: any) => ({
-        ...item,
-        id: item?.public_procurement?.id,
-        public_procurement_article_id: item?.id || 0,
-        organization_unit_id: organizationUnitId,
-        amount: Number(item?.amount),
-        status: item?.status || '',
-        is_rejected: item?.is_rejected || false,
-        rejected_description: item?.rejected_description || '',
-      }));
+      return;
+    }
 
-      if (updatedItems) {
-        for (const updatedItem of updatedItems) {
-          const insertItem = {
-            id: updatedItem.id,
-            public_procurement_article_id: updatedItem.public_procurement_article_id,
-            organization_unit_id: updatedItem.organization_unit_id,
-            status: updatedItem.status,
-            is_rejected: updatedItem.is_rejected,
-            rejected_description: updatedItem.rejected_description,
-            amount: Number(updatedItem.amount),
-          };
-          await insertOrganizationUnitArticle(
-            insertItem,
-            () => {
-              setRequestSuccessCount(prevCount => prevCount + 1);
-            },
-            () => {
-              context.alert.error('Nije uspješno sačuvano');
-              setRequestErrorCount(prevCount => prevCount + 1);
-            },
-          );
-        }
-      }
+    for (const item of filteredArticles) {
+      const insertItem = {
+        id: filledArticles?.find(item => item?.public_procurement_article.id === item?.id)?.id || undefined,
+        public_procurement_article_id: item.id,
+        organization_unit_id: organizationUnitId,
+        status: item.status,
+        is_rejected: item.is_rejected || false,
+        rejected_description: item.rejected_description,
+        amount: item.amount,
+      };
+
+      await insertOrganizationUnitArticle(
+        insertItem,
+        () => {
+          setRequestSuccessCount(prevCount => prevCount + 1);
+        },
+        () => {
+          context.alert.error('Nije uspješno sačuvano');
+          setRequestErrorCount(prevCount => prevCount + 1);
+        },
+      );
     }
   };
 
