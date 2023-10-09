@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import {
   PublicProcurementOrganizationUnitArticlesOverviewResponse,
   RequestArticle,
@@ -9,7 +9,7 @@ import query from '../queries/getRequests';
 const useGetPublicProcurementOUArticles = (id: number) => {
   const [articles, setArticles] = useState<RequestArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const { fetch } = useAppContext();
+  const {fetch} = useAppContext();
 
   const fetchArticles = async () => {
     try {
@@ -29,7 +29,7 @@ const useGetPublicProcurementOUArticles = (id: number) => {
     fetchArticles();
   }, [id]);
 
-  return { articles, loading, refetch: fetchArticles };
+  return {articles, loading, refetch: fetchArticles};
 };
 
 export default useGetPublicProcurementOUArticles;
