@@ -144,7 +144,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   limit = parseFloat(desiredItem?.limit || '0');
 
   const handleSave = async () => {
-    if (totalPrice > limit) {
+    if (limit!==0 && totalPrice > limit) {
       context.alert.error('Prekoračili ste limit.');
       return;
     }
