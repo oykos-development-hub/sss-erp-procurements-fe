@@ -52,7 +52,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
 
   const {mutate} = useInsertPublicProcurementPlanItem();
   const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
-  const {counts} = useGetCounts();
+  const {counts} = useGetCounts({level: 3});
   const dropdowncountsOptions = useMemo(() => {
     return generateDropdownOptions(counts);
   }, [counts]);

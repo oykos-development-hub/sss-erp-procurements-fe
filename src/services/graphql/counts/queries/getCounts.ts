@@ -1,5 +1,5 @@
-const getCounts = `query AccountOverview($id: Int, $tree: Boolean, $search: String) {
-    account_Overview(id: $id, tree: $tree, search: $search) {
+const getCounts = `query AccountOverview($id: Int, $tree: Boolean, $search: String, $page: Int, $level: Int,$size: Int) {
+    account_Overview(id: $id, tree: $tree, search: $search, page: $page, size: $size, level: $level) {
         status
         message
         total
