@@ -81,12 +81,13 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     return firstArray;
   }
 
-  const procurementsPlansTableData: any = useMemo(() => {
+  const procurementsPlansTableData: ProcurementItem[] = useMemo(() => {
     const mergedResult = mergeArrays(planDetails, procurements);
     return mergedResult?.items;
   }, [planDetails, procurements]);
-
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
+
+  const buttonSendEnable= procurementsPlansTableData?.every(item => item.status === 'Obrađen');
 
   const totalNet =
     procurementsPlansTableData?.reduce((total: number, item: any) => {
@@ -356,7 +357,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 onClick={() => {
                   context.navigation.navigate(pathname);
                 }}
-                disabled={planDetails?.status === 'Konvertovan'}
+                disabled={!buttonSendEnable}
               />
             )}
           </>
