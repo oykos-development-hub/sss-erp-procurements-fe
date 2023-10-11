@@ -87,7 +87,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   }, [planDetails, procurements]);
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
 
-  const buttonSendEnable= procurementsPlansTableData?.every(item => item.status === 'Obrađen');
+  const buttonSendEnable = procurementsPlansTableData?.every(item => item.status === 'Obrađen');
 
   const totalNet =
     procurementsPlansTableData?.reduce((total: number, item: any) => {
