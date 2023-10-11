@@ -8,7 +8,7 @@ export const tableHeads: TableHead[] = [
     title: 'Konto',
     accessor: 'budget_indent',
     type: 'custom',
-    renderContents: (item: any) => item.title,
+    renderContents: (item: any) => item.serial_number,
   },
   {
     title: 'Naziv konta',

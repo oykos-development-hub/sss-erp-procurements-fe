@@ -24,6 +24,7 @@ const planDetailsQuery = `query PlanDetails($id: Int!) {
                 budget_indent {
                     id
                     title
+                    serial_number 
                 }
                 plan {
                     id
