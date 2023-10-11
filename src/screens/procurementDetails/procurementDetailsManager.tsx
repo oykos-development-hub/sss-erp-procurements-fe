@@ -151,7 +151,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
 
     for (const item of filteredArticles) {
       const insertItem = {
-        id: filledArticles?.find(item => item?.public_procurement_article.id === item?.id)?.id || undefined,
+        id: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id || undefined,
         public_procurement_article_id: item.id,
         organization_unit_id: organizationUnitId,
         status: item.status,
