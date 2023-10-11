@@ -5,7 +5,6 @@ import useGetProcurementPlanItemLimits from '../../services/graphql/procurementP
 import ScreenWrapper from '../../shared/screenWrapper';
 import {CustomDivider, Filters, Header, MainTitle, SectionBox, SubTitle, TableContainer} from '../../shared/styles';
 import {AmountInput, Column, FormControls, FormFooter, Plan, Price} from './styles';
-import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetPublicProcurementOUArticles from '../../services/graphql/plansRequests/hooks/useGetProcurementOUArticles';
