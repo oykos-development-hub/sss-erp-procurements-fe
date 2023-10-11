@@ -44,10 +44,6 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       setFilteredArticles(updatedArticles);
     }
   };
-  const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
-    planID,
-    organizationUnitId,
-  );
 
   const {articles: filledArticles, refetch} = useGetPublicProcurementOUArticles(+procurementID);
 
@@ -65,7 +61,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         }),
       };
     }
-  }, [publicProcurement, procurements]);
+  }, [publicProcurement]);
 
   const tableHeads: TableHead[] = [
     {
@@ -227,7 +223,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         <TableContainer
           tableHeads={tableHeads}
           data={filteredArticles || []}
-          isLoading={isLoadingOUProcurements || isLoadingOUProcurementDetails}
+          isLoading={isLoadingOUProcurementDetails}
         />
       </SectionBox>
 
