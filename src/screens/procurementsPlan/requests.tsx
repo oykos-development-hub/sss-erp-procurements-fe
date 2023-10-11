@@ -20,7 +20,7 @@ interface RequestsPageProps {
 
 const calculatePriceSums = (tableData: any[]) => {
   const initialSums = {netPriceSum: 0, totalPriceSum: 0};
-  return tableData.reduce((accumulator, item) => {
+  return tableData?.reduce((accumulator, item) => {
     const netPrice = item?.amount?.netPrice || 0;
     const totalPrice = item?.amount?.totalPrice || 0;
 
@@ -85,7 +85,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handle
     return filterTableData(organizationUnits, requests, organizationUnit, plan);
   }, [organizationUnits, requests, organizationUnit, plan]);
 
-  const isAllAccepted = tableData.every((item: any) => item.status === 'Odobreno');
+  const isAllAccepted = tableData?.every((item: any) => item.status === 'Odobreno');
 
   const priceSums = useMemo(() => {
     return calculatePriceSums(tableData);
