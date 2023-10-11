@@ -5,14 +5,34 @@ import {InlineText} from '../../shared/styles';
 
 export const tableHeads: TableHead[] = [
   {
+    title: 'Konto',
+    accessor: 'budget_indent',
+    type: 'custom',
+    renderContents: (item: any) => item.title,
+  },
+  {
+    title: 'Naziv konta',
+    accessor: 'budget_indent',
+    type: 'custom',
+    renderContents: (item: any) => item.title,
+  },
+  {
+    title: 'Opis javne nabavke',
+    accessor: 'title',
+    type: 'text',
+  },
+  {
     title: 'Vrsta',
     accessor: 'article_type',
     type: 'text',
   },
   {
-    title: 'Naziv javne nabavke',
-    accessor: 'title',
-    type: 'text',
+    title: 'Tip postupka',
+    accessor: 'is_open_procurement',
+    type: 'custom',
+    renderContents: (item: any) => {
+      return item === true ? 'Otvoreni postupak' : 'Jednostavna nabavka';
+    },
   },
   {
     title: 'Vrijednost neto',
@@ -79,20 +99,6 @@ export const tableHeads: TableHead[] = [
         </InlineText>
       );
     },
-  },
-  {
-    title: 'Tip postupka',
-    accessor: 'is_open_procurement',
-    type: 'custom',
-    renderContents: (item: any) => {
-      return item === true ? 'Otvoreni postupak' : 'Jednostavna nabavka';
-    },
-  },
-  {
-    title: 'Konto',
-    accessor: 'budget_indent',
-    type: 'custom',
-    renderContents: (item: any) => item.title,
   },
   {
     title: 'Datum objavljivanja',

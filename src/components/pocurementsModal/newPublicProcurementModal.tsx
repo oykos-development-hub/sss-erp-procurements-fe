@@ -48,6 +48,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     control,
     formState: {errors},
     reset,
+    register,
   } = useForm({defaultValues: initialValues});
 
   const {mutate} = useInsertPublicProcurementPlanItem();
@@ -67,7 +68,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         ...values,
         budget_indent_id: values?.budget_indent_id?.id,
         is_open_procurement: values?.is_open_procurement?.id === 1 ? true : false,
-        title: orginalTitle,
+        title: values?.title,
         article_type: values?.article_type?.title,
         plan_id: planID,
         status: values?.status,
@@ -99,6 +100,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         },
         article_type: {id: selectedItem?.article_type, title: selectedItem?.article_type},
         plan_id: selectedItem?.plan?.id,
+        title: selectedItem?.title,
       });
     }
   }, [selectedItem]);
@@ -133,7 +135,10 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
             />
           </FormGroup>
           <FormGroup>
-            <Input label="NAZIV:" name="title" value={orginalTitle} disabled={true} />
+            <Input label="NAZIV KONTA:" name="serial_number" value={orginalTitle} disabled={true} />
+          </FormGroup>
+          <FormGroup>
+            <Input {...register('title')} label="OPIS JAVNE NABAVKE:" />
           </FormGroup>
           <FormGroup>
             <Controller
