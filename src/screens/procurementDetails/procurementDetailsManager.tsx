@@ -49,7 +49,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     organizationUnitId,
   );
 
-  const {articles: filledArticles} = useGetPublicProcurementOUArticles(+procurementID);
+  const {articles: filledArticles, refetch} = useGetPublicProcurementOUArticles(+procurementID);
 
   const {publicProcurement, loading: isLoadingOUProcurementDetails} = usePublicProcurementGetDetails(procurementID);
 
@@ -150,6 +150,12 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     }
 
     for (const item of filteredArticles) {
+      console.log(
+        filledArticles,
+        item,
+        filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id,
+        'eejejeje',
+      );
       const insertItem = {
         id: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id || undefined,
         public_procurement_article_id: item.id,
@@ -170,6 +176,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
           setRequestErrorCount(prevCount => prevCount + 1);
         },
       );
+      refetch();
     }
   };
 
