@@ -53,7 +53,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         articles: publicProcurement?.articles.map(article => {
           return {
             ...article,
-            amount: filledArticles?.find(item => item?.public_procurement_article.id === article?.id)?.amount || 0,
+            amount: filledArticles?.find(item => item?.public_procurement_article.id === article?.id)?.amount,
           };
         }),
       };
