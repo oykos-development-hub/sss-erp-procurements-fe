@@ -36,7 +36,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     const index = updatedArticles.findIndex(item => item.id === row.id);
 
     if (index !== -1) {
-      const updatedItem = {...updatedArticles[index], amount: Number(value)};
+      const updatedItem = {...updatedArticles[index], amount: value === '' ? null : +value};
       updatedArticles[index] = updatedItem;
       setFilteredArticles(updatedArticles);
     }
@@ -110,7 +110,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         return (
           <AmountInput
             type="number"
-            value={row.amount !== 0 ? row.amount : null}
+            value={row.amount}
             onChange={event => handleInputChange(event, row)}
             disabled={planDetails?.status === 'Odobren'}
           />
@@ -143,12 +143,6 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     }
 
     for (const item of filteredArticles) {
-      console.log(
-        filledArticles,
-        item,
-        filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id,
-        'eejejeje',
-      );
       const insertItem = {
         id: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id || undefined,
         public_procurement_article_id: item.id,
@@ -156,7 +150,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         status: item.status,
         is_rejected: item.is_rejected || false,
         rejected_description: item.rejected_description,
-        amount: item.amount,
+        amount: item.amount || 0,
       };
 
       await insertOrganizationUnitArticle(
@@ -190,7 +184,6 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     }
   }, [procurement]);
 
-  console.log(planDetails?.status, 'status');
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
