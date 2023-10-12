@@ -11,7 +11,7 @@ const useProcurementArticleDelete = () => {
   const deleteProcurementArticle = async (id: number, onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
     const response: PublicProcurementArticleDeleteResponse = await fetch(mutation, {id});
-    if (response.publicProcurementPlanItemArticle_Delete.status === REQUEST_STATUSES.success) {
+    if (response?.publicProcurementPlanItemArticle_Delete.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {
       onError && onError();

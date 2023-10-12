@@ -1,7 +1,7 @@
-const publicProcurementArticleDeleteMutation = `mutation {
-    publicProcurementPlanItemArticle_Delete(id: $id) {
-    message
-    status
+const publicProcurementArticleDeleteMutation = `mutation($id: Int!) {
+  publicProcurementPlanItemArticle_Delete(id: $id) {
+      message
+      status
   }
 }`;
 
