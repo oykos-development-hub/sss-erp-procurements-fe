@@ -11,6 +11,7 @@ import {tableHeadsRequests} from './constants';
 import {RequestArticle} from '../../types/graphql/planRequests';
 import {DropdownDataNumber} from '../../types/dropdownData';
 import {calculateStatus} from '../../utils/getStatus';
+import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
 
 interface RequestsPageProps {
   plan?: ProcurementPlanDetails;
@@ -75,7 +76,7 @@ const filterTableData = (
 
 export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handleDateOfClosing}) => {
   const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
-  const organizationUnits: OrganizationUnit[] = context?.contextMain?.organization_units_list;
+  const {organizationUnits} = useGetOrganizationUnits();
   const unitIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
   const {requests, loading: isLoadingPlanRequests} = useGetPublicProcurementPlanRequests(unitIds);
 
