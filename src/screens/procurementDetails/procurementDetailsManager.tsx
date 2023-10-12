@@ -21,13 +21,11 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   const procurementID = url.split('/').at(-1);
   let limit = 0;
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
-  const [isEdit, setIsEdit] = useState<boolean>(false);
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementID);
   const {planDetails} = usePublicProcurementPlanDetails(planID);
   const [requestSuccessCount, setRequestSuccessCount] = useState<number>(0);
   const [requestErrorCount, setRequestErrorCount] = useState<number>(0);
 
-  const [isDisabled, setIsDisabled] = useState(true);
   const {mutate: insertOrganizationUnitArticle, loading: isLoadingInsertOUArticleMutate} =
     useProcurementOrganizationUnitArticleInsert();
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
@@ -112,9 +110,9 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         return (
           <AmountInput
             type="number"
-            value={row.amount}
+            value={row.amount !== 0 ? row.amount : null}
             onChange={event => handleInputChange(event, row)}
-            disabled={row.amount !== '' && isDisabled}
+            disabled={planDetails?.status === 'Odobren'}
           />
         );
       },
@@ -165,6 +163,10 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         insertItem,
         () => {
           setRequestSuccessCount(prevCount => prevCount + 1);
+          totalPrice > limit || requestErrorCount > 0 ? '' : context.navigation.navigate(pathname);
+          setRequestErrorCount(0);
+          context.navigation.navigate(pathname);
+          context.breadcrumbs.remove();
         },
         () => {
           context.alert.error('Nije uspješno sačuvano');
@@ -188,6 +190,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     }
   }, [procurement]);
 
+  console.log(planDetails?.status, 'status');
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
@@ -229,48 +232,23 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       <FormFooter>
         <FormControls>
           <>
-            {!isEdit && planDetails?.status !== 'Konvertovan' && (
-              <>
-                <Button
-                  content="Izmijeni"
-                  variant="secondary"
-                  onClick={() => {
-                    setIsEdit(true);
-                    setIsDisabled(false);
-                  }}
-                />
-                <Button
-                  content="Završi"
-                  variant="primary"
-                  onClick={() => {
-                    handleSave();
-                    totalPrice > limit || requestErrorCount > 0 ? '' : context.navigation.navigate(pathname);
-                    setRequestErrorCount(0);
-                    context.breadcrumbs.remove();
-                  }}
-                />
-              </>
-            )}
-            {planDetails?.status === 'Konvertovan' && (
+            <Button
+              content="Nazad"
+              variant="secondary"
+              onClick={() => {
+                context.navigation.navigate(pathname);
+                context.breadcrumbs.remove();
+              }}
+            />
+
+            {planDetails?.status !== 'Odobren' && (
               <Button
-                content="Nazad"
+                content="Sačuvaj"
                 variant="primary"
-                onClick={() => {
-                  context.navigation.navigate(pathname);
-                  context.breadcrumbs.remove();
-                }}
-              />
-            )}
-            {isEdit && (
-              <Button
-                content="Sačuvaj izmjene"
-                variant="primary"
-                isLoading={isLoadingInsertOUArticleMutate}
                 onClick={() => {
                   handleSave();
-                  setIsEdit(false);
-                  setIsDisabled(true);
                 }}
+                isLoading={isLoadingInsertOUArticleMutate}
               />
             )}
           </>
