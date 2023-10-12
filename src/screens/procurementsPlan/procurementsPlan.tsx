@@ -39,7 +39,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
 
   const alert = context?.alert;
   const url = context.navigation.location.pathname;
-  const {updateStatus}= useUpdateStatusPlan();
+  const {updateStatus} = useUpdateStatusPlan();
 
   const planID = +url.split('/').pop();
   const organizationUnitID = +url?.split('/').at(-1);
