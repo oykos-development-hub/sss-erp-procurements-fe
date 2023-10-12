@@ -26,6 +26,7 @@ import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} f
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import {UserPermission, UserRole, checkPermission} from '../../constants';
+import useUpdateStatusPlan from '../../services/graphql/plans/hooks/useUpdatePlanStatus';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -38,6 +39,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
 
   const alert = context?.alert;
   const url = context.navigation.location.pathname;
+  const {updateStatus}= useUpdateStatusPlan();
 
   const planID = +url.split('/').pop();
   const organizationUnitID = +url?.split('/').at(-1);
@@ -355,6 +357,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 content="Pošalji"
                 variant="primary"
                 onClick={() => {
+                  updateStatus(planDetails?.id);
                   context.navigation.navigate(pathname);
                 }}
                 disabled={!buttonSendEnable}
