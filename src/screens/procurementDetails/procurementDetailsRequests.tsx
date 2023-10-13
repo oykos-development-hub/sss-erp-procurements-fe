@@ -13,9 +13,9 @@ interface ProcurementDetailsPageProps {
 export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> = ({context}) => {
   const url = context.navigation.location.pathname;
   const procurementID = url.split('/').at(-1);
-  const organizationUnitId = context?.contextMain?.organization_unit?.id;
+  const organizationUnitId = url.split('/').at(-3);
+  const planID = url.split('/').at(-5);
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(1);
-  const planID = url.split('/').at(-3);
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
     planID,
     organizationUnitId,

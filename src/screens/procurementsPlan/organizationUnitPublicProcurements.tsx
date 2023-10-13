@@ -119,11 +119,11 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
           tableHeads={tableHeadsOrganizationUnitProcurements}
           onRowClick={row => {
             context?.navigation.navigate(
-              `/procurements/plans/${planId}/procurement-details-requests/${row.id.toString()}`,
+              `/procurements/plans/${planId}/requests/${organizationUnitId}/procurement-details-requests/${row.id.toString()}`,
             );
             context?.breadcrumbs.add({
               name: `Nabavka Broj. ${row?.title || ''} / Konto: ${row?.budget_indent?.title || ''}`,
-              to: `/procurements/plans/${planId}/procurement-details-requests/${row.id.toString()}`,
+              to: `/procurements/plans/${planId}/requests/${organizationUnitId}/procurement-details-requests/${row.id.toString()}`,
             });
           }}
         />

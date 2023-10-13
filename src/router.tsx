@@ -12,12 +12,12 @@ import {ContractDetails} from './screens/procurementContracts/contractDetails/co
 import {ContractDetailsSigned} from './screens/procurementContracts/contractDetails/contractDetailsSigned';
 
 const ProcurementPlanDetailsRegex = /^\/procurements\/plans\/\d+/;
-const OrganizationUnitPublicProcurementsRegex = /^\/procurements\/plans\/[^/]+\/requests\/\d+/;
+const OrganizationUnitPublicProcurementsRegex = /^\/procurements\/plans\/\d+\/requests\/\d+$/;
 const ProcurementDetailsRegex = /^\/procurements\/plans\/[^/]+\/procurement-details\/\d+/;
 const ContractDetailsRegex = /\/procurements\/contracts\/\d+$/;
 const ContractDetailsSignedRegex = /^\/procurements\/contracts\/\d+\/signed$/;
 const ProcurementDetailsManagerRegex = /^\/procurements\/plans\/[^/]+\/procurement-details-manager\/\d+/;
-const ProcurementDetailsRequestsRegex = /^\/procurements\/plans\/[^/]+\/procurement-details-requests\/\d+/;
+const ProcurementDetailsRequestsRegex = /^\/procurements\/plans\/\d+\/requests\/\d+\/procurement-details-requests\/\d+/;
 
 export const Router: React.FC<MicroserviceProps> = props => {
   const pathname = props?.navigation?.location?.pathname;
