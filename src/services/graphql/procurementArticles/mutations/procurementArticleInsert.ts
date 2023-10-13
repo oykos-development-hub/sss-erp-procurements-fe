@@ -4,10 +4,6 @@ const articleInsertMutation = `mutation($data: PublicProcurementPlanItemArticleI
       message
       item {
         id
-        budget_indent {
-            id
-            title
-        }
         public_procurement {
             id
             title

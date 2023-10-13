@@ -4,10 +4,6 @@ const organizationUnitArticleDetailsQuery = `query OrganizationUnitPublicProcure
       message
       items {
           id
-          budget_indent {
-              id
-              title
-          }
           plan {
               id
               title

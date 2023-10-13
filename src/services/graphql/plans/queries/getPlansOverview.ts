@@ -41,10 +41,6 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
                 file_id
                 articles {
                     id
-                    budget_indent {
-                        id
-                        title
-                    }
                     public_procurement {
                         id
                         title

@@ -25,10 +25,6 @@ const procurementDetailsQuery = `query ProcurementDetails($id: Int!) {
             file_id
             articles {
                 id
-                budget_indent {
-                    id
-                    title
-                }
                 public_procurement {
                     id
                     title

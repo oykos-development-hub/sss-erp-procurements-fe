@@ -2380,10 +2380,6 @@ See https://reactjs.org/docs/forms.html#controlled-components`);let n;t.initialP
       message
       item {
         id
-        budget_indent {
-            id
-            title
-        }
         public_procurement {
             id
             title
@@ -2539,10 +2535,6 @@ attempted value: ${o}
             file_id
             articles {
                 id
-                budget_indent {
-                    id
-                    title
-                }
                 public_procurement {
                     id
                     title
@@ -2709,10 +2701,6 @@ attempted value: ${o}
                 file_id
                 articles {
                     id
-                    budget_indent {
-                        id
-                        title
-                    }
                     public_procurement {
                         id
                         title
@@ -2751,10 +2739,6 @@ attempted value: ${o}
             file_id
             articles {
                 id
-                budget_indent {
-                    id
-                    title
-                }
                 public_procurement {
                     id
                     title
@@ -2834,10 +2818,6 @@ attempted value: ${o}
                 file_id
                 articles {
                     id
-                    budget_indent {
-                        id
-                        title
-                    }
                     public_procurement {
                         id
                         title
@@ -2856,10 +2836,6 @@ attempted value: ${o}
       message
       items {
           id
-          budget_indent {
-              id
-              title
-          }
           plan {
               id
               title
@@ -3080,10 +3056,6 @@ attempted value: ${o}
                 file_id
                 articles {
                     id
-                    budget_indent {
-                        id
-                        title
-                    }
                     public_procurement {
                         id
                         title
