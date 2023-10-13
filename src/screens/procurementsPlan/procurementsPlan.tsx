@@ -19,7 +19,7 @@ import {
   TableContainer,
 } from '../../shared/styles';
 import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
-import {parseDate} from '../../utils/dateUtils';
+import {parseDateForBackend, stringToDate} from '../../utils/dateUtils';
 import {tableHeads} from './constants';
 import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
@@ -181,15 +181,12 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
       id: planDetails?.id,
       pre_budget_id: planDetails?.pre_budget_plan?.id || undefined,
       is_pre_budget: planDetails?.is_pre_budget,
-      active: planDetails?.active,
       year: planDetails?.year,
       title: planDetails?.title,
       serial_number: planDetails?.serial_number,
-      date_of_publishing: parseDate(planDetails?.date_of_publishing),
-      date_of_closing: dateOfClosing,
+      date_of_publishing: parseDateForBackend(new Date(planDetails?.date_of_publishing)),
+      date_of_closing: parseDateForBackend(stringToDate(dateOfClosing)),
       file_id: planDetails?.file_id,
-      created_at: planDetails?.created_at,
-      updated_at: planDetails?.updated_at || '',
     };
 
     insertPlan(

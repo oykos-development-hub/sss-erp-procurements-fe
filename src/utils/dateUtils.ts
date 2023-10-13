@@ -8,13 +8,15 @@ export const parseDate = (date: Date | string | null) => {
   return `${day}/${month}/${year}`;
 };
 
-export const parseDateForBackend = (date: Date | null) => {
-  if (!date) return null;
+// parses date of format dd/mm/yyyy to Date object
+export const stringToDate = (dateString: string): Date => {
+  const [day, month, year] = dateString.split('/').map(s => parseInt(s, 10));
+  return new Date(year, month - 1, day); // Month is 0-indexed
+};
 
-  const pickedDate = new Date(date);
-  pickedDate.setMinutes(pickedDate.getMinutes() - pickedDate.getTimezoneOffset());
-
-  return pickedDate.toISOString();
+export const parseDateForBackend = (date: Date) => {
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString();
 };
 
 export const calculateExperience = (startDate: Date | string, endDate: Date | string) => {
