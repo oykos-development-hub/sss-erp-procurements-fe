@@ -3,7 +3,6 @@ import {SingularResponse} from './utils';
 
 export interface PublicProcurementArticleParams {
   id?: number;
-  budget_indent_id: number;
   public_procurement_id: number;
   title: string;
   description: string;
@@ -13,7 +12,6 @@ export interface PublicProcurementArticleParams {
 
 export interface PublicProcurementArticle {
   id: number;
-  budget_indent: DropdownDataNumber;
   public_procurement: DropdownDataNumber;
   title: string;
   description: string;

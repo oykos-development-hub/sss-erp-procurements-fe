@@ -14,3 +14,7 @@ export const Row = styled.div`
     width: 250px;
   }
 `;
+
+export const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;

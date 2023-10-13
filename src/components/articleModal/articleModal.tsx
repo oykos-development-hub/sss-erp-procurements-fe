@@ -2,7 +2,7 @@ import {Dropdown, Input, Modal, Theme} from 'client-library';
 import React, {useEffect, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {FormWrapper, Row} from './styles';
+import {FormGroup, FormWrapper, Row} from './styles';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {articleModalConfirmationSchema} from './validationSchema.ts';
 import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts.ts';
@@ -45,16 +45,10 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
     }
   }, [selectedItem]);
 
-  const {counts} = useGetCounts();
-  const dropdowncountsOptions = useMemo(() => {
-    return generateDropdownOptions(counts);
-  }, [counts]);
-
   const onSubmit = (data: any) => {
     const payload = {
       id: data?.id,
       public_procurement_id: data.public_procurement_id || procurementId,
-      budget_indent_id: data.budget_indent?.id,
       title: data.title,
       description: data.description,
       net_price: parseFloat(data.net_price),
@@ -92,25 +86,9 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
       rightButtonOnClick={handleSubmit(onSubmit)}
       content={
         <FormWrapper>
-          <Row>
-            <Controller
-              name="budget_indent"
-              control={control}
-              render={({field: {onChange, name, value}}) => {
-                return (
-                  <Dropdown
-                    onChange={onChange}
-                    value={value as any}
-                    name={name}
-                    label="POD KONTO:"
-                    options={dropdowncountsOptions}
-                    error={errors.budget_indent?.message as string}
-                  />
-                );
-              }}
-            />
+          <FormGroup>
             <Input {...register('title')} label="NAZIV PREDMETA NABAVKE:" error={errors.title?.message as string} />
-          </Row>
+          </FormGroup>
           <Row>
             <Input
               {...register('description')}

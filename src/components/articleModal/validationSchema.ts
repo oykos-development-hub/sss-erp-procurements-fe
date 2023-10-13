@@ -1,12 +1,7 @@
 import * as yup from 'yup';
-import {
-  dropdownDataNumberSchema,
-  dropdownDataBooleanSchema,
-  stringRequiredSchema,
-} from '../../screens/validationSchema';
+import {dropdownDataNumberSchema, stringRequiredSchema} from '../../screens/validationSchema';
 
 export const articleModalConfirmationSchema = yup.object().shape({
-  budget_indent: dropdownDataNumberSchema,
   title: stringRequiredSchema,
   description: stringRequiredSchema,
   net_price: stringRequiredSchema,
