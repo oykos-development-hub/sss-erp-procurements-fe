@@ -73,7 +73,6 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
             await insertProcurement(insertItem, async procurement => {
               for (const article of item.articles) {
                 const insertArticle = {
-                  budget_indent_id: article?.budget_indent?.id ?? 0,
                   public_procurement_id: procurement.id,
                   title: article?.title,
                   description: article?.description,
