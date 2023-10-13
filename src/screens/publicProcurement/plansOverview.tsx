@@ -284,46 +284,41 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     if (!selectedItem) return;
     try {
       const payload = {
-        ...selectedItem,
-        id: 0,
+        id: undefined,
         year: selectedItem.year,
         is_pre_budget: false,
         title: 'Postbudzetski' + '-' + 'Plan za ' + selectedItem.year,
-        pre_budget_id: selectedItem.id || undefined,
-        date_of_publishing: '',
-        date_of_closing: '',
+        pre_budget_id: selectedItem.id,
+        date_of_publishing: undefined,
+        date_of_closing: undefined,
+        file_id: selectedItem.file_id,
+        serial_number: selectedItem.serial_number,
       };
 
       insertPlan(payload, async planID => {
-        if (selectedItem) {
-          for (const item of selectedItem.items) {
-            const insertItem = {
-              id: 0,
-              budget_indent_id: item.budget_indent.id,
-              plan_id: planID,
-              is_open_procurement: item.is_open_procurement,
-              title: item.title,
-              article_type: item.article_type,
-              status: item.status,
-              file_id: item.file_id,
-              date_of_awarding: '',
-              date_of_publishing: '',
-            };
-            await insertProcurement(insertItem as any, async procurementID => {
-              for (const article of item.articles) {
-                const insertArticle = {
-                  id: 0,
-                  budget_indent_id: article?.budget_indent?.id ?? 0,
-                  public_procurement_id: procurementID,
-                  title: article?.title,
-                  description: article?.description,
-                  net_price: article?.net_price,
-                  vat_percentage: article?.vat_percentage,
-                };
-                await addArticle(insertArticle as any);
-              }
-            });
-          }
+        for (const item of selectedItem.items) {
+          const insertItem = {
+            budget_indent_id: item.budget_indent.id,
+            plan_id: planID,
+            is_open_procurement: item.is_open_procurement,
+            title: item.title,
+            article_type: item.article_type,
+            status: item.status,
+            file_id: item.file_id,
+          };
+          await insertProcurement(insertItem, async procurement => {
+            for (const article of item.articles) {
+              const insertArticle = {
+                budget_indent_id: article?.budget_indent?.id,
+                public_procurement_id: procurement.id,
+                title: article?.title,
+                description: article?.description,
+                net_price: article?.net_price,
+                vat_percentage: article?.vat_percentage,
+              };
+              await addArticle(insertArticle);
+            }
+          });
         }
         refetchData();
         context.alert.success('Uspješno ste konvertovali plan.');

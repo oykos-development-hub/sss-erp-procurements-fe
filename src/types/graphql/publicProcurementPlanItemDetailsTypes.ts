@@ -24,9 +24,10 @@ export interface ProcurementItemForOrganizationUnit extends Omit<ProcurementItem
   articles: PublicProcurementArticleWithAmount[];
 }
 export interface ProcurementItemInsert
-  extends Omit<ProcurementItem, 'budget_indent' | 'plan' | 'articles' | 'created_at' | 'updated_at'> {
+  extends Omit<ProcurementItem, 'budget_indent' | 'plan' | 'articles' | 'created_at' | 'updated_at' | 'id'> {
   budget_indent_id: number | null;
   plan_id: number;
+  id?: number;
 }
 
 export interface ProcurementPlanItemDetailsGetResponse {
