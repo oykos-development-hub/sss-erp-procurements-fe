@@ -200,6 +200,12 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
     type: 'text',
   },
   {
+    title: 'Konto',
+    accessor: 'budget_indent',
+    type: 'custom',
+    renderContents: (item: any) => item.serial_number,
+  },
+  {
     title: 'Naziv javne nabavke',
     accessor: 'title',
     type: 'text',
@@ -269,12 +275,7 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
       return item === true ? 'Otvoreni postupak' : 'Jednostavna nabavka';
     },
   },
-  {
-    title: 'Konto',
-    accessor: 'budget_indent',
-    type: 'custom',
-    renderContents: (item: any) => item.title,
-  },
+
   {
     title: 'Datum objavljivanja',
     accessor: 'date_of_publishing',
