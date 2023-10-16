@@ -17,11 +17,10 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
   const planID = url.split('/').at(-5);
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(1);
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
-    planID,
-    organizationUnitId,
+    +planID,
+    +organizationUnitId,
+    +procurementID,
   );
-  const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
-  const [procurement, setProcurement] = useState<any>();
   const breadcrumbs = context?.breadcrumbs.get();
   const title = breadcrumbs?.at(-2)?.name;
   const tableHeads: TableHead[] = [
@@ -85,13 +84,13 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
   ];
 
   const totalNet =
-    filteredArticles?.reduce(
+    procurements?.[0].articles?.reduce(
       (sum: number, article: any) => sum + parseFloat(article?.public_procurement_article?.net_price),
       0,
     ) || 0;
 
   const totalPrice =
-    filteredArticles?.reduce((sum: number, article: any) => {
+    procurements?.[0].articles?.reduce((sum: number, article: any) => {
       const pdvValue =
         (Number(article?.public_procurement_article?.net_price) *
           Number(article?.public_procurement_article?.vat_percentage)) /
@@ -112,26 +111,13 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
     }
   };
 
-  useEffect(() => {
-    if (procurements) {
-      const filtered = procurements.find((item: any) => {
-        return item?.id === Number(procurementID);
-      });
-
-      if (filtered) {
-        setFilteredArticles(filtered?.articles);
-        setProcurement(filtered);
-      }
-    }
-  }, [procurements, planID]);
-
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
         <MainTitle
           variant="bodyMedium"
-          content={`${title.toUpperCase()} - NABAVKA BROJ. ${procurement?.title || ''} / KONTO: ${
-            procurement?.budget_indent?.title || ''
+          content={`${title.toUpperCase()} - NABAVKA BROJ. ${procurements?.[0].title || ''} / KONTO: ${
+            procurements?.[0]?.budget_indent?.title || ''
           }`}
           style={{marginBottom: 0}}
         />
@@ -153,12 +139,16 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
         <Price variant="bodySmall" content={findIdForOrganisationUnit()} />
         <Plan>
           <Typography
-            content={procurement?.plan?.id === 1 ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}
+            content={procurements?.[0]?.plan?.id === 1 ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}
             variant="bodyMedium"
             style={{fontWeight: 600}}
           />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={filteredArticles || []} isLoading={isLoadingOUProcurements} />
+        <TableContainer
+          tableHeads={tableHeads}
+          data={procurements?.[0].articles || []}
+          isLoading={isLoadingOUProcurements}
+        />
       </SectionBox>
 
       <FormFooter>
