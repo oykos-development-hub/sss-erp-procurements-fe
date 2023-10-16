@@ -128,11 +128,6 @@ export const tableHeads: TableHead[] = [
 
 export const tableHeadsRequests: TableHead[] = [
   {
-    title: 'ID',
-    accessor: 'id',
-    type: 'text',
-  },
-  {
     title: 'Organizaciona jedinica',
     accessor: 'organization_unit',
     type: 'text',
@@ -165,7 +160,10 @@ export const tableHeadsRequests: TableHead[] = [
   {
     title: 'Datum kreiranja',
     accessor: 'date_of_publishing',
-    type: 'text',
+    type: 'custom',
+    renderContents: (date_of_publishing: any) => {
+      return <Typography variant="bodyMedium" content={parseDate(date_of_publishing)} />;
+    },
   },
   {
     title: 'Ukupna vrijednost',
