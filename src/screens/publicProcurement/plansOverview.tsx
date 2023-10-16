@@ -201,10 +201,10 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
         id: selectedItem.id,
         title: selectedItem.title,
         date_of_closing: selectedItem.date_of_closing,
-        date_of_publishing: parseDateForBackend(new Date()) as string,
+        date_of_publishing: parseDateForBackend(new Date()),
         year: selectedItem.year.toString(),
         is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id || undefined,
+        pre_budget_id: selectedItem.pre_budget_plan?.id || undefined,
         serial_number: selectedItem.serial_number,
       };
       insertPlan(payload, () => {
