@@ -58,7 +58,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         }),
       };
     }
-  }, [publicProcurement]);
+  }, [publicProcurement, filledArticles]);
 
   const tableHeads: TableHead[] = [
     {
