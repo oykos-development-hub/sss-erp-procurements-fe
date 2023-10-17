@@ -112,9 +112,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     }
   }, [selectedItem]);
 
-  const filteredArray = dropdownData.filter(
-    (obj: DropdownDataNumber) => obj.title.includes(selectedYear?.title) || obj.title.includes('None'),
-  );
+  const filteredArray = dropdownData.filter((obj: DropdownDataNumber) => obj.title.includes(selectedYear?.title));
 
   return (
     <Modal
