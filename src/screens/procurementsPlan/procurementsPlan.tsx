@@ -265,13 +265,15 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
             </Header>
             <TableContainer
               isLoading={isLoadingPlanDetails || isLoadingProcurements}
-              tableHeads={!isAdmin ? tableHeads.filter(item => item.accessor !== 'TABLE_ACTIONS') : tableHeads}
+              tableHeads={
+                checkPermission(role, UserPermission.EDIT_PROCUREMENTS)
+                  ? tableHeads
+                  : tableHeads.filter(item => item.accessor !== 'TABLE_ACTIONS')
+              }
               data={procurementsPlansTableData || []}
               onRowClick={row => {
                 navigateToDetailsScreen(row);
               }}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               tableActions={[
                 {
                   name: 'Izmeni',

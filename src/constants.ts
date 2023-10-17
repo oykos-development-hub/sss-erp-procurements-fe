@@ -17,6 +17,7 @@ export enum UserPermission {
   SEND_PROCUREMENTS = 'SEND_PROCUREMENTS',
   CREATE_PROCUREMENT = 'CREATE_PROCUREMENT',
   VIEW_PROCUREMENT_REQUESTS = 'VIEW_PROCUREMENT_REQUESTS',
+  EDIT_PROCUREMENTS = 'EDIT_PROCUREMENTS',
 }
 
 const rolePermissionsMap = {
@@ -28,6 +29,7 @@ const rolePermissionsMap = {
     UserPermission.VIEW_PLANS_REQUESTS,
     UserPermission.CREATE_PROCUREMENT,
     UserPermission.VIEW_PROCUREMENT_REQUESTS,
+    UserPermission.EDIT_PROCUREMENTS,
   ],
   [UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS]: [
     UserPermission.VIEW_PLANS,
@@ -36,6 +38,7 @@ const rolePermissionsMap = {
     UserPermission.VIEW_PLANS_REQUESTS,
     UserPermission.CREATE_PROCUREMENT,
     UserPermission.VIEW_PROCUREMENT_REQUESTS,
+    UserPermission.EDIT_PROCUREMENTS,
   ],
   [UserRole.MANAGER_OJ]: [UserPermission.VIEW_PLANS, UserPermission.FILL_PLANS, UserPermission.SEND_PROCUREMENTS],
 };
