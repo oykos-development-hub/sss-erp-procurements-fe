@@ -213,7 +213,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
         setShowShareModal(false);
       });
     } catch (e) {
-      console.log(e);
+      console.log(e, 'e');
     }
   };
 
