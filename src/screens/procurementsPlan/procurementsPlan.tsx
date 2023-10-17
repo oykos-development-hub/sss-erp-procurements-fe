@@ -35,6 +35,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const location = context?.navigation?.location;
   const [activeTab, setActiveTab] = useState(location?.state?.activeTab || 1);
+  const [isNotificationModalActive, setIsNotificationModalActive] = useState<boolean>(false);
   const [dateOfClosing, setDateOfClosing] = useState('');
 
   const alert = context?.alert;
@@ -173,6 +174,13 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
+  };
+
+  const handleUpdatePlan = () => {
+    updateStatus(planDetails?.id, () => {
+      context.navigation.navigate(pathname);
+      setIsNotificationModalActive(false);
+    });
   };
 
   const handleCompletePlan = () => {
@@ -355,13 +363,17 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               <Button
                 content="Pošalji"
                 variant="primary"
-                onClick={() => {
-                  updateStatus(planDetails?.id);
-                  context.navigation.navigate(pathname);
-                }}
+                onClick={() => setIsNotificationModalActive(true)}
                 disabled={!buttonSendEnable}
               />
             )}
+
+            <NotificationsModal
+              open={!!isNotificationModalActive}
+              onClose={() => setIsNotificationModalActive(false)}
+              handleLeftButtomClick={handleUpdatePlan}
+              subTitle="Nakdnadne izmjene neće biti moguće."
+            />
           </>
           {activeTab === 2 && (
             <Button
