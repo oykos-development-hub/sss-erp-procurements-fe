@@ -196,25 +196,24 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const handleShare = async () => {
     if (!selectedItem) return;
 
-    try {
-      const payload = {
-        id: selectedItem.id,
-        title: selectedItem.title,
-        date_of_closing: selectedItem.date_of_closing,
-        date_of_publishing: parseDateForBackend(new Date()),
-        year: selectedItem.year.toString(),
-        is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan?.id || undefined,
-        serial_number: selectedItem.serial_number,
-      };
-      insertPlan(payload, () => {
-        refetchData();
-        context.alert.success('Uspješno ste poslali plan organizacionim jedinicama na pregled.');
-        setShowShareModal(false);
-      });
-    } catch (e) {
-      console.log(e, 'e');
-    }
+    const payload = {
+      id: selectedItem.id,
+      title: selectedItem.title,
+      date_of_closing: selectedItem.date_of_closing,
+      date_of_publishing: parseDateForBackend(new Date()),
+      year: selectedItem.year.toString(),
+      is_pre_budget: selectedItem.is_pre_budget,
+      pre_budget_id: selectedItem.pre_budget_plan?.id || undefined,
+      serial_number: selectedItem.serial_number,
+    };
+
+    console.log(selectedItem.pre_budget_plan?.id, 'selectedItem.pre_budget_plan?.id');
+
+    insertPlan(payload, () => {
+      refetchData();
+      context.alert.success('Uspješno ste poslali plan organizacionim jedinicama na pregled.');
+      setShowShareModal(false);
+    });
   };
 
   const handleRevert = async () => {
@@ -228,7 +227,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
         date_of_publishing: undefined,
         year: selectedItem.year.toString(),
         is_pre_budget: selectedItem.is_pre_budget,
-        pre_budget_id: selectedItem.pre_budget_plan.id || undefined,
+        pre_budget_id: selectedItem.pre_budget_plan?.id || undefined,
         serial_number: selectedItem.serial_number,
       };
 
@@ -288,7 +287,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
         year: selectedItem.year,
         is_pre_budget: false,
         title: 'Postbudzetski' + '-' + 'Plan za ' + selectedItem.year,
-        pre_budget_id: selectedItem.id,
+        pre_budget_id: selectedItem?.id,
         date_of_publishing: undefined,
         date_of_closing: undefined,
         file_id: selectedItem.file_id,
