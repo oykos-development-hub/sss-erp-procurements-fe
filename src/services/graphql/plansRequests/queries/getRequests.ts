@@ -1,5 +1,5 @@
-const getPublicProcurementPlanRequestsQuery = `query OrganizationUnitArticles($procurement_id: Int) {
-  publicProcurementOrganizationUnitArticles_Overview(procurement_id: $procurement_id) {
+const getPublicProcurementPlanRequestsQuery = `query OrganizationUnitArticles($procurement_id: Int, $organization_unit_id: Int) {
+  publicProcurementOrganizationUnitArticles_Overview(procurement_id: $procurement_id, organization_unit_id: $organization_unit_id) {
       status 
       message
       items {

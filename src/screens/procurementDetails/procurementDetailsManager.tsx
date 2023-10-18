@@ -42,7 +42,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
     }
   };
 
-  const {articles: filledArticles, refetch} = useGetPublicProcurementOUArticles(+procurementID);
+  const {articles: filledArticles, refetch} = useGetPublicProcurementOUArticles(+procurementID, organizationUnitId);
 
   const {publicProcurement, loading: isLoadingOUProcurementDetails} = usePublicProcurementGetDetails(procurementID);
 

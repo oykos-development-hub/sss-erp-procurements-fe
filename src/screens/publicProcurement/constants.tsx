@@ -7,9 +7,12 @@ export interface ValueType {
   title: ReactNode;
 }
 
-const getCurrentYear = () => {
-  return new Date().getFullYear();
-};
+export enum RequestStatus {
+  Pending = 'Na čekanju',
+  Rejected = 'Odbijeno',
+  Approved = 'Odobreno',
+  Sent = 'Poslat',
+}
 
 export const TypeForPP = [
   {id: true, title: 'Predbudžetsko'},

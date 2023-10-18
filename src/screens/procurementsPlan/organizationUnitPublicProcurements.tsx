@@ -10,6 +10,7 @@ import {Column, FormControls, FormFooter, Price, StatusForm, TotalValues} from '
 import {dropdownProcurementStatusOptions} from '../../constants';
 import {calculateStatus} from '../../utils/getStatus';
 import useProcurementOrganizationUnitArticleInsert from '../../services/graphql/organizationUnitPublicProcurements/hooks/usePublicProcurementOrganizationUnitArticleInsert';
+import {RequestStatus} from '../publicProcurement/constants';
 
 interface OrganizationUnitPublicProcurementsPageProps {
   context?: MicroserviceProps;
@@ -64,13 +65,13 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
 
   const changeStatus = () => {
     let counter = 0;
-    articles?.forEach((article: any) => {
+    articles?.forEach(article => {
       const payload = {
         ...article,
         public_procurement_article_id: article?.public_procurement_article?.id,
         organization_unit_id: article?.organization_unit?.id,
-        status: form?.status?.id === 2 ? 'accepted' : 'rejected',
-        is_rejected: form?.status?.id !== 2,
+        status: form?.status.title === RequestStatus.Approved ? 'accepted' : 'rejected',
+        is_rejected: form?.status.title === RequestStatus.Rejected,
         rejected_description: form?.comment || '',
       };
       delete payload?.public_procurement_article;
@@ -94,7 +95,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   useEffect(() => {
     if (procurements && procurements.length > 0) {
       const status = calculateStatus(articles);
-      setForm(prevState => ({...prevState, status}));
+      setForm(prevState => ({...prevState, status: {id: 0, title: status}}));
     }
   }, [procurements]);
 

@@ -12,6 +12,7 @@ import {RequestArticle} from '../../types/graphql/planRequests';
 import {DropdownDataNumber} from '../../types/dropdownData';
 import {calculateStatus} from '../../utils/getStatus';
 import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import {RequestStatus} from '../publicProcurement/constants';
 
 interface RequestsPageProps {
   plan?: ProcurementPlanDetails;
@@ -36,12 +37,11 @@ const filterTableData = (
   organizationUnits: OrganizationUnit[],
   requests: RequestArticle[],
   organizationUnit: DropdownDataNumber,
-  plan?: ProcurementPlanDetails,
+  plan: ProcurementPlanDetails,
 ) => {
   return organizationUnits
     ?.map(item => {
-      const organizationUnitsRequests = requests?.filter(request => request?.organization_unit?.id === item?.id);
-      if (!organizationUnitsRequests || organizationUnitsRequests.length === 0) return null;
+      const organizationUnitsRequests = requests?.filter(request => request?.organization_unit?.id === item?.id) || [];
       const netPrice = organizationUnitsRequests.reduce((accumulator, request) => {
         const price = request?.amount * Number(request?.public_procurement_article?.net_price);
         return accumulator + price;
@@ -60,15 +60,15 @@ const filterTableData = (
       }, 0);
 
       return {
-        id: item?.id || 0,
-        organization_unit: item?.title,
-        year: plan?.year,
-        is_pre_budget: plan?.is_pre_budget,
-        title: plan?.title,
-        date_of_publishing: plan?.date_of_publishing,
+        id: item.id,
+        organization_unit: item.title,
+        year: plan.year,
+        is_pre_budget: plan.is_pre_budget,
+        title: plan.title,
+        date_of_publishing: plan.date_of_publishing,
         amount: {totalPrice, netPrice},
-        updated_at: plan?.updated_at ? parseDate(plan?.updated_at) : '',
-        status: status?.title || '',
+        updated_at: plan?.updated_at ? parseDate(plan.updated_at) : '',
+        status: status,
       };
     })
     .filter(item => (organizationUnit?.id === 0 ? item : item?.id === organizationUnit?.id));
@@ -77,12 +77,13 @@ const filterTableData = (
 export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handleDateOfClosing}) => {
   const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
   const {organizationUnits} = useGetOrganizationUnits();
-  const unitIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
-  const {requests, loading: isLoadingPlanRequests} = useGetPublicProcurementPlanRequests(unitIds);
+  const procurementIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
+  const {requests, loading: isLoadingPlanRequests} = useGetPublicProcurementPlanRequests(procurementIds);
 
   const [dateOfClosing, setDateOfClosing] = useState<Date | string>('');
 
-  const tableData = useMemo<any>(() => {
+  const tableData = useMemo(() => {
+    if (!plan) return [];
     return filterTableData(organizationUnits, requests, organizationUnit, plan);
   }, [organizationUnits, requests, organizationUnit, plan]);
 
@@ -105,6 +106,8 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handle
     setOrganizationUnit(value);
   };
 
+  type TableDataRowType = (typeof tableData)[number];
+
   return (
     <div>
       <DropdowWrapper>
@@ -120,10 +123,11 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handle
         isLoading={isLoadingPlanRequests}
         data={tableData || []}
         tableHeads={tableHeadsRequests}
-        onRowClick={row => {
+        onRowClick={(row: TableDataRowType) => {
+          if (row.status === RequestStatus.Pending) return;
           context?.navigation.navigate(`/procurements/plans/${plan?.id}/requests/${row.id.toString()}`);
           context?.breadcrumbs.add({
-            name: `${row?.organization_unit} ${row?.year}`,
+            name: `${row.organization_unit} ${row.year}`,
             to: `/procurements/plans/${plan?.id}/requests/${row.id.toString()}`,
           });
         }}

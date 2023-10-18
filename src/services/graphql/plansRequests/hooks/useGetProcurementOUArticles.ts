@@ -6,7 +6,7 @@ import {
 import useAppContext from '../../../../context/useAppContext';
 import query from '../queries/getRequests';
 
-const useGetPublicProcurementOUArticles = (id: number) => {
+const useGetPublicProcurementOUArticles = (procurement_id: number, organization_unit_id: number) => {
   const [articles, setArticles] = useState<RequestArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
@@ -14,7 +14,8 @@ const useGetPublicProcurementOUArticles = (id: number) => {
   const fetchArticles = async () => {
     try {
       const response: PublicProcurementOrganizationUnitArticlesOverviewResponse = await fetch(query, {
-        procurement_id: id,
+        procurement_id,
+        organization_unit_id,
       });
       const articles = response?.publicProcurementOrganizationUnitArticles_Overview.items || [];
       setArticles(articles);
@@ -27,7 +28,7 @@ const useGetPublicProcurementOUArticles = (id: number) => {
 
   useEffect(() => {
     fetchArticles();
-  }, [id]);
+  }, [procurement_id, organization_unit_id]);
 
   return {articles, loading, refetch: fetchArticles};
 };
