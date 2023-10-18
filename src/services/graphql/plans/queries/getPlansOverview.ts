@@ -2,9 +2,10 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
     publicProcurementPlans_Overview(status: $status, year: $year, page: $page, size: $size, is_pre_budget: $is_pre_budget) {
         status 
         message
-        total 
+        total
         items {
             id
+            requests
             pre_budget_plan {
                 id
                 title

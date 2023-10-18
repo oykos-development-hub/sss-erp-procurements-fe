@@ -7,6 +7,7 @@ export interface PlanOverviewResponse {
 
 export interface PlanItem {
   id: number;
+  requests: number;
   pre_budget_plan: DropdownDataNumber;
   is_pre_budget: boolean;
   year: string;
