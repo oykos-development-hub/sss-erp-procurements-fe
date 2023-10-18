@@ -5,7 +5,7 @@ import {ProcurementContractModalProps} from './types';
 import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
 import {Filters, SubTitle} from '../../shared/styles';
 import useInsertProcurementContract from '../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
-import {parseDate} from '../../utils/dateUtils';
+import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
 import useGetSuppliers from '../../services/graphql/suppliers/hooks/useGetSuppliers';
 import {Column} from '../../screens/procurementContracts/contractDetails/styles';
 import {Controller, useForm} from 'react-hook-form';
@@ -45,7 +45,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
 
   const {data: plansData} = useGetPlansOverview({
     page: 1,
-    size: 0,
+    size: 1000,
     status: '',
     is_pre_budget: false,
     year: '',
@@ -60,6 +60,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
     });
   }, [plansData]);
 
+  console.log(plansData, 'plans');
   const procurementsOptions = useMemo(() => {
     const plan = plansData?.find(item => item.id === selectedPlanId);
     return plan?.items.map(item => {
@@ -78,11 +79,11 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
         public_procurement_id: Number(selectedProcurementId),
         supplier_id: Number(values?.supplier.id),
         serial_number: values?.serial_number,
-        date_of_signing: parseDate(values?.date_of_signing),
-        date_of_expiry: parseDate(values?.date_of_expiry),
-        net_value: '',
-        gross_value: '',
-        file_id: 0,
+        date_of_signing: parseDateForBackend(values?.date_of_signing),
+        date_of_expiry: parseDateForBackend(values?.date_of_expiry),
+        net_value: values?.net_value || 0.0,
+        gross_value: values?.gross_value || 0.0,
+        file_id: 1,
       };
 
       await insertContract(

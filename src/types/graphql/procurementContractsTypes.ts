@@ -38,12 +38,7 @@ export interface ProcurementContractsGetResponse {
 }
 
 export interface ContractDeleteResponse {
-  data: {
-    publicProcurementContracts_Delete: {
-      status?: string;
-      message?: string;
-    };
-  };
+  publicProcurementContracts_Delete: SingularResponse<null>;
 }
 
 export interface ProcurementContractsInsertResponse {

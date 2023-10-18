@@ -198,59 +198,56 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {mutate: insertContractArticle, loading: isLoadingContractArticleMutate} = useInsertContractArticle();
 
   const handleSave = async () => {
-    try {
-      const insertContractData = {
-        id: Number(contractID),
-        public_procurement_id: procurementID,
-        supplier_id: Number(watch('supplier').id) || Number(contract?.supplier.id),
-        serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
-        date_of_signing: watch('date_of_signing').toString() || parseDate(contract?.date_of_signing).toString(),
-        date_of_expiry: watch('date_of_expiry').toString() || parseDate(contract?.date_of_expiry).toString(),
-        net_value: totalNetValue?.toFixed(2),
-        gross_value: totalPrice?.toFixed(2),
-        file_id: 0,
-      };
+    const insertContractData = {
+      id: Number(contractID),
+      public_procurement_id: procurementID,
+      supplier_id: Number(watch('supplier').id) || Number(contract?.supplier.id),
+      serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
+      date_of_signing: watch('date_of_signing').toString() || parseDate(contract?.date_of_signing).toString(),
+      date_of_expiry: watch('date_of_expiry').toString() || parseDate(contract?.date_of_expiry).toString(),
+      net_value: totalNetValue?.toFixed(2),
+      gross_value: totalPrice?.toFixed(2),
+      file_id: 0,
+    };
 
-      insertContract(insertContractData as any, async () => {
-        if (filteredArticles) {
-          for (const item of filteredArticles) {
-            let counter = 0;
-            const insertItem = {
-              id: 0,
-              public_procurement_article_id: Number(item?.public_procurement_article?.id),
-              public_procurement_contract_id: Number(contractID),
-              amount: item?.amount.toString(),
-              net_value: item?.public_procurement_article?.net_price,
-              gross_value: (
-                Number(item.amount || 1) *
-                (Number(item?.public_procurement_article?.net_price) +
-                  (Number(item?.public_procurement_article?.net_price) *
-                    Number(item?.public_procurement_article?.vat_percentage)) /
-                    100)
-              )
-                ?.toFixed(2)
-                .toString(),
-            };
-            await insertContractArticle(
-              insertItem,
-              () => {
-                counter++;
-                if (counter === filteredArticles.length) {
-                  context?.alert.success('Uspješno sačuvano');
-                  context?.navigation.navigate('/procurements/contracts');
-                  context.breadcrumbs.remove();
-                }
-              },
-              () => {
-                context?.alert.error('Greška pri čuvanju!');
-              },
-            );
-          }
+    insertContract(insertContractData as any, async () => {
+      if (filteredArticles) {
+        let counter = 0;
+        for (const item of filteredArticles) {
+          const insertItem = {
+            id: 0,
+            public_procurement_article_id: Number(item?.public_procurement_article?.id),
+            public_procurement_contract_id: Number(contractID),
+            amount: item?.amount.toString(),
+            net_value: item?.public_procurement_article?.net_price,
+            gross_value: (
+              Number(item.amount || 1) *
+              (Number(item?.public_procurement_article?.net_price) +
+                (Number(item?.public_procurement_article?.net_price) *
+                  Number(item?.public_procurement_article?.vat_percentage)) /
+                  100)
+            )
+              ?.toFixed(2)
+              .toString(),
+          };
+          await insertContractArticle(
+            insertItem,
+            () => {
+              counter++;
+              if (counter === filteredArticles.length) {
+                context?.alert.success('Uspješno sačuvano');
+                context?.navigation.navigate(`/procurements/plans/${planID}`);
+                console.log(`/procurements/plans/${procurementID}`);
+                context.breadcrumbs.remove();
+              }
+            },
+            () => {
+              context?.alert.error('Greška pri čuvanju!');
+            },
+          );
         }
-      });
-    } catch (e) {
-      console.log(e);
-    }
+      }
+    });
   };
 
   return (

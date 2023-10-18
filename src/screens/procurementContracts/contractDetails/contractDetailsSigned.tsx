@@ -6,6 +6,7 @@ import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
+import {parseDate} from '../../../utils/dateUtils';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -115,14 +116,14 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           <Column>
             <Input
               label="DATUM ZAKLJUČENJA UGOVORA:"
-              value={contractData && contractData[0]?.date_of_signing}
+              value={contractData && parseDate(contractData[0]?.date_of_signing)}
               disabled={true}
             />
           </Column>
           <Column>
             <Input
               label="DATUM ZAVRŠETKA UGOVORA:"
-              value={contractData && contractData[0]?.date_of_expiry}
+              value={contractData && parseDate(contractData[0]?.date_of_expiry)}
               disabled={true}
             />
           </Column>

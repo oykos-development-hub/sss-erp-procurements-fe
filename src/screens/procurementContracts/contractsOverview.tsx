@@ -11,7 +11,6 @@ import {ProcurementContractsFilters} from './filters/procurementContractsFilters
 import useGetSuppliers from '../../services/graphql/suppliers/hooks/useGetSuppliers';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import useContractDelete from '../../services/graphql/procurementContractsOverview/hooks/useContractDelete';
-import {ContractDetails} from './contractDetails/contractDetails';
 
 export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [showModal, setShowModal] = useState(false);
@@ -82,7 +81,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
         },
         () => {
           setShowDeleteModal(false);
-          context.alert.success('Došlo je do greške pri brisanju');
+          context.alert.error('Došlo je do greške pri brisanju');
         },
       );
     }

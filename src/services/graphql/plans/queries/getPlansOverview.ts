@@ -10,13 +10,14 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
                 title
             }
             is_pre_budget
+            active
             year
             title
-            status
+            status 
             serial_number
-            status
             date_of_publishing
             date_of_closing
+            created_at
             updated_at
             file_id
             items {

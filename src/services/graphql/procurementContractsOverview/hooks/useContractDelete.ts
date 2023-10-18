@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {REQUEST_STATUSES} from '../../../constants';
 import mutation from '../mutations/deleteContract';
 import useAppContext from '../../../../context/useAppContext';
+import {ContractDeleteResponse} from '../../../../types/graphql/procurementContractsTypes';
 
 const useContractDelete = () => {
   const [loading, setLoading] = useState(false);
@@ -9,9 +10,9 @@ const useContractDelete = () => {
 
   const deleteContract = async (id: number, onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
+    const response: ContractDeleteResponse = await fetch(mutation, {id});
 
-    const response = await fetch(mutation, {id});
-    if (response.status === REQUEST_STATUSES.success) {
+    if (response.publicProcurementContracts_Delete.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {
       onError && onError();
