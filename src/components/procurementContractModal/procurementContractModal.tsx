@@ -178,10 +178,10 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
 
           <Filters>
             <Column>
-              <SubTitle variant="bodySmall" content="ŠIFRA UGOVORA:" />
               <Input
                 {...register('serial_number', {required: 'Ovo polje je obavezno'})}
                 error={errors?.serial_number?.message as string}
+                label={'ŠIFRA UGOVORA:'}
               />
             </Column>
             <Column>
