@@ -4,6 +4,7 @@ const planDetailsQuery = `query PlanDetails($id: Int!) {
         message
         item {
             id
+            rejected_description
             pre_budget_plan {
                 id
                 title

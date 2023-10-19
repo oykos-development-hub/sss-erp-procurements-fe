@@ -56,6 +56,7 @@ export interface ProcurementPlanDetails {
   created_at: string;
   updated_at: string;
   file_id: number;
+  rejected_description: string;
   items: ProcurementItem[];
 }
 

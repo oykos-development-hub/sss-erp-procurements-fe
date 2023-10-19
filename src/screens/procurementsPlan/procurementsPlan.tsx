@@ -1,5 +1,5 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
-import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon} from 'client-library';
+import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon, Input} from 'client-library';
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
@@ -22,11 +22,12 @@ import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDeta
 import {parseDateForBackend, stringToDate} from '../../utils/dateUtils';
 import {tableHeads} from './constants';
 import {RequestsPage} from './requests';
-import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
+import {Column, FormControls, FormFooter, Price, StyledTabs, MessageBox, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import {UserPermission, UserRole, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
 import useUpdateStatusPlan from '../../services/graphql/plans/hooks/useUpdatePlanStatus';
+import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -36,6 +37,8 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const location = context?.navigation?.location;
   const [activeTab, setActiveTab] = useState(location?.state?.activeTab || 1);
   const [isNotificationModalActive, setIsNotificationModalActive] = useState<boolean>(false);
+  const [isRejectedModalActive, setIsRejectedModalActive] = useState<boolean>(false);
+
   const [dateOfClosing, setDateOfClosing] = useState('');
 
   const alert = context?.alert;
@@ -180,6 +183,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     updateStatus(planDetails?.id, () => {
       context.navigation.navigate(pathname);
       setIsNotificationModalActive(false);
+      setIsRejectedModalActive(false);
     });
   };
 
@@ -282,7 +286,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               }}
               tableActions={[
                 {
-                  name: 'Izmeni',
+                  name: 'Izmijeni',
                   onClick: (item: ProcurementItem) => {
                     handleEdit(item.id);
                   },
@@ -304,7 +308,6 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 },
               ]}
             />
-
             {showModal && (
               <PublicProcurementModal
                 alert={context.alert}
@@ -342,6 +345,11 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
           />
         )}
       </SectionBox>
+      {planDetails?.status === 'Obradi' &&
+        planDetails.rejected_description !== null &&
+        checkPermission(role, UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT) && (
+          <MessageBox>{`Razlog odbijanja: ${planDetails.rejected_description}`}</MessageBox>
+        )}
 
       <FormFooter>
         <FormControls>
@@ -363,11 +371,26 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               />
             )}
 
+            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) && planDetails?.status === 'Odbijen' && (
+              <Button
+                content="Pošalji"
+                variant="primary"
+                onClick={() => setIsRejectedModalActive(true)}
+                disabled={!buttonSendEnable}
+              />
+            )}
+
             <NotificationsModal
               open={!!isNotificationModalActive}
               onClose={() => setIsNotificationModalActive(false)}
               handleLeftButtomClick={handleUpdatePlan}
-              subTitle="Nakdnadne izmjene neće biti moguće."
+              subTitle="Naknadne izmjene neće biti moguće."
+            />
+
+            <RejectedProcurementModal
+              open={!!isRejectedModalActive}
+              onClose={() => setIsRejectedModalActive(false)}
+              handleRightButtonClick={handleUpdatePlan}
             />
           </>
           {activeTab === 2 && (

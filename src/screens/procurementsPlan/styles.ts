@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Tabs, Theme, Typography, Datepicker} from 'client-library';
+import {Tabs, Theme, Typography, Datepicker, Input} from 'client-library';
 
 export const StyledTabs = styled(Tabs)`
   border-width: 1px;
@@ -73,4 +73,13 @@ export const DateWrapper = styled.div`
 export const DatePickerWrapper = styled(Datepicker)`
   padding-right: 10px;
   margin-top: -2px;
+`;
+
+export const MessageBox = styled.p`
+  margin-top: 40px;
+  color: ${Theme.palette.error700};
+  border: 1px solid ${Theme.palette.gray100};
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
 `;
