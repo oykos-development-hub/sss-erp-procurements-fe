@@ -49,7 +49,7 @@ export interface Article {
 
 export interface GetPlansOverviewParams {
   fetch?: any;
-  status: string;
+  status?: string;
   year: string;
   page: number;
   size: number;

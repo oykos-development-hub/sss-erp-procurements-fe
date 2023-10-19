@@ -46,7 +46,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
   const {data: plansData} = useGetPlansOverview({
     page: 1,
     size: 1000,
-    status: '',
+    status: undefined,
     is_pre_budget: false,
     year: '',
   });

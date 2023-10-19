@@ -1,6 +1,6 @@
 import {ReactNode} from 'react';
-import {DropdownDataNumber, DropdownDataString} from '../../types/dropdownData';
 import {UserRole} from '../../constants';
+import {DropdownDataString} from '../../types/dropdownData';
 
 export interface ValueType {
   id: number | string | boolean;
@@ -20,8 +20,8 @@ export const TypeForPP = [
   {id: null, title: 'Sve'},
 ];
 
-export const PlanStatusesForAdmin: DropdownDataString[] = [
-  {id: '', title: 'Sve'},
+export const PlanStatusesForAdmin: any[] = [
+  {id: undefined, title: 'Sve'},
   {id: 'U toku', title: 'U toku'},
   {id: 'Poslat', title: 'Poslat'},
   {id: 'Zaključen', title: 'Zaključen'},
@@ -29,8 +29,8 @@ export const PlanStatusesForAdmin: DropdownDataString[] = [
   {id: 'Objavljen', title: 'Objavljen'},
 ];
 
-export const PlanStatusesForManager: DropdownDataString[] = [
-  {id: '', title: 'Sve'},
+export const PlanStatusesForManager: any[] = [
+  {id: undefined, title: 'Sve'},
   {id: 'Obradi', title: 'Obradi'},
   {id: 'Na čekanju', title: 'Na čekanju'},
   {id: 'Odobren', title: 'Odobren'},

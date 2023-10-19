@@ -129,7 +129,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
   const [form, setForm] = useState<any>({
-    status: '',
+    status: undefined,
     year: {id: '', title: 'Odaberite godinu'},
     page: 1,
     size: 100,
@@ -144,7 +144,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     ...form,
     is_pre_budget: form?.is_pre_budget?.id,
     year: form?.year?.id,
-    status: form?.status.id,
+    status: form?.status?.id,
   });
 
   const {mutate: deletePlan} = useDeletePublicProcurementPlan();

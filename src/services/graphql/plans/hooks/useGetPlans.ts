@@ -10,7 +10,7 @@ const useGetPlansOverview = ({status, year, page, size, is_pre_budget}: GetPlans
 
   const GetPlans = async () => {
     const response: PlanOverviewResponse = await fetch(query, {status, year, page, size, is_pre_budget});
-    setGetPlans(response?.publicProcurementPlans_Overview.items);
+    setGetPlans(response?.publicProcurementPlans_Overview?.items);
     setLoading(false);
   };
 
