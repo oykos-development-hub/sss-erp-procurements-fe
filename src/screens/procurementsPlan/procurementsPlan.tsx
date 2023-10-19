@@ -25,7 +25,7 @@ import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
-import {UserPermission, UserRole, checkPermission} from '../../constants';
+import {UserPermission, UserRole, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
 import useUpdateStatusPlan from '../../services/graphql/plans/hooks/useUpdatePlanStatus';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
@@ -223,6 +223,8 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     }
   };
 
+  const isEditPlanDisabled = isEditProcurementAndPlanDisabled(planDetails?.status || '');
+
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
@@ -263,11 +265,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               </Filters>
               {checkPermission(role, UserPermission.CREATE_PROCUREMENT) && (
                 <Controls>
-                  <Button
-                    content="Nova nabavka"
-                    onClick={handleAdd}
-                    disabled={planDetails?.status === 'Zaključen' || planDetails?.status === 'Objavljen'}
-                  />
+                  <Button content="Nova nabavka" onClick={handleAdd} disabled={isEditPlanDisabled} />
                 </Controls>
               )}
             </Header>
@@ -289,23 +287,20 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                     handleEdit(item.id);
                   },
                   icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-                  shouldRender: () =>
-                    isAdmin && planDetails?.status !== 'Objavljen' && planDetails?.status !== 'Zaključen',
+                  shouldRender: () => !isEditPlanDisabled,
                 },
                 {
                   name: 'Obriši',
                   onClick: (item: any) => handleDeleteIconClick(item.id),
                   icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-                  shouldRender: () =>
-                    isAdmin && planDetails?.status !== 'Objavljen' && planDetails?.status !== 'Zaključen',
+                  shouldRender: () => !isEditPlanDisabled,
                 },
                 {
                   name: 'Ugovor',
                   onClick: (item: any) => handleContractIconClick(item.id),
                   icon: <FilePlusIcon stroke={Theme?.palette?.gray800} />,
-                  shouldRender: () =>
-                    planDetails?.is_pre_budget === false &&
-                    (planDetails?.status === 'Objavljen' || planDetails?.status === 'Zaključen'),
+                  shouldRender: () => planDetails?.is_pre_budget === false && planDetails?.status === 'Objavljen',
+                  disabled: row => row.status === 'Ugovoren',
                 },
               ]}
             />

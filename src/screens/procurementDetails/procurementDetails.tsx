@@ -19,7 +19,7 @@ import {
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import {UserRole} from '../../constants';
+import {UserPermission, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
 import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
 
 interface ProcurementDetailsPageProps {
@@ -89,7 +89,6 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   } = usePublicProcurementGetDetails(procurementID);
   const {mutate: deleteProcurementArticle} = useProcurementArticleDelete();
   const {planDetails} = usePublicProcurementPlanDetails(planID);
-  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
 
   const selectedItem = useMemo(() => {
     return publicProcurement?.articles?.find((item: any) => item?.id === selectedItemId);
@@ -160,6 +159,9 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
     }
     setSelectedItemId(0);
   };
+  const role = context?.contextMain?.role_id;
+
+  const isEditProcurementDisabled = isEditProcurementAndPlanDisabled(planDetails?.status || '');
 
   return (
     <ScreenWrapper context={context}>
@@ -185,16 +187,8 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           </Filters>
 
           <Controls>
-            <Button
-              content="Limit"
-              onClick={handleAddLimit}
-              disabled={planDetails?.status === 'Zaključen' || planDetails?.status === 'Objavljen'}
-            />
-            <Button
-              content="Novi Artikal"
-              onClick={handleAddArticle}
-              disabled={planDetails?.status === 'Zaključen' || planDetails?.status === 'Objavljen'}
-            />
+            <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
+            <Button content="Novi Artikal" onClick={handleAddArticle} disabled={isEditProcurementDisabled} />
           </Controls>
         </Header>
 
@@ -208,9 +202,9 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         <TableContainer
           isLoading={isLoadingProcurementDetails}
           tableHeads={
-            (isAdmin && planDetails?.status === 'Zaključen') || (isAdmin && planDetails?.status === 'Objavljen')
-              ? tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')
-              : tableHeads
+            checkPermission(role, UserPermission.EDIT_PROCUREMENTS)
+              ? tableHeads
+              : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')
           }
           data={publicProcurement?.articles || []}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -221,12 +215,16 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
               onClick: (item: any) => handleEdit(item.id),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: () => true,
+              disabled: _ => isEditProcurementDisabled,
+              tooltip: _ => (isEditProcurementDisabled ? `Status plana je "${planDetails?.status}"` : ''),
             },
             {
               name: 'delete',
               onClick: (item: PublicProcurement) => handleDeleteIconClick(item.id),
               icon: <TrashIconTwo stroke={Theme?.palette?.gray800} />,
               shouldRender: () => true,
+              disabled: _ => isEditProcurementDisabled,
+              tooltip: _ => (isEditProcurementDisabled ? `Status plana je "${planDetails?.status}"` : ''),
             },
           ]}
         />

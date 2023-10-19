@@ -1,5 +1,3 @@
-import {useMemo} from 'react';
-import useGetCounts from './services/graphql/counts/hooks/useGetCounts';
 import {DropdownDataNumber, DropdownDataString} from './types/dropdownData';
 import {Count} from './types/graphql/countType';
 
@@ -19,6 +17,9 @@ export enum UserPermission {
   VIEW_PROCUREMENT_REQUESTS = 'VIEW_PROCUREMENT_REQUESTS',
   EDIT_PROCUREMENTS = 'EDIT_PROCUREMENTS',
 }
+
+export const isEditProcurementAndPlanDisabled = (planStatus: string) =>
+  planStatus === 'Poslat' || planStatus === 'Zaključen' || planStatus === 'Objavljen' || planStatus === 'Konvertovan';
 
 const rolePermissionsMap = {
   [UserRole.ADMIN]: [
