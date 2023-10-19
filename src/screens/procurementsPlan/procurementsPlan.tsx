@@ -279,7 +279,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                   : tableHeads.filter(item => item.accessor !== 'TABLE_ACTIONS')
               }
               data={procurementsPlansTableData || []}
-              onRowClick={row => {
+              onRowClick={(row: any) => {
                 navigateToDetailsScreen(row);
               }}
               tableActions={[
