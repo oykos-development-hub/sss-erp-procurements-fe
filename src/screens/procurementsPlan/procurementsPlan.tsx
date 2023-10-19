@@ -362,7 +362,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 context.breadcrumbs.remove();
               }}
             />
-            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) && (
+            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) && planDetails?.rejected_description === null && (
               <Button
                 content="Pošalji"
                 variant="primary"
@@ -371,14 +371,16 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               />
             )}
 
-            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) && planDetails?.status === 'Odbijen' && (
-              <Button
-                content="Pošalji"
-                variant="primary"
-                onClick={() => setIsRejectedModalActive(true)}
-                disabled={!buttonSendEnable}
-              />
-            )}
+            {checkPermission(role, UserPermission.SEND_PROCUREMENTS) &&
+              planDetails?.status === 'Obradi' &&
+              planDetails.rejected_description !== null && (
+                <Button
+                  content="Pošalji"
+                  variant="primary"
+                  onClick={() => setIsRejectedModalActive(true)}
+                  disabled={!buttonSendEnable}
+                />
+              )}
 
             <NotificationsModal
               open={!!isNotificationModalActive}

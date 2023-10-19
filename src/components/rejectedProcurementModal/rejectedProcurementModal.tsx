@@ -14,6 +14,7 @@ export const RejectedProcurementModal: React.FC<ModalProps> = ({open, onClose, h
       leftButtonOnClick={onClose}
       leftButtonText="Otkaži"
       rightButtonOnClick={handleRightButtonClick}
+      rightButtonText="Sačuvaj"
       content={
         <ModalContent>
           <TriangleIcon />
