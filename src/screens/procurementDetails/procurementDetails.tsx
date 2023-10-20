@@ -74,7 +74,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         const pdvValue = (Number(row?.net_price) * Number(row?.vat_percentage)) / 100;
         const total = Number(row.net_price) + Number(pdvValue);
 
-        const calculateTotal = total * row.total_amount;
+        const calculateTotal = total;
 
         return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
       },
@@ -103,15 +103,12 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   }, [selectedItemId]);
 
   const totalNet =
-    publicProcurement?.articles?.reduce(
-      (sum: any, article) => sum + parseFloat(article.net_price) * article.total_amount,
-      0,
-    ) || 0;
+    publicProcurement?.articles?.reduce((sum: any, article: any) => sum + parseFloat(article.net_price), 0) || 0;
 
   const totalPrice =
-    publicProcurement?.articles?.reduce((sum: any, article) => {
+    publicProcurement?.articles?.reduce((sum: any, article: any) => {
       const pdvValue = (Number(article?.net_price) * Number(article?.vat_percentage)) / 100;
-      const total = (Number(article?.net_price) + Number(pdvValue)) * article.total_amount;
+      const total = Number(article?.net_price) + Number(pdvValue);
       return sum + total;
     }, 0) || 0;
 
