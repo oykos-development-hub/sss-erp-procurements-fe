@@ -1,4 +1,4 @@
-const organizationUnitArticleDetailsQuery = `query OrganizationUnitPublicProcurementsArticles($plan_id: Int!, $organization_unit_id: Int, $procurement_id: Int) {
+const organizationUnitArticleDetailsQuery = `query OrganizationUnitPublicProcurementsArticles($plan_id: Int, $organization_unit_id: Int, $procurement_id: Int) {
   publicProcurementOrganizationUnitArticles_Details(plan_id: $plan_id, organization_unit_id: $organization_unit_id, procurement_id: $procurement_id) {
       status 
       message

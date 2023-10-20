@@ -5,7 +5,6 @@ import useInsertContractArticle from '../../../services/graphql/contractArticles
 import useGetOrganizationUnitPublicProcurements from '../../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useInsertProcurementContract from '../../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
-import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
@@ -29,11 +28,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
-    procurement_id: 0,
-    supplier_id: 0,
   });
   const [contract] = contractData || [];
+
   const procurementID = contract?.public_procurement.id;
+  const {procurements} = useGetOrganizationUnitPublicProcurements(undefined, undefined, procurementID);
+  const [procurement] = procurements || [];
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -59,19 +59,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     reset(defaultValuesData);
   }, [defaultValuesData, reset]);
 
-  const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
-  const planID = publicProcurement?.plan?.id;
-  const organizationUnitId = context?.contextMain?.organization_unit?.id;
-
-  const {procurements} = useGetOrganizationUnitPublicProcurements(planID as number, organizationUnitId);
-
   useEffect(() => {
-    if (procurements) {
-      const procurement = procurements.find((procurement: any) => {
-        return Number(procurement.id) === Number(procurementID);
-      });
-
-      setFilteredArticles(procurement?.articles as []);
+    if (procurement?.articles) {
+      setFilteredArticles(procurement?.articles || []);
     }
   }, [procurements]);
 
@@ -200,14 +190,13 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const handleSave = async () => {
     const insertContractData = {
       id: Number(contractID),
-      public_procurement_id: procurementID,
+      public_procurement_id: contract.public_procurement.id,
       supplier_id: Number(watch('supplier').id) || Number(contract?.supplier.id),
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
       date_of_signing: watch('date_of_signing').toString() || parseDate(contract?.date_of_signing).toString(),
       date_of_expiry: watch('date_of_expiry').toString() || parseDate(contract?.date_of_expiry).toString(),
       net_value: totalNetValue?.toFixed(2),
       gross_value: totalPrice?.toFixed(2),
-      file_id: 0,
     };
 
     insertContract(insertContractData as any, async () => {
@@ -236,8 +225,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               counter++;
               if (counter === filteredArticles.length) {
                 context?.alert.success('Uspješno sačuvano');
-                context?.navigation.navigate(`/procurements/plans/${planID}`);
-                console.log(`/procurements/plans/${procurementID}`);
+                context?.navigation.navigate(`/procurements/plans/${procurement?.plan.id}`);
                 context.breadcrumbs.remove();
               }
             },

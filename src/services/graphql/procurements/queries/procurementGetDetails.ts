@@ -33,6 +33,7 @@ const procurementDetailsQuery = `query ProcurementDetails($id: Int!) {
                 description
                 net_price
                 vat_percentage
+                total_amount
             }
         }
     }

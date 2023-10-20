@@ -51,6 +51,8 @@ const planDetailsQuery = `query PlanDetails($id: Int!) {
                     description
                     net_price
                     vat_percentage
+                    amount
+                    total_amount
                 }
             }
         }

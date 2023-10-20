@@ -1,5 +1,5 @@
 import {Button, MicroserviceProps, TableHead, Typography} from 'client-library';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useGetProcurementPlanItemLimits from '../../services/graphql/procurementPlanItemLimits/hooks/useGetProcurementPlanItemLimit';
 import ScreenWrapper from '../../shared/screenWrapper';
@@ -14,10 +14,9 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
   const url = context.navigation.location.pathname;
   const procurementID = url.split('/').at(-1);
   const organizationUnitId = url.split('/').at(-3);
-  const planID = url.split('/').at(-5);
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(1);
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
-    +planID,
+    undefined,
     +organizationUnitId,
     +procurementID,
   );

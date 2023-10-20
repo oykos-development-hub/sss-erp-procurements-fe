@@ -5,7 +5,7 @@ import query from '../queries/getOrganizationUnitPublicProcurements';
 import {PublicProcurementOrganizationUnitArticlesResponse} from '../../../../types/graphql/organizationUnitPublicProcurements';
 
 const useGetOrganizationUnitPublicProcurements = (
-  plan_id: number,
+  plan_id?: number,
   organization_unit_id?: number,
   procurement_id?: number,
 ) => {
@@ -27,7 +27,7 @@ const useGetOrganizationUnitPublicProcurements = (
 
   useEffect(() => {
     getProcurements();
-  }, [plan_id, organization_unit_id]);
+  }, [plan_id, organization_unit_id, procurement_id]);
 
   return {procurements, loading, refetch: getProcurements};
 };

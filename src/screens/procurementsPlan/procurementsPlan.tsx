@@ -3,7 +3,6 @@ import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon, Input} from 'client
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
-import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
@@ -46,57 +45,19 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const {updateStatus} = useUpdateStatusPlan();
 
   const planID = +url.split('/').pop();
-  const organizationUnitID = +url?.split('/').at(-1);
 
   const pathname = url.substring(0, url.lastIndexOf('/'));
 
-  const isAdmin = context?.contextMain?.role_id === UserRole.ADMIN;
   const role = context?.contextMain?.role_id; // Get the role from context
 
   const {planDetails, fetch, loading: isLoadingPlanDetails} = usePublicProcurementPlanDetails(planID);
-  const {procurements, loading: isLoadingProcurements} = useGetOrganizationUnitPublicProcurements(
-    planID,
-    organizationUnitID,
-  );
 
-  function mergeArrays(firstArray: any, secondArray: any) {
-    for (let i = 0; i < firstArray?.items?.length; i++) {
-      const firstItem = firstArray.items[i];
-      const secondItem = secondArray?.find((item: any) => item.id === firstItem.id); // Find the matching item in the second array
-      if (secondItem) {
-        // Iterate over the articles in the first item
-        for (let j = 0; j < firstItem.articles.length; j++) {
-          const firstArticle = firstItem.articles[j];
-          const matchingArticle = secondItem.articles.find((article: any) => {
-            return article.public_procurement_article.id === firstArticle.id;
-          }); // Find the matching article in the second item
-
-          if (matchingArticle) {
-            firstArticle.amount = matchingArticle.amount; // Add the 'amount' field to the article in the first item
-          }
-        }
-      } else {
-        // If no matching item is found in the second array, set the 'amount' field to 0 for all articles in the first item
-        for (let j = 0; j < firstItem.articles.length; j++) {
-          const firstArticle = firstItem.articles[j];
-          firstArticle.amount = 0;
-        }
-      }
-    }
-
-    return firstArray;
-  }
-
-  const procurementsPlansTableData: ProcurementItem[] = useMemo(() => {
-    const mergedResult = mergeArrays(planDetails, procurements);
-    return mergedResult?.items;
-  }, [planDetails, procurements]);
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
 
-  const buttonSendEnable = procurementsPlansTableData?.every(item => item.status === 'Obrađen');
+  const buttonSendEnable = planDetails?.items?.every(item => item.status === 'Obrađen');
 
   const totalNet =
-    procurementsPlansTableData?.reduce((total: number, item: any) => {
+    planDetails?.items?.reduce((total: number, item: any) => {
       const netPrices = item.articles.map((article: any) =>
         article?.amount ? parseFloat(article.net_price) * article.amount : parseFloat(article.net_price),
       );
@@ -105,7 +66,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
     }, 0) || 0;
 
   const totalPrice =
-    procurementsPlansTableData?.reduce((total: number, item: any) => {
+    planDetails?.items?.reduce((total: number, item: any) => {
       const itemTotalPrice = item.articles.reduce((sum: any, article: any) => {
         const netPrice = parseFloat(article.net_price);
         const vatPercentage = parseFloat(article.vat_percentage);
@@ -120,7 +81,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const {mutate} = useDeletePublicProcurementPlanItem();
 
   const selectedItem = useMemo(() => {
-    return procurementsPlansTableData?.find((item: ProcurementItem) => item.id === selectedItemId);
+    return planDetails?.items?.find((item: ProcurementItem) => item.id === selectedItemId);
   }, [selectedItemId]);
 
   const handleAdd = () => {
@@ -274,13 +235,13 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
               )}
             </Header>
             <TableContainer
-              isLoading={isLoadingPlanDetails || isLoadingProcurements}
+              isLoading={isLoadingPlanDetails}
               tableHeads={
                 checkPermission(role, UserPermission.EDIT_PROCUREMENTS)
                   ? tableHeads
                   : tableHeads.filter(item => item.accessor !== 'TABLE_ACTIONS')
               }
-              data={procurementsPlansTableData || []}
+              data={planDetails?.items || []}
               onRowClick={(row: any) => {
                 navigateToDetailsScreen(row);
               }}

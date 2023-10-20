@@ -17,6 +17,8 @@ export interface ProcurementItem {
   created_at: string;
   updated_at: string;
   file_id: number;
+  amount: number;
+  total_amount: number;
   articles: PublicProcurementArticle[];
 }
 

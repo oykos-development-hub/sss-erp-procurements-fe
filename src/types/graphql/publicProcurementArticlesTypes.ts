@@ -17,6 +17,7 @@ export interface PublicProcurementArticle {
   description: string;
   net_price: string;
   vat_percentage: number;
+  total_amount: number;
 }
 
 export interface PublicProcurementArticleWithAmount {

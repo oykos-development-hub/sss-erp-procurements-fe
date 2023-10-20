@@ -79,6 +79,14 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
+    {
+      title: 'Ukupna količina',
+      accessor: 'total_amount',
+      type: 'custom',
+      renderContents: (total_amount: any) => {
+        return <Typography content={total_amount} variant="bodySmall" />;
+      },
+    },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
 
