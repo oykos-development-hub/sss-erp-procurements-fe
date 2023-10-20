@@ -2198,6 +2198,9 @@ See https://reactjs.org/docs/forms.html#controlled-components`);let n;t.initialP
   &:not(:last-child) {
     border-bottom: 1px solid ${I.palette.gray100};
   }
+  &.some-class {
+    background-color: white;
+  }
 `,uN=T(TA)`
   border: none;
   box-shadow: none;
