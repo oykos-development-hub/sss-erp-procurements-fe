@@ -54,4 +54,5 @@ export interface GetPlansOverviewParams {
   page: number;
   size: number;
   is_pre_budget: boolean;
+  contract?: boolean;
 }

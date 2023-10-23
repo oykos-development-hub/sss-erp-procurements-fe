@@ -49,6 +49,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
     status: undefined,
     is_pre_budget: false,
     year: '',
+    contract: false,
   });
 
   const plansOptions = useMemo(() => {
@@ -60,7 +61,6 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
     });
   }, [plansData]);
 
-  console.log(plansData, 'plans');
   const procurementsOptions = useMemo(() => {
     const plan = plansData?.find(item => item.id === selectedPlanId);
     return plan?.items.map(item => {

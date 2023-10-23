@@ -3,13 +3,13 @@ import {GetPlansOverviewParams, PlanItem, PlanOverviewResponse} from '../../../.
 import query from '../queries/getPlansOverview';
 import useAppContext from '../../../../context/useAppContext';
 
-const useGetPlansOverview = ({status, year, page, size, is_pre_budget}: GetPlansOverviewParams) => {
+const useGetPlansOverview = ({status, year, page, size, is_pre_budget, contract}: GetPlansOverviewParams) => {
   const [getPlans, setGetPlans] = useState<PlanItem[]>();
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
 
   const GetPlans = async () => {
-    const response: PlanOverviewResponse = await fetch(query, {status, year, page, size, is_pre_budget});
+    const response: PlanOverviewResponse = await fetch(query, {status, year, page, size, is_pre_budget, contract});
     setGetPlans(response?.publicProcurementPlans_Overview?.items);
     setLoading(false);
   };
