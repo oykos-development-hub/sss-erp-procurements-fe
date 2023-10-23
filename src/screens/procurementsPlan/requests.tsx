@@ -42,22 +42,28 @@ const filterTableData = (
   return organizationUnits
     ?.map(item => {
       const organizationUnitsRequests = requests?.filter(request => request?.organization_unit?.id === item?.id) || [];
-      const netPrice = organizationUnitsRequests.reduce((accumulator, request) => {
-        const price = request?.amount * Number(request?.public_procurement_article?.net_price);
-        return accumulator + price;
-      }, 0);
 
       const status = calculateStatus(organizationUnitsRequests);
 
-      const totalPrice = organizationUnitsRequests.reduce((accumulator, request) => {
-        const price =
-          Number(request?.public_procurement_article?.net_price) +
-          (Number(request?.public_procurement_article?.net_price) *
-            Number(request?.public_procurement_article?.vat_percentage)) /
-            100;
-        const requestTotal = request?.amount * price;
-        return accumulator + requestTotal;
-      }, 0);
+      let netPrice = 0;
+      let totalPrice = 0;
+
+      if (status !== RequestStatus.Pending) {
+        netPrice = organizationUnitsRequests.reduce((accumulator, request) => {
+          const price = request?.amount * Number(request?.public_procurement_article?.net_price);
+          return accumulator + price;
+        }, 0);
+
+        totalPrice = organizationUnitsRequests.reduce((accumulator, request) => {
+          const price =
+            Number(request?.public_procurement_article?.net_price) +
+            (Number(request?.public_procurement_article?.net_price) *
+              Number(request?.public_procurement_article?.vat_percentage)) /
+              100;
+          const requestTotal = request?.amount * price;
+          return accumulator + requestTotal;
+        }, 0);
+      }
 
       return {
         id: item.id,
