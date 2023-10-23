@@ -25,8 +25,8 @@ import {Column, FormControls, FormFooter, Price, StyledTabs, MessageBox, TitleTa
 import {ProcurementsPlanPageProps} from './types';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import {UserPermission, UserRole, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
-import useUpdateStatusPlan from '../../services/graphql/plans/hooks/useUpdatePlanStatus';
 import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
+import useSendProcurementOnRevision from '../../services/graphql/plans/hooks/useSendProcurementOnRevision';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -42,7 +42,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
 
   const alert = context?.alert;
   const url = context.navigation.location.pathname;
-  const {updateStatus} = useUpdateStatusPlan();
+  const {sendProcurementOnRevision} = useSendProcurementOnRevision();
 
   const planID = +url.split('/').pop();
 
@@ -141,7 +141,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   };
 
   const handleUpdatePlan = () => {
-    updateStatus(planDetails?.id, () => {
+    sendProcurementOnRevision(planDetails?.id, () => {
       context.navigation.navigate(pathname);
       setIsNotificationModalActive(false);
       setIsRejectedModalActive(false);
