@@ -1,4 +1,13 @@
-import {Button, Datepicker, Dropdown, Input, MicroserviceProps, TableHead, Typography} from 'client-library';
+import {
+  Button,
+  Datepicker,
+  Dropdown,
+  Input,
+  MicroserviceProps,
+  TableHead,
+  Typography,
+  FileUpload,
+} from 'client-library';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
@@ -9,7 +18,7 @@ import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSup
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
 import {parseDate} from '../../../utils/dateUtils';
-import {Column, FormControls, FormFooter, Plan, Price} from './styles';
+import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -25,6 +34,7 @@ const initialValues = {
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
@@ -36,6 +46,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const [procurement] = procurements || [];
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
+
+  const handleUpload = (files: FileList) => {
+    const fileList = Array.from(files);
+    setUploadedFiles(fileList);
+  };
 
   useEffect(() => {
     setDefaultValuesData({
@@ -300,9 +315,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               )}
             />
           </Column>
-        </Filters>
-
-        <Filters style={{marginTop: '10px'}}>
           <Column>
             <Controller
               name="supplier"
@@ -321,6 +333,21 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                 );
               }}
             />
+          </Column>
+        </Filters>
+
+        <Filters style={{marginTop: '10px'}}>
+          <Column>
+            <FileUploadWrapper>
+              <FileUpload
+                icon={<></>}
+                style={{width: '100%'}}
+                variant="secondary"
+                onUpload={handleUpload}
+                note={<Typography variant="bodySmall" content="Ugovor" />}
+                buttonText="Učitaj"
+              />
+            </FileUploadWrapper>
           </Column>
         </Filters>
 

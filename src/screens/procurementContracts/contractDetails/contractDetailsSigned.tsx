@@ -1,11 +1,11 @@
-import {Button, Input, MicroserviceProps, TableHead, Typography} from 'client-library';
+import {Button, Input, MicroserviceProps, TableHead, Typography, FileUpload} from 'client-library';
 import React, {useEffect, useState} from 'react';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
-import {Column, FormControls, FormFooter, Plan, Price} from './styles';
+import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 import {parseDate} from '../../../utils/dateUtils';
 
 interface ContractDetailsPageProps {
@@ -15,12 +15,18 @@ interface ContractDetailsPageProps {
 export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {data: contractData} = useProcurementContracts({
     id: contractID,
     procurement_id: 0,
     supplier_id: 0,
   });
+
+  const handleUpload = (files: FileList) => {
+    const fileList = Array.from(files);
+    setUploadedFiles(fileList);
+  };
 
   const {data: contractArticles, loading: isLoadingContractArticles} = useContractArticles(contractID);
 
@@ -127,11 +133,23 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               disabled={true}
             />
           </Column>
+          <Column>
+            <Input label="DOBAVLJAČ:" value={contractData && contractData[0]?.supplier?.title} disabled={true} />
+          </Column>
         </Filters>
 
         <Filters style={{marginTop: '10px'}}>
           <Column>
-            <Input label="DOBAVLJAČ:" value={contractData && contractData[0]?.supplier?.title} disabled={true} />
+            <FileUploadWrapper>
+              <FileUpload
+                icon={<></>}
+                style={{width: '100%'}}
+                variant="secondary"
+                onUpload={handleUpload}
+                note={<Typography variant="bodySmall" content="Ugovor" />}
+                buttonText="Učitaj"
+              />
+            </FileUploadWrapper>
           </Column>
         </Filters>
 

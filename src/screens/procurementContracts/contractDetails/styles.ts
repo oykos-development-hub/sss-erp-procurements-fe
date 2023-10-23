@@ -36,3 +36,18 @@ export const Plan = styled.div`
   background-color: ${Theme.palette.gray50};
   padding: 10px;
 `;
+
+export const FileUploadWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  > div > div {
+    display: flex;
+    width: 100%;
+
+    & div > p > p {
+      font-weight: 600;
+      line-height: 20px;
+    }
+  }
+`;
