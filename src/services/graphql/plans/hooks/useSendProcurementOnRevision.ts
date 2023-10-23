@@ -5,7 +5,11 @@ import sendProcurementOnRevisionMutation from '../mutations/sendProcurementsOnRe
 const useSendProcurementOnRevision = () => {
   const {fetch} = useAppContext();
 
-  const sendProcurementOnRevision = async (plan_id: number | undefined, onSuccess?: () => void, onError?: () => void) => {
+  const sendProcurementOnRevision = async (
+    plan_id: number | undefined,
+    onSuccess?: () => void,
+    onError?: () => void,
+  ) => {
     const response = await fetch(sendProcurementOnRevisionMutation, {plan_id});
 
     if (response.publicProcurementSendPlanOnRevision_Update.status === REQUEST_STATUSES.success) {
