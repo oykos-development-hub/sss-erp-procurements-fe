@@ -2879,13 +2879,12 @@ attempted value: ${o}
             }
         }
     }
-}`,ih=()=>{const[e,t]=O.useState(!1),{fetch:n}=Ge();return{loading:e,mutate:async(a,i,o)=>{t(!0);const s=await n(BI,{data:a});s.publicProcurementPlan_Insert.status===Jt.success?i&&i(s.publicProcurementPlan_Insert.item.id):o&&o(),t(!1)}}},UI=`mutation {
+}`,ih=()=>{const[e,t]=O.useState(!1),{fetch:n}=Ge();return{loading:e,mutate:async(a,i,o)=>{t(!0);const s=await n(BI,{data:a});s.publicProcurementPlan_Insert.status===Jt.success?i&&i(s.publicProcurementPlan_Insert.item.id):o&&o(),t(!1)}}},UI=`mutation($id: Int!) {
     publicProcurementPlanItem_Delete(id: $id) {
-    message
-    status
-  }
-}
-`,zI=()=>{const[e,t]=O.useState(!1),{fetch:n}=Ge();return{loading:e,mutate:async(a,i,o)=>{t(!0),(await n(UI,{id:a})).publicProcurementPlanItem_Delete.status===Jt.success?i&&i():o&&o(),t(!1)}}},_t=e=>{if(!e)return"";const t=new Date(e),n=t.toLocaleDateString("sr-latn-SR",{day:"2-digit"}),r=t.toLocaleDateString("sr-latn-SR",{month:"2-digit"}),a=t.toLocaleDateString("sr-latn-SR",{year:"numeric"}).replace(".","");return`${n}/${r}/${a}`},HI=e=>{const[t,n,r]=e.split("/").map(a=>parseInt(a,10));return new Date(r,n-1,t)},bs=e=>(e.setMinutes(e.getMinutes()-e.getTimezoneOffset()),e.toISOString());var Mg;const WI=T.div`
+        message
+        status
+    }
+}`,zI=()=>{const[e,t]=O.useState(!1),{fetch:n}=Ge();return{loading:e,mutate:async(a,i,o)=>{t(!0),(await n(UI,{id:a})).publicProcurementPlanItem_Delete.status===Jt.success?i&&i():o&&o(),t(!1)}}},_t=e=>{if(!e)return"";const t=new Date(e),n=t.toLocaleDateString("sr-latn-SR",{day:"2-digit"}),r=t.toLocaleDateString("sr-latn-SR",{month:"2-digit"}),a=t.toLocaleDateString("sr-latn-SR",{year:"numeric"}).replace(".","");return`${n}/${r}/${a}`},HI=e=>{const[t,n,r]=e.split("/").map(a=>parseInt(a,10));return new Date(r,n-1,t)},bs=e=>(e.setMinutes(e.getMinutes()-e.getTimezoneOffset()),e.toISOString());var Mg;const WI=T.div`
   display: flex;
   flex-direction: column;
   margin-top: 20px;
