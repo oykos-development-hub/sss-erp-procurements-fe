@@ -14,13 +14,11 @@ interface ContractDetailsPageProps {
 
 export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
-  const contractID = context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
+  const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {data: contractData} = useProcurementContracts({
     id: contractID,
-    procurement_id: 0,
-    supplier_id: 0,
   });
 
   const handleUpload = (files: FileList) => {

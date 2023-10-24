@@ -9,7 +9,7 @@ const useContractArticles = (id: number) => {
   const {fetch} = useAppContext();
 
   const fetchContractArticles = async () => {
-    const response: ContractArticlesGetResponse = await fetch(query, {id});
+    const response: ContractArticlesGetResponse = await fetch(query, {contract_id: id});
     setContractArticles(response?.publicProcurementContractArticles_Overview.items);
     setLoading(false);
   };
