@@ -38,6 +38,7 @@ import {StatusTextWrapper} from '../publicProcurement/styles';
 import {RequestsPage} from './requests';
 import {Column, FormControls, FormFooter, MessageBox, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
+import {PlanCloseModal} from '../../components/planCloseModal/planCloseModal';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -48,6 +49,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const [activeTab, setActiveTab] = useState(location?.state?.activeTab || 1);
   const [isNotificationModalActive, setIsNotificationModalActive] = useState<boolean>(false);
   const [isRejectedModalActive, setIsRejectedModalActive] = useState<boolean>(false);
+  const [showPlanCloseModal, setShowPlanCloseModal] = useState<boolean>(false);
 
   const [dateOfClosing, setDateOfClosing] = useState('');
 
@@ -507,12 +509,20 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
             <Button
               content={planDetails?.is_pre_budget ? 'Zaključi' : 'Objavi'}
               variant="primary"
-              onClick={handleCompletePlan}
+              onClick={() => (planDetails?.is_pre_budget ? setShowPlanCloseModal(true) : handleCompletePlan())}
               disabled={!dateOfClosing}
             />
           )}
         </FormControls>
       </FormFooter>
+
+      {showPlanCloseModal && (
+        <PlanCloseModal
+          open={!!showPlanCloseModal}
+          onClose={() => setShowPlanCloseModal(false)}
+          handleRightButtonClick={handleCompletePlan}
+        />
+      )}
     </ScreenWrapper>
   );
 };
