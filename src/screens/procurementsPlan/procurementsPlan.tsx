@@ -1,5 +1,5 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
-import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon, Input} from 'client-library';
+import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon, EyeIcon} from 'client-library';
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
@@ -262,10 +262,20 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 },
                 {
                   name: 'Ugovor',
-                  onClick: (item: any) => handleContractIconClick(item.id),
+                  onClick: (item: any) => {
+                    handleContractIconClick(item.id);
+                  },
                   icon: <FilePlusIcon stroke={Theme?.palette?.gray800} />,
                   shouldRender: () => planDetails?.is_pre_budget === false && planDetails?.status === 'Objavljen',
                   disabled: row => row.status === 'Ugovoren',
+                },
+                {
+                  name: 'Pregled ugovora',
+                  onClick: row => {
+                    context.navigation.navigate(`/procurements/contracts/${row?.contract_id}/signed`);
+                  },
+                  icon: <EyeIcon stroke={Theme?.palette?.gray800} />,
+                  shouldRender: (row: any) => row?.status === 'Ugovoren',
                 },
               ]}
             />

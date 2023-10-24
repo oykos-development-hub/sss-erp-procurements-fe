@@ -2,6 +2,9 @@ import {Button, EditIconTwo, MicroserviceProps, TableHead, Theme, TrashIconTwo, 
 import React, {useMemo, useState} from 'react';
 import {ArticleModal} from '../../components/articleModal/articleModal';
 import {LimitsModal} from '../../components/limitsModal/limitsModal';
+import {UserPermission, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
+import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import useProcurementArticleDelete from '../../services/graphql/procurementArticles/hooks/useProcurementArticleDelete';
 import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
@@ -16,11 +19,8 @@ import {
   SubTitle,
   TableContainer,
 } from '../../shared/styles';
-import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
-import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import {UserPermission, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
-import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;

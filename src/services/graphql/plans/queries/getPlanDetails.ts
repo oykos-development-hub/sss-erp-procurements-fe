@@ -31,6 +31,7 @@ const planDetailsQuery = `query PlanDetails($id: Int!) {
                     id
                     title
                 }
+                contract_id
                 is_open_procurement
                 title
                 article_type
