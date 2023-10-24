@@ -1,9 +1,8 @@
-const procurementPlanItemDeleteMutation = `mutation {
+const procurementPlanItemDeleteMutation = `mutation($id: Int!) {
     publicProcurementPlanItem_Delete(id: $id) {
-    message
-    status
-  }
-}
-`;
+        message
+        status
+    }
+}`;
 
 export default procurementPlanItemDeleteMutation;
