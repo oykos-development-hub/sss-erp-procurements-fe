@@ -1,10 +1,24 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
-import {Button, EditIconTwo, Theme, TrashIcon, FilePlusIcon, EyeIcon} from 'client-library';
+import {
+  Badge,
+  Button,
+  EditIconTwo,
+  EyeIcon,
+  FilePlusIcon,
+  TableHead,
+  Theme,
+  TrashIcon,
+  Typography,
+} from 'client-library';
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
-import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
-import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
+import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
+import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
+import {UserPermission, UserRole, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
+import useSendProcurementOnRevision from '../../services/graphql/plans/hooks/useSendProcurementOnRevision';
+import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {
@@ -12,21 +26,18 @@ import {
   CustomDivider,
   Filters,
   Header,
+  InlineText,
   MainTitle,
   SectionBox,
   SubTitle,
   TableContainer,
 } from '../../shared/styles';
 import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
-import {parseDateForBackend, stringToDate} from '../../utils/dateUtils';
-import {tableHeads} from './constants';
+import {parseDate, parseDateForBackend, stringToDate} from '../../utils/dateUtils';
+import {StatusTextWrapper} from '../publicProcurement/styles';
 import {RequestsPage} from './requests';
-import {Column, FormControls, FormFooter, Price, StyledTabs, MessageBox, TitleTabsWrapper} from './styles';
+import {Column, FormControls, FormFooter, MessageBox, Price, StyledTabs, TitleTabsWrapper} from './styles';
 import {ProcurementsPlanPageProps} from './types';
-import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
-import {UserPermission, UserRole, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
-import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
-import useSendProcurementOnRevision from '../../services/graphql/plans/hooks/useSendProcurementOnRevision';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -55,6 +66,132 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
 
   const buttonSendEnable = planDetails?.items?.every(item => item.status === 'Obrađen');
+
+  const tableHeads: TableHead[] = [
+    {
+      title: 'Konto',
+      accessor: 'budget_indent',
+      type: 'custom',
+      renderContents: (item: any) => item.serial_number,
+    },
+    {
+      title: 'Naziv konta',
+      accessor: 'budget_indent',
+      type: 'custom',
+      renderContents: (item: any) => item.title,
+    },
+    {
+      title: 'Opis javne nabavke',
+      accessor: 'title',
+      type: 'text',
+    },
+    {
+      title: 'Vrsta',
+      accessor: 'article_type',
+      type: 'text',
+    },
+    {
+      title: 'Tip postupka',
+      accessor: 'is_open_procurement',
+      type: 'custom',
+      renderContents: (item: any) => {
+        return item === true ? 'Otvoreni postupak' : 'Jednostavna nabavka';
+      },
+    },
+    {
+      title: 'Vrijednost neto',
+      accessor: 'articles',
+      type: 'custom',
+      shouldRender: role !== UserRole.MANAGER_OJ,
+      renderContents: (articles: any) => {
+        const totalPrice =
+          articles?.reduce((sum: any, article: any) => {
+            const price = article?.amount
+              ? parseFloat(article.net_price) * article?.amount
+              : parseFloat(article.net_price);
+            return sum + price;
+          }, 0) || 0;
+        return (
+          <InlineText>
+            <Typography variant="bodyMedium" content={`${totalPrice.toFixed(2)} €`} />
+          </InlineText>
+        );
+      },
+    },
+    {
+      title: 'PDV',
+      accessor: 'articles',
+      type: 'custom',
+      shouldRender: role !== UserRole.MANAGER_OJ,
+      renderContents: (articles: any) => {
+        const totalPdv =
+          articles?.reduce((sum: any, article: any) => {
+            const pdv = article?.amount
+              ? (parseFloat(article.net_price) * parseFloat(article.vat_percentage) * article?.amount) / 100
+              : (parseFloat(article.net_price) * parseFloat(article.vat_percentage)) / 100;
+            return sum + pdv;
+          }, 0) || 0;
+        return (
+          <InlineText>
+            <Typography variant="bodyMedium" content={`${totalPdv.toFixed(2)} €`} />
+          </InlineText>
+        );
+      },
+    },
+    {
+      title: 'Ukupno',
+      accessor: '',
+      type: 'custom',
+      shouldRender: role !== UserRole.MANAGER_OJ,
+      renderContents: (_, row: any) => {
+        const totalPdv =
+          row?.articles?.reduce((sum: any, article: any) => {
+            const pdv = article?.amount
+              ? (parseFloat(article.net_price) * parseFloat(article.vat_percentage) * article?.amount) / 100
+              : (parseFloat(article.net_price) * parseFloat(article.vat_percentage)) / 100;
+            return sum + pdv;
+          }, 0) || 0;
+        const totalNet =
+          row.articles?.reduce(
+            (sum: any, article: any) =>
+              article?.amount
+                ? sum + parseFloat(article.net_price) * article?.amount
+                : sum + parseFloat(article.net_price),
+            0,
+          ) || 0;
+        const total = totalNet + totalPdv;
+        return (
+          <InlineText>
+            <Typography variant="bodyMedium" content={`${total.toFixed(2)} €`} />
+          </InlineText>
+        );
+      },
+    },
+    {
+      title: 'Datum objavljivanja',
+      accessor: 'date_of_publishing',
+      renderContents: (date: any) => {
+        return <Typography variant="bodyMedium" content={date ? parseDate(date) : ''} />;
+      },
+    },
+    {
+      title: 'Status',
+      accessor: 'status',
+      type: 'custom',
+      renderContents: (status: any) => {
+        return (
+          <StatusTextWrapper>
+            <Badge content={<Typography content={status} variant="bodySmall" />} variant="primary" />
+          </StatusTextWrapper>
+        );
+      },
+    },
+    {
+      title: '',
+      accessor: 'TABLE_ACTIONS',
+      type: 'tableActions',
+    },
+  ];
 
   const totalNet =
     planDetails?.items?.reduce((total: number, item: any) => {
