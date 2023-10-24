@@ -198,7 +198,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const handleSave = async () => {
     const insertContractData = {
-      id: Number(contractID),
+      id: +contractID,
       public_procurement_id: contract.public_procurement.id,
       supplier_id: Number(watch('supplier').id) || Number(contract?.supplier.id),
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
