@@ -208,7 +208,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       gross_value: totalPrice?.toFixed(2),
     };
 
-    insertContract(insertContractData as any, async () => {
+    insertContract(insertContractData, async () => {
       if (filteredArticles) {
         let counter = 0;
         for (const item of filteredArticles) {
@@ -229,7 +229,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               counter++;
               if (counter === filteredArticles.length) {
                 context?.alert.success('Uspješno sačuvano');
-                context?.navigation.navigate(`/procurements/contracts`);
+                context?.navigation.navigate('/procurements/contracts');
                 context.breadcrumbs.remove();
               }
             },

@@ -24,7 +24,7 @@ export interface ProcurementContractInsert {
   date_of_expiry: string;
   net_value: string;
   gross_value: string;
-  file_id: number;
+  file_id?: number;
 }
 
 export interface GetProcurementContractParams {

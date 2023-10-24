@@ -9,7 +9,7 @@ const usePublicProcurementGetDetails = (id: number) => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
   const [publicProcurement, setPublicProcurement] = useState<PublicProcurement>();
-  
+
   const getProcurementDetails = async (onSuccess?: () => void, onError?: () => void) => {
     if (!id) {
       return;

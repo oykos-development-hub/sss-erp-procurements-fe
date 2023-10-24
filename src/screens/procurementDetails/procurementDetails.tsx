@@ -104,7 +104,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
 
   const totalNet =
     publicProcurement?.articles?.reduce(
-      (sum: any, article) => sum + parseFloat(article.net_price) * article.total_amount,
+      (sum: any, article) => sum + (article.net_price || 0) * article.total_amount,
       0,
     ) || 0;
 
