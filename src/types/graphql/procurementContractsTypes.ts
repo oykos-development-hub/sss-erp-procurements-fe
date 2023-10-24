@@ -13,6 +13,7 @@ export interface ProcurementContract {
   created_at: string;
   updated_at: string;
   file_id: number;
+  vat_value: string;
 }
 
 export interface ProcurementContractInsert {
@@ -25,6 +26,7 @@ export interface ProcurementContractInsert {
   net_value: string;
   gross_value: string;
   file_id?: number;
+  vat_value?: string;
 }
 
 export interface GetProcurementContractParams {

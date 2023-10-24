@@ -7,6 +7,7 @@ import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer}
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 import {parseDate} from '../../../utils/dateUtils';
+import {useForm} from 'react-hook-form';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -103,7 +104,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       },
     },
   ];
-
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
@@ -153,12 +153,21 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PDV-A" />
-            <Price variant="bodySmall" content={`€ ${totalPDV?.toFixed(2)}`} />
+            <Input label="UKUPNA NETO VRIJEDNOST" value={contractData && contractData[0]?.net_value} disabled={true} />
           </Column>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST UGOVORA" />
-            <Price variant="bodySmall" content={`€ ${totalPrice?.toFixed(2)}`} />
+            <Input
+              label="UKUPNA VRIJEDNOST PDV-A"
+              disabled={true}
+              value={contractData && contractData[0]?.gross_value}
+            />
+          </Column>
+          <Column>
+            <Input
+              label="UKUPNA VRIJEDNOST UGOVORA"
+              disabled={true}
+              value={contractData && contractData[0]?.vat_value}
+            />
           </Column>
         </Filters>
         <Plan>

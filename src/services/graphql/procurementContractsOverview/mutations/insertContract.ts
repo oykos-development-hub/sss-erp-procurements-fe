@@ -18,6 +18,7 @@ const contractInsertMutation = `mutation($data: PublicProcurementContractInsertM
             date_of_expiry
             net_value
             gross_value
+            vat_value
             created_at
             updated_at
             file_id

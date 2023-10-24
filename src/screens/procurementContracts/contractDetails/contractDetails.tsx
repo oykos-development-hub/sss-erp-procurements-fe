@@ -31,6 +31,9 @@ const initialValues = {
   date_of_signing: '',
   date_of_expiry: '',
   supplier: {id: 0, title: ''},
+  vat_value: '',
+  net_value: '',
+  gross_value: '',
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
@@ -59,6 +62,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       date_of_signing: contract?.date_of_signing,
       date_of_expiry: contract?.date_of_expiry,
       supplier: contract?.supplier,
+      net_value: contract?.net_value,
+      gross_value: contract?.gross_value,
+      vat_value: contract?.vat_value,
     });
   }, [contract]);
 
@@ -87,22 +93,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     }
   }, [procurement]);
 
-  const totalPDV = filteredArticles?.reduce((sum, article) => {
-    const pdvValue = (Number(article?.total_amount || 1) * Number(article?.net_price) * article?.vat_percentage) / 100;
-    return sum + pdvValue;
-  }, 0);
-
-  const totalNetValue = filteredArticles?.reduce((sum, article) => sum + (article?.net_price || 0), 0);
-
-  const totalPrice = filteredArticles?.reduce((sum, article) => {
-    const netPrice = article?.net_price || 0;
-    const articleTotalPrice = article.total_amount
-      ? Number(article.total_amount || 1) * (netPrice + (netPrice * Number(article?.vat_percentage)) / 100)
-      : netPrice + (netPrice * Number(article?.vat_percentage)) / 100;
-
-    return sum + articleTotalPrice;
-  }, 0);
-
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
@@ -128,7 +118,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             net_price: value !== '' ? Number(value) : undefined,
           };
         }
-        console.log(article, value);
         return article;
       }),
     );
@@ -196,6 +185,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {mutate: insertContract, loading: isLoadingContractMutate} = useInsertProcurementContract();
   const {mutate: insertContractArticle, loading: isLoadingContractArticleMutate} = useInsertContractArticle();
 
+  const net_value = watch('net_value');
+  const gross_value = watch('gross_value');
+  const vat_value = watch('vat_value');
+
   const handleSave = async () => {
     const insertContractData = {
       id: +contractID,
@@ -204,8 +197,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
       date_of_signing: watch('date_of_signing').toString() || parseDate(contract?.date_of_signing).toString(),
       date_of_expiry: watch('date_of_expiry').toString() || parseDate(contract?.date_of_expiry).toString(),
-      net_value: totalNetValue?.toFixed(2),
-      gross_value: totalPrice?.toFixed(2),
+      net_value: net_value,
+      gross_value: gross_value,
+      vat_value: vat_value,
     };
 
     insertContract(insertContractData, async () => {
@@ -342,12 +336,25 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PDV-A" />
-            <Price variant="bodySmall" content={`€ ${totalPDV?.toFixed(2)}`} />
+            <Input
+              {...register('net_value', {required: 'Ovo polje je obavezno'})}
+              error={errors?.net_value?.message as string}
+              label="UKUPNA NETO VRIJEDNOST"
+            />
           </Column>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST UGOVORA" />
-            <Price variant="bodySmall" content={`€ ${totalPrice?.toFixed(2)}`} />
+            <Input
+              {...register('gross_value', {required: 'Ovo polje je obavezno'})}
+              error={errors?.gross_value?.message as string}
+              label="UKUPNA VRIJEDNOST PDV-A"
+            />
+          </Column>
+          <Column>
+            <Input
+              {...register('vat_value', {required: 'Ovo polje je obavezno'})}
+              error={errors?.vat_value?.message as string}
+              label="UKUPNA VRIJEDNOST UGOVORA"
+            />
           </Column>
         </Filters>
 
