@@ -240,7 +240,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               counter++;
               if (counter === filteredArticles.length) {
                 context?.alert.success('Uspješno sačuvano');
-                context?.navigation.navigate(`/procurements/plans/${procurement?.plan.id}`);
+                context?.navigation.navigate(`/procurements/contracts`);
                 context.breadcrumbs.remove();
               }
             },
