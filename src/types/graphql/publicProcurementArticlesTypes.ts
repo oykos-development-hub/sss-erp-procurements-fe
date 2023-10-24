@@ -15,7 +15,7 @@ export interface PublicProcurementArticle {
   public_procurement: DropdownDataNumber;
   title: string;
   description: string;
-  net_price: string;
+  net_price?: number;
   vat_percentage: number;
   total_amount: number;
 }

@@ -23,9 +23,9 @@ export interface ContractArticleInsert {
   id: number;
   public_procurement_article_id: number;
   public_procurement_contract_id: number;
-  amount: string;
-  net_value: string;
-  gross_value: string;
+  amount: number;
+  net_value: number;
+  gross_value: number;
 }
 
 export interface ContractArticlesInsertResponse {

@@ -19,6 +19,8 @@ import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
+import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
+import {PublicProcurementArticle} from '../../../types/graphql/publicProcurementArticlesTypes';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -32,7 +34,7 @@ const initialValues = {
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
-  const [filteredArticles, setFilteredArticles] = useState<any[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<PublicProcurementArticle[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
@@ -42,8 +44,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const [contract] = contractData || [];
 
   const procurementID = contract?.public_procurement.id;
-  const {procurements} = useGetOrganizationUnitPublicProcurements(undefined, undefined, procurementID);
-  const [procurement] = procurements || [];
+  const {publicProcurement: procurement} = usePublicProcurementGetDetails(procurementID);
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -76,30 +77,28 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   useEffect(() => {
     if (procurement?.articles) {
-      setFilteredArticles(procurement?.articles || []);
+      const contractArticles = procurement.articles.map(article => {
+        return {
+          ...article,
+          net_price: 0,
+        };
+      });
+      setFilteredArticles(contractArticles);
     }
-  }, [procurements]);
+  }, [procurement]);
 
   const totalPDV = filteredArticles?.reduce((sum, article) => {
-    const pdvValue =
-      (Number(article?.amount || 1) *
-        Number(article?.public_procurement_article?.net_price) *
-        Number(article?.public_procurement_article?.vat_percentage)) /
-      100;
+    const pdvValue = (Number(article?.total_amount || 1) * Number(article?.net_price) * article?.vat_percentage) / 100;
     return sum + pdvValue;
   }, 0);
 
-  const totalNetValue = filteredArticles?.reduce(
-    (sum, article) => sum + parseFloat(article?.public_procurement_article?.net_price),
-    0,
-  );
+  const totalNetValue = filteredArticles?.reduce((sum, article) => sum + (article?.net_price || 0), 0);
 
   const totalPrice = filteredArticles?.reduce((sum, article) => {
-    const netPrice = parseFloat(article?.public_procurement_article.net_price);
-    const articleTotalPrice = article.amount
-      ? Number(article.amount || 1) *
-        (netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100)
-      : netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100;
+    const netPrice = article?.net_price || 0;
+    const articleTotalPrice = article.total_amount
+      ? Number(article.total_amount || 1) * (netPrice + (netPrice * Number(article?.vat_percentage)) / 100)
+      : netPrice + (netPrice * Number(article?.vat_percentage)) / 100;
 
     return sum + articleTotalPrice;
   }, 0);
@@ -126,12 +125,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         if (article.id === row.id) {
           return {
             ...article,
-            public_procurement_article: {
-              ...article.public_procurement_article,
-              net_price: Number(value),
-            },
+            net_price: value !== '' ? Number(value) : undefined,
           };
         }
+        console.log(article, value);
         return article;
       }),
     );
@@ -140,36 +137,32 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const tableHeads: TableHead[] = [
     {
       title: 'Opis predmeta nabavke',
-      accessor: 'public_procurement_article',
+      accessor: 'title',
       type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.title} variant="bodySmall" />
-      ),
+      renderContents: title => {
+        return <Typography content={title} variant="bodySmall" />;
+      },
     },
     {
       title: 'Bitne karakteristike',
-      accessor: 'public_procurement_article',
+      accessor: 'description',
       type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.description} variant="bodySmall" />
-      ),
+      renderContents: description => <Typography content={description} variant="bodySmall" />,
     },
     {
       title: 'PDV',
-      accessor: 'public_procurement_article',
+      accessor: 'vat_percentage',
       type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.vat_percentage + '%'} variant="bodySmall" />
-      ),
+      renderContents: vat_percentage => <Typography content={vat_percentage + '%'} variant="bodySmall" />,
     },
     {
       title: 'Jedinična cijena',
       accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: (_, row: any) => (
+      renderContents: (_, row: PublicProcurementArticle) => (
         <Input
           type="number"
-          value={row?.public_procurement_article?.net_price}
+          value={row?.net_price?.toString() || ''}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
         />
@@ -179,21 +172,22 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       title: 'Količina',
       accessor: 'amount',
       type: 'custom',
-      renderContents: (_, row: any) => (
-        <Input type="number" value={row?.amount} onChange={event => handleInputChangeAmount(event, row)} />
+      renderContents: (_, row: PublicProcurementArticle) => (
+        <Input
+          type="number"
+          value={row?.total_amount.toString()}
+          onChange={event => handleInputChangeAmount(event, row)}
+        />
       ),
     },
     {
       title: 'Ukupno',
       accessor: '',
       type: 'custom',
-      renderContents: (_, row: any) => {
-        const pdvValue =
-          (Number(row?.public_procurement_article?.net_price) *
-            Number(row?.public_procurement_article?.vat_percentage)) /
-          100;
-        const total = Number(row?.public_procurement_article?.net_price) + Number(pdvValue);
-        const calculateTotal = total * (Number(row.amount) || 1);
+      renderContents: (_, row: PublicProcurementArticle) => {
+        const pdvValue = (Number(row?.net_price || 0) * Number(row?.vat_percentage)) / 100;
+        const total = Number(row?.net_price || 0) + Number(pdvValue);
+        const calculateTotal = total * (Number(row.total_amount) || 1);
         return <Typography content={`${calculateTotal?.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
@@ -220,19 +214,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         for (const item of filteredArticles) {
           const insertItem = {
             id: 0,
-            public_procurement_article_id: Number(item?.public_procurement_article?.id),
+            public_procurement_article_id: Number(item?.id),
             public_procurement_contract_id: Number(contractID),
-            amount: item?.amount.toString(),
-            net_value: item?.public_procurement_article?.net_price,
-            gross_value: (
-              Number(item.amount || 1) *
-              (Number(item?.public_procurement_article?.net_price) +
-                (Number(item?.public_procurement_article?.net_price) *
-                  Number(item?.public_procurement_article?.vat_percentage)) /
-                  100)
-            )
-              ?.toFixed(2)
-              .toString(),
+            amount: item?.total_amount,
+            net_value: item?.net_price || 0,
+            gross_value: +(
+              Number(item.total_amount || 1) *
+              (Number(item?.net_price) + (Number(item?.net_price) * Number(item?.vat_percentage)) / 100)
+            )?.toFixed(2),
           };
           await insertContractArticle(
             insertItem,

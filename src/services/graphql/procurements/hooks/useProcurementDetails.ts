@@ -9,11 +9,14 @@ const usePublicProcurementGetDetails = (id: number) => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
   const [publicProcurement, setPublicProcurement] = useState<PublicProcurement>();
-
+  
   const getProcurementDetails = async (onSuccess?: () => void, onError?: () => void) => {
+    if (!id) {
+      return;
+    }
     setLoading(true);
     const response: ProcurementPlanItemDetailsGetResponse = await fetch(query, {id});
-    if (response.publicProcurementPlanItem_Details.status === REQUEST_STATUSES.success) {
+    if (response?.publicProcurementPlanItem_Details.status === REQUEST_STATUSES.success) {
       response?.publicProcurementPlanItem_Details.items &&
         setPublicProcurement(response.publicProcurementPlanItem_Details?.items[0]);
       onSuccess && onSuccess();
