@@ -189,6 +189,29 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const gross_value = watch('gross_value');
   const vat_value = watch('vat_value');
 
+  const calculateGrossPrice = (netPrice: number, vatPercentage: number): number => {
+    return netPrice + (netPrice * vatPercentage) / 100;
+  };
+
+  const totals = useMemo(() => {
+    // Perform the calculations
+    return filteredArticles.reduce(
+      (accumulator, article) => {
+        const totalNetPriceForArticle = article.total_amount * (article.net_price || 0);
+        const grossPricePerUnit = calculateGrossPrice(article.net_price || 0, article.vat_percentage);
+        const totalGrossPriceForArticle = article.total_amount * grossPricePerUnit;
+
+        accumulator.totalNetValue += totalNetPriceForArticle;
+        accumulator.totalGrossValue += totalGrossPriceForArticle;
+        return accumulator;
+      },
+      {
+        totalNetValue: 0,
+        totalGrossValue: 0,
+      },
+    );
+  }, [filteredArticles]);
+
   const handleSave = async () => {
     const insertContractData = {
       id: +contractID,
@@ -337,22 +360,32 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <Filters style={{marginTop: '44px'}}>
           <Column>
             <Input
-              {...register('net_value', {required: 'Ovo polje je obavezno'})}
+              {...register('net_value', {
+                required: 'Ovo polje je obavezno',
+                validate: value =>
+                  +value < totals.totalNetValue ? 'Obračunata neto vrijednost je veća od navedene vrijednosti.' : true,
+              })}
               error={errors?.net_value?.message as string}
               label="UKUPNA NETO VRIJEDNOST"
             />
           </Column>
           <Column>
             <Input
-              {...register('gross_value', {required: 'Ovo polje je obavezno'})}
-              error={errors?.gross_value?.message as string}
+              {...register('vat_value', {required: 'Ovo polje je obavezno'})}
+              error={errors?.vat_value?.message as string}
               label="UKUPNA VRIJEDNOST PDV-A"
             />
           </Column>
           <Column>
             <Input
-              {...register('vat_value', {required: 'Ovo polje je obavezno'})}
-              error={errors?.vat_value?.message as string}
+              {...register('gross_value', {
+                required: 'Ovo polje je obavezno',
+                validate: value =>
+                  +value < totals.totalGrossValue
+                    ? 'Obračunata bruto vrijednost je veća od navedene vrijednosti'
+                    : true,
+              })}
+              error={errors?.gross_value?.message as string}
               label="UKUPNA VRIJEDNOST UGOVORA"
             />
           </Column>
