@@ -477,7 +477,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = ({context})
                 content="Pošalji"
                 variant="primary"
                 onClick={() => setIsNotificationModalActive(true)}
-                disabled={!buttonSendEnable}
+                disabled={!buttonSendEnable || planDetails?.status === 'Na čekanju'}
               />
             )}
 
