@@ -112,8 +112,6 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     }
   }, [selectedItem]);
 
-  const filteredArray = dropdownData.filter((obj: DropdownDataNumber) => obj.title.includes(selectedYear?.title));
-
   return (
     <Modal
       open={open}
@@ -151,22 +149,6 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                   options={IS_PRE_BUDGET_OPTIONS}
                   error={errors.is_pre_budget?.message as string}
                   isDisabled={!!selectedItem}
-                />
-              );
-            }}
-          />
-          <Controller
-            name="pre_budget_id"
-            control={control}
-            render={({field: {onChange, name, value}}) => {
-              return (
-                <Dropdown
-                  onChange={onChange}
-                  value={value as any}
-                  name={name}
-                  label="POČETNE VRIJEDNOSTI:"
-                  options={filteredArray}
-                  isDisabled={!!selectedItem || budgetIndent?.id}
                 />
               );
             }}
