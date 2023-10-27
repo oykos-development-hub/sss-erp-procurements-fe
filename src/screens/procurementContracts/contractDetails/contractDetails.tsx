@@ -11,7 +11,6 @@ import {
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
-import useGetOrganizationUnitPublicProcurements from '../../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import useInsertProcurementContract from '../../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
@@ -20,7 +19,8 @@ import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer}
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
-import {PublicProcurementArticle} from '../../../types/graphql/publicProcurementArticlesTypes';
+import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
+import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -37,13 +37,15 @@ const initialValues = {
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
-  const [filteredArticles, setFilteredArticles] = useState<PublicProcurementArticle[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
   });
+  const {data: contractArticles} = useContractArticles(contractID);
+
   const [contract] = contractData || [];
 
   const procurementID = contract?.public_procurement.id;
@@ -83,15 +85,30 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   useEffect(() => {
     if (procurement?.articles) {
-      const contractArticles = procurement.articles.map(article => {
+      const articles = procurement.articles.map(article => {
+        const matchArticle = contractArticles?.find(
+          contractArticle => contractArticle?.public_procurement_article.id === article.id,
+        );
+        if (matchArticle) return matchArticle;
         return {
-          ...article,
-          net_price: 0,
+          id: undefined,
+          public_procurement_article: {
+            id: article.id,
+            title: article.title,
+            vat_percentage: article.vat_percentage,
+            description: article.description,
+            total_amount: article.total_amount,
+            net_price: article.net_price,
+          },
+          amount: article.total_amount,
+          contract: {id: 0, title: ''},
+          net_value: undefined,
+          gross_value: undefined,
         };
       });
-      setFilteredArticles(contractArticles);
+      setFilteredArticles(articles);
     }
-  }, [procurement]);
+  }, [procurement, contractArticles]);
 
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
@@ -115,7 +132,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         if (article.id === row.id) {
           return {
             ...article,
-            net_price: value !== '' ? Number(value) : undefined,
+            net_value: value !== '' ? +value : undefined,
           };
         }
         return article;
@@ -126,32 +143,32 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const tableHeads: TableHead[] = [
     {
       title: 'Opis predmeta nabavke',
-      accessor: 'title',
+      accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: title => {
-        return <Typography content={title} variant="bodySmall" />;
+      renderContents: article => {
+        return <Typography content={article.title} variant="bodySmall" />;
       },
     },
     {
       title: 'Bitne karakteristike',
-      accessor: 'description',
+      accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: description => <Typography content={description} variant="bodySmall" />,
+      renderContents: article => <Typography content={article.description} variant="bodySmall" />,
     },
     {
       title: 'PDV',
-      accessor: 'vat_percentage',
+      accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: vat_percentage => <Typography content={vat_percentage + '%'} variant="bodySmall" />,
+      renderContents: article => <Typography content={article.vat_percentage + '%'} variant="bodySmall" />,
     },
     {
       title: 'Jedinična cijena',
       accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: (_, row: PublicProcurementArticle) => (
+      renderContents: (_, row: ContractArticleGet) => (
         <Input
           type="number"
-          value={row?.net_price?.toString() || ''}
+          value={row?.net_value?.toString() || ''}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
         />
@@ -161,23 +178,18 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       title: 'Količina',
       accessor: 'amount',
       type: 'custom',
-      renderContents: (_, row: PublicProcurementArticle) => (
-        <Input
-          type="number"
-          value={row?.total_amount.toString()}
-          onChange={event => handleInputChangeAmount(event, row)}
-        />
+      renderContents: (_, row: ContractArticleGet) => (
+        <Input type="number" value={row?.amount?.toString()} onChange={event => handleInputChangeAmount(event, row)} />
       ),
     },
     {
       title: 'Ukupno',
       accessor: '',
       type: 'custom',
-      renderContents: (_, row: PublicProcurementArticle) => {
-        const pdvValue = (Number(row?.net_price || 0) * Number(row?.vat_percentage)) / 100;
-        const total = Number(row?.net_price || 0) + Number(pdvValue);
-        const calculateTotal = total * (Number(row.total_amount) || 1);
-        return <Typography content={`${calculateTotal?.toFixed(2)} €`} variant="bodySmall" />;
+      renderContents: (_, row: ContractArticleGet) => {
+        const pdvValue = (Number(row?.net_value || 0) * Number(row?.public_procurement_article.vat_percentage)) / 100;
+        const total = (+(row?.net_value || 0) + +pdvValue) * (row.amount || 0);
+        return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
   ];
@@ -194,12 +206,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   };
 
   const totals = useMemo(() => {
-    // Perform the calculations
     return filteredArticles.reduce(
       (accumulator, article) => {
-        const totalNetPriceForArticle = article.total_amount * (article.net_price || 0);
-        const grossPricePerUnit = calculateGrossPrice(article.net_price || 0, article.vat_percentage);
-        const totalGrossPriceForArticle = article.total_amount * grossPricePerUnit;
+        const totalNetPriceForArticle = (article.amount || 0) * (article.net_value || 0);
+        const grossPricePerUnit = calculateGrossPrice(
+          article.net_value || 0,
+          article.public_procurement_article.vat_percentage,
+        );
+        const totalGrossPriceForArticle = (article.amount || 0) * grossPricePerUnit;
 
         accumulator.totalNetValue += totalNetPriceForArticle;
         accumulator.totalGrossValue += totalGrossPriceForArticle;
@@ -230,14 +244,15 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         let counter = 0;
         for (const item of filteredArticles) {
           const insertItem = {
-            id: 0,
-            public_procurement_article_id: Number(item?.id),
+            id: item.id,
+            public_procurement_article_id: Number(item?.public_procurement_article.id),
             public_procurement_contract_id: Number(contractID),
-            amount: item?.total_amount,
-            net_value: item?.net_price || 0,
+            amount: item?.amount || 0,
+            net_value: item?.net_value || 0,
             gross_value: +(
-              Number(item.total_amount || 1) *
-              (Number(item?.net_price) + (Number(item?.net_price) * Number(item?.vat_percentage)) / 100)
+              Number(item.amount || 0) *
+              (Number(item?.net_value) +
+                (Number(item?.net_value) * Number(item?.public_procurement_article.vat_percentage)) / 100)
             )?.toFixed(2),
           };
           await insertContractArticle(
@@ -397,7 +412,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <TableContainer
           isLoading={isLoadingProcurementContracts}
           tableHeads={tableHeads}
-          data={filteredArticles || []}
+          data={(filteredArticles as any) || []}
         />
       </SectionBox>
 

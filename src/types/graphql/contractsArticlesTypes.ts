@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
+import { PublicProcurementArticle } from './publicProcurementArticlesTypes';
 import {Response, SingularResponse} from './utils';
 
 export interface ContractArticle {
@@ -11,16 +12,16 @@ export interface ContractArticle {
 }
 
 export interface ContractArticleGet {
-  id: number;
-  public_procurement_article: {id: number; title: string; vat_percentage: string; description: string};
+  id?: number;
+  public_procurement_article: PublicProcurementArticle;
   contract: DropdownDataNumber;
-  amount: string;
-  net_value: string;
-  gross_value: string;
+  amount?: number;
+  net_value?: number;
+  gross_value?: number;
 }
 
 export interface ContractArticleInsert {
-  id: number;
+  id?: number;
   public_procurement_article_id: number;
   public_procurement_contract_id: number;
   amount: number;

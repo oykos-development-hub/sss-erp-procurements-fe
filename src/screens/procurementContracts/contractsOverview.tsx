@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {Button, Table, Theme, TrashIcon, Typography} from 'client-library';
+import {Button, Table, Theme, TrashIcon, Typography, EditIconTwo} from 'client-library';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {ScreenProps} from '../../types/screen-props';
@@ -126,9 +126,12 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
                 to: `/procurements/contracts/${row.id.toString()}/signed`,
               });
             }}
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             tableActions={[
+              {
+                name: 'edit',
+                onClick: (item: any) => context.navigation.navigate(`/procurements/contracts/${item.id.toString()}`),
+                icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+              },
               {
                 name: 'delete',
                 onClick: (item: ProcurementContract) => handleDeleteIconClick(item.id),

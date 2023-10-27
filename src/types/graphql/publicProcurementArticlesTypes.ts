@@ -12,7 +12,7 @@ export interface PublicProcurementArticleParams {
 
 export interface PublicProcurementArticle {
   id: number;
-  public_procurement: DropdownDataNumber;
+  public_procurement?: DropdownDataNumber;
   title: string;
   description: string;
   net_price?: number;
