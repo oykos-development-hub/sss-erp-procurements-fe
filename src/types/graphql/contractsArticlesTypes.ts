@@ -1,5 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
-import { PublicProcurementArticle } from './publicProcurementArticlesTypes';
+import {PublicProcurementArticle} from './publicProcurementArticlesTypes';
 import {Response, SingularResponse} from './utils';
 
 export interface ContractArticle {

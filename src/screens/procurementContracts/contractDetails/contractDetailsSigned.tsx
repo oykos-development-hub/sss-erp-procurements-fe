@@ -1,13 +1,12 @@
-import {Button, Input, MicroserviceProps, TableHead, Typography, FileUpload} from 'client-library';
+import {Button, FileUpload, Input, MicroserviceProps, TableHead, Typography} from 'client-library';
 import React, {useEffect, useState} from 'react';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import ScreenWrapper from '../../../shared/screenWrapper';
-import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
+import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
-import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 import {parseDate} from '../../../utils/dateUtils';
-import {useForm} from 'react-hook-form';
+import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -34,26 +33,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       setFilteredArticles(contractArticles);
     }
   }, [contractArticles]);
-
-  const totalPDV = filteredArticles.reduce((sum, article) => {
-    const pdvValue =
-      (Number(article?.amount || 1) *
-        Number(article?.net_value) *
-        Number(article?.public_procurement_article?.vat_percentage)) /
-      100;
-    return sum + pdvValue;
-  }, 0);
-
-  const totalPrice = filteredArticles.reduce((sum, article) => {
-    const netPrice = parseFloat(article?.net_value);
-
-    const articleTotalPrice = article.amount
-      ? Number(article?.amount || 1) *
-        (netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100)
-      : netPrice + (netPrice * Number(article?.public_procurement_article?.vat_percentage)) / 100;
-
-    return sum + articleTotalPrice;
-  }, 0);
 
   const tableHeads: TableHead[] = [
     {
@@ -173,7 +152,11 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
-        <TableContainer tableHeads={tableHeads} data={contractArticles || []} isLoading={isLoadingContractArticles} />
+        <TableContainer
+          tableHeads={tableHeads}
+          data={(contractArticles as any) || []}
+          isLoading={isLoadingContractArticles}
+        />
       </SectionBox>
 
       <FormFooter>
