@@ -21,6 +21,7 @@ import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from '
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
+import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -50,6 +51,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const procurementID = contract?.public_procurement.id;
   const {publicProcurement: procurement} = usePublicProcurementGetDetails(procurementID);
+  const {articles} = useGetOrderProcurementAvailableArticles(procurementID);
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -156,12 +158,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       renderContents: article => <Typography content={article.description} variant="bodySmall" />,
     },
     {
-      title: 'PDV',
-      accessor: 'public_procurement_article',
-      type: 'custom',
-      renderContents: article => <Typography content={article.vat_percentage + '%'} variant="bodySmall" />,
-    },
-    {
       title: 'Jedinična cijena',
       accessor: 'public_procurement_article',
       type: 'custom',
@@ -175,15 +171,13 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       ),
     },
     {
-      title: 'Količina',
-      accessor: 'amount',
+      title: 'Ukupno neto',
+      accessor: 'net_value',
       type: 'custom',
-      renderContents: (_, row: ContractArticleGet) => (
-        <Input type="number" value={row?.amount?.toString()} onChange={event => handleInputChangeAmount(event, row)} />
-      ),
+      renderContents: net_value => <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />,
     },
     {
-      title: 'Ukupno',
+      title: 'Ukupno bruto',
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
@@ -191,6 +185,32 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         const total = (+(row?.net_value || 0) + +pdvValue) * (row.amount || 0);
         return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
       },
+    },
+    {
+      title: 'Ugovorena količina',
+      accessor: 'amount',
+      type: 'custom',
+      renderContents: (_, row: ContractArticleGet) => (
+        <Input type="number" value={row?.amount?.toString()} onChange={event => handleInputChangeAmount(event, row)} />
+      ),
+    },
+    {
+      title: 'Dostupna količina',
+      accessor: '',
+      type: 'custom',
+      renderContents: (_, row: ContractArticleGet) => {
+        return (
+          <Typography
+            content={articles.find(article => article.id === row.public_procurement_article.id)?.available?.toString()}
+            variant="bodySmall"
+          />
+        );
+      },
+    },
+    {
+      title: 'Prekoračenje',
+      accessor: '',
+      type: 'text',
     },
   ];
 

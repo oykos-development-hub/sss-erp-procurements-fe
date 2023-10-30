@@ -7,6 +7,7 @@ import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -20,6 +21,9 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   const {data: contractData} = useProcurementContracts({
     id: contractID,
   });
+
+  const procurementID = contractData && contractData[0]?.public_procurement?.id;
+  const {articles} = useGetOrderProcurementAvailableArticles(procurementID as any);
 
   const handleUpload = (files: FileList) => {
     const fileList = Array.from(files);
@@ -39,48 +43,61 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       title: 'Opis predmeta nabavke',
       accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.title} variant="bodySmall" />
-      ),
+      renderContents: article => {
+        return <Typography content={article.title} variant="bodySmall" />;
+      },
     },
     {
       title: 'Bitne karakteristike',
       accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.description} variant="bodySmall" />
-      ),
-    },
-    {
-      title: 'PDV',
-      accessor: 'public_procurement_article',
-      type: 'custom',
-      renderContents: public_procurement_article => (
-        <Typography content={public_procurement_article?.vat_percentage + '%'} variant="bodySmall" />
-      ),
+      renderContents: article => <Typography content={article.description} variant="bodySmall" />,
     },
     {
       title: 'Jedinična cijena',
-      accessor: 'net_value',
+      accessor: 'public_procurement_article',
       type: 'custom',
-      renderContents: net_value => <Typography content={net_value} />,
+      renderContents: (_, row: ContractArticleGet) => <Typography content={row?.net_value} variant="bodySmall" />,
     },
     {
-      title: 'Količina',
+      title: 'Ukupno neto',
+      accessor: 'net_value',
+      type: 'custom',
+      renderContents: net_value => <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />,
+    },
+    {
+      title: 'Ukupno bruto',
+      accessor: '',
+      type: 'custom',
+      renderContents: (_, row: ContractArticleGet) => {
+        const pdvValue = (Number(row?.net_value || 0) * Number(row?.public_procurement_article.vat_percentage)) / 100;
+        const total = (+(row?.net_value || 0) + +pdvValue) * (row.amount || 0);
+        return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
+      },
+    },
+    {
+      title: 'Ugovorena količina',
       accessor: 'amount',
       type: 'custom',
       renderContents: (_, row: any) => <Typography content={row?.amount} />,
     },
     {
-      title: 'Ukupno',
+      title: 'Dostupna količina',
       accessor: '',
       type: 'custom',
-      renderContents: (_, row: any) => {
-        const pdvValue = (Number(row?.net_value) * Number(row?.public_procurement_article?.vat_percentage)) / 100;
-        const total = Number(row?.net_value) + Number(pdvValue);
-        const calculateTotal = total * (Number(row?.amount) || 1);
-        return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
+      renderContents: (_, row: ContractArticleGet) => {
+        return (
+          <Typography
+            content={articles.find(article => article.id === row.public_procurement_article.id)?.available?.toString()}
+            variant="bodySmall"
+          />
+        );
       },
+    },
+    {
+      title: 'Prekoračenje',
+      accessor: '',
+      type: 'text',
     },
   ];
   return (
