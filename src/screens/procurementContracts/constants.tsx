@@ -4,7 +4,6 @@ import {TableHead, Typography} from 'client-library';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 
 export const tableHeads: TableHead[] = [
-  {title: 'ID', accessor: 'id', type: 'custom', renderContents: id => <Typography variant="bodySmall" content={id} />},
   {
     title: 'Šifra ugovora',
     accessor: 'serial_number',

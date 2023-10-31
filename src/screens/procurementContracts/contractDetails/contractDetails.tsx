@@ -51,7 +51,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const procurementID = contract?.public_procurement.id;
   const {publicProcurement: procurement} = usePublicProcurementGetDetails(procurementID);
-  const {articles} = useGetOrderProcurementAvailableArticles(procurementID);
+  const {articles} = useGetOrderProcurementAvailableArticles(procurementID, 0);
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -131,7 +131,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     const {value} = event.target;
     setFilteredArticles(articles =>
       articles.map(article => {
-        if (article.id === row.id) {
+        if (article.public_procurement_article.id === row.public_procurement_article.id) {
           return {
             ...article,
             net_value: value !== '' ? +value : undefined,
@@ -191,7 +191,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       accessor: 'amount',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
-        <Input type="number" value={row?.amount?.toString()} onChange={event => handleInputChangeAmount(event, row)} />
+        <Typography content={row?.amount?.toString()} variant="bodySmall" />
       ),
     },
     {
@@ -206,11 +206,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           />
         );
       },
-    },
-    {
-      title: 'Prekoračenje',
-      accessor: '',
-      type: 'text',
     },
   ];
 

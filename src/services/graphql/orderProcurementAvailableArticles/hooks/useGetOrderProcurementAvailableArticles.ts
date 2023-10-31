@@ -3,13 +3,14 @@ import useAppContext from '../../../../context/useAppContext';
 import {OrderListArticleType, OrderProcurementAvailableArticlesType} from '../../../../types/graphql/orderListTypes';
 import getOrderProcurementAvailableArticles from '../queries/getOrderProcurementAvailableArticles';
 
-const useGetOrderProcurementAvailableArticles = (public_procurement_id: number) => {
+const useGetOrderProcurementAvailableArticles = (public_procurement_id: number, organization_unit_id?: number) => {
   const [articles, setArticles] = useState<OrderListArticleType[]>([]);
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
   const fetchOrderProcurementArticles = async () => {
     const response: OrderProcurementAvailableArticlesType = await fetch(getOrderProcurementAvailableArticles, {
       public_procurement_id,
+      organization_unit_id,
     });
 
     const items = response?.orderProcurementAvailableList_Overview?.items;
@@ -19,7 +20,7 @@ const useGetOrderProcurementAvailableArticles = (public_procurement_id: number) 
 
   useEffect(() => {
     fetchOrderProcurementArticles();
-  }, [public_procurement_id]);
+  }, [public_procurement_id, organization_unit_id]);
 
   return {articles, loading, fetch: fetchOrderProcurementArticles};
 };

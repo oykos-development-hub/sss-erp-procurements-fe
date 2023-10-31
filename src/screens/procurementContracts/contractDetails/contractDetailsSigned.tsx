@@ -1,5 +1,15 @@
-import {Button, FileUpload, Input, MicroserviceProps, TableHead, Typography} from 'client-library';
-import React, {useEffect, useState} from 'react';
+import {
+  Button,
+  FileUpload,
+  Input,
+  MicroserviceProps,
+  TableHead,
+  Typography,
+  PlusIcon,
+  Theme,
+  Dropdown,
+} from 'client-library';
+import React, {useEffect, useMemo, useState} from 'react';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import ScreenWrapper from '../../../shared/screenWrapper';
@@ -8,6 +18,10 @@ import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes'
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
+import useGetOrganizationUnits from '../../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import {DropdownDataNumber} from '../../../types/dropdownData';
+import {OveragesModal} from '../../../components/overagesModal/overagesModal';
+import {UserRole} from '../../../constants';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -17,26 +31,47 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const {organizationUnits} = useGetOrganizationUnits();
+  const unitsforDropdown = useMemo(() => {
+    return [
+      {id: 0, title: 'Sve'},
+      ...(organizationUnits?.map(unit => {
+        return {id: unit.id, title: unit.title || ''};
+      }) || []),
+    ];
+  }, [organizationUnits]);
+
+  const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(unitsforDropdown[0]);
+  const [selectedItemId, setSelectedItemId] = useState(0);
 
   const {data: contractData} = useProcurementContracts({
     id: contractID,
   });
 
-  const procurementID = contractData && contractData[0]?.public_procurement?.id;
-  const {articles} = useGetOrderProcurementAvailableArticles(procurementID as any);
+  const procurementID = contractData?.[0].public_procurement.id;
+  const {articles, fetch: refetchAvailableArticles} = useGetOrderProcurementAvailableArticles(
+    procurementID as number,
+    selectedOrganizationUnit.id,
+  );
 
   const handleUpload = (files: FileList) => {
     const fileList = Array.from(files);
     setUploadedFiles(fileList);
   };
 
-  const {data: contractArticles, loading: isLoadingContractArticles} = useContractArticles(contractID);
+  const {
+    data: contractArticles,
+    loading: isLoadingContractArticles,
+    refetchData: refetchContractArticles,
+  } = useContractArticles(contractID, selectedOrganizationUnit.id);
 
   useEffect(() => {
     if (contractArticles) {
       setFilteredArticles(contractArticles);
     }
   }, [contractArticles]);
+
+  const role = context?.contextMain?.role_id;
 
   const tableHeads: TableHead[] = [
     {
@@ -79,7 +114,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       title: 'Ugovorena količina',
       accessor: 'amount',
       type: 'custom',
-      renderContents: (_, row: any) => <Typography content={row?.amount} />,
+      renderContents: (_, row: any) => <Typography content={row?.amount} variant="bodySmall" />,
     },
     {
       title: 'Dostupna količina',
@@ -96,10 +131,34 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     },
     {
       title: 'Prekoračenje',
-      accessor: '',
-      type: 'text',
+      accessor: 'overage_total',
+      type: 'custom',
+      renderContents: overage_total => <Typography content={overage_total} variant="bodySmall" />,
+    },
+    {
+      title: '',
+      accessor: 'TABLE_ACTIONS',
+      type: 'tableActions',
+      shouldRender: role !== UserRole.MANAGER_OJ,
     },
   ];
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleIconClick = (id: number) => {
+    setSelectedItemId(id);
+    setShowModal(!showModal);
+  };
+
+  const selectedItem = useMemo(() => {
+    return contractArticles?.find((item: any) => item?.id === selectedItemId);
+  }, [selectedItemId]);
+
+  const refetchData = () => {
+    refetchContractArticles();
+    refetchAvailableArticles();
+  };
+
   return (
     <ScreenWrapper context={context}>
       <SectionBox>
@@ -169,10 +228,29 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
+        <Filters style={{marginBlock: '12px'}}>
+          <Column>
+            <Dropdown
+              label={<Typography variant="bodySmall" content="ORGANIZACIONA JEDINICA:" />}
+              options={unitsforDropdown}
+              value={selectedOrganizationUnit}
+              onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
+            />
+          </Column>
+        </Filters>
         <TableContainer
           tableHeads={tableHeads}
           data={(contractArticles as any) || []}
           isLoading={isLoadingContractArticles}
+          tableActions={[
+            {
+              name: 'add overages',
+              onClick: (item: any) => handleIconClick(item.id),
+              icon: <PlusIcon stroke={Theme?.palette?.gray800} />,
+              disabled: () => selectedOrganizationUnit.id === 0,
+              tooltip: () => (selectedOrganizationUnit.id === 0 ? 'Organizaciona jedinica nije odabrana' : ''),
+            },
+          ]}
         />
       </SectionBox>
 
@@ -188,6 +266,17 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           />
         </FormControls>
       </FormFooter>
+
+      {showModal && (
+        <OveragesModal
+          open={!!showModal}
+          onClose={handleIconClick}
+          alert={context.alert}
+          selectedItem={selectedItem}
+          refetchData={() => refetchData()}
+          organizationUnitID={selectedOrganizationUnit.id}
+        />
+      )}
     </ScreenWrapper>
   );
 };

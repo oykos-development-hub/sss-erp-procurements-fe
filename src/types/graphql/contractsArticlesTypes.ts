@@ -12,12 +12,19 @@ export interface ContractArticle {
 }
 
 export interface ContractArticleGet {
-  id?: number;
+  id: number | undefined;
   public_procurement_article: PublicProcurementArticle;
   contract: DropdownDataNumber;
   amount?: number;
   net_value?: number;
   gross_value?: number;
+  overage_total?: string;
+  overages?: {
+    id: number;
+    amount: number;
+    created_at: string;
+    updated_at: string;
+  }[];
 }
 
 export interface ContractArticleInsert {

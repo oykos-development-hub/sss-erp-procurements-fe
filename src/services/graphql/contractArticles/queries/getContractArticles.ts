@@ -1,5 +1,5 @@
-const contractArticlesOverviewQuery = `query ContractArticles($contract_id: Int) {
-    publicProcurementContractArticles_Overview(contract_id: $contract_id) {
+const contractArticlesOverviewQuery = `query ContractArticles($contract_id: Int, $organization_unit_id: Int) {
+    publicProcurementContractArticles_Overview(contract_id: $contract_id, organization_unit_id: $organization_unit_id) {
         status 
         message
         items {
@@ -14,6 +14,13 @@ const contractArticlesOverviewQuery = `query ContractArticles($contract_id: Int)
                 id
                 title
             }
+            overages {
+                id
+                amount
+                created_at
+                updated_at
+            }
+            overage_total
             amount
             net_value
             gross_value
