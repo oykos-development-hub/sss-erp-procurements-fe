@@ -30,7 +30,7 @@ import {
   MainTitle,
   StatusTextWrapper,
   TableHeader,
-  YearWrapper,
+  Filters,
 } from './styles';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {UserPermission, UserRole, checkPermission} from '../../constants';
@@ -53,14 +53,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
 
   const tableHeads: TableHead[] = [
     {title: 'Godina', accessor: 'year', type: 'text'},
-    {
-      title: 'Vrsta',
-      accessor: 'is_pre_budget',
-      type: 'custom',
-      renderContents: (is_pre_budget: any) => {
-        return <Typography variant="bodyMedium" content={is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko'} />;
-      },
-    },
     {title: 'Naslov', accessor: 'title', type: 'text'},
     {
       title: 'Datum kreiranja',
@@ -358,26 +350,17 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
         <CustomDivider />
         <TableHeader>
           <DropdownsWrapper>
-            <YearWrapper>
+            <Filters>
               <Dropdown
                 label={<Typography variant="bodySmall" content="GODINA:" />}
-                options={yearsForDropdown(5)}
+                options={yearsForDropdown(5, true, 1)}
                 name="year"
                 value={form?.year || null}
                 onChange={handleChange}
                 placeholder="Odaberite godinu"
               />
-            </YearWrapper>
-            <YearWrapper>
-              <Dropdown
-                label={<Typography variant="bodySmall" content="VRSTA:" />}
-                options={TypeForPP as any}
-                name="is_pre_budget"
-                value={form?.is_pre_budget || null}
-                onChange={handleChange as any}
-              />
-            </YearWrapper>
-            <YearWrapper>
+            </Filters>
+            <Filters>
               <Dropdown
                 label={<Typography variant="bodySmall" content="STATUS:" />}
                 options={planStatuses}
@@ -386,7 +369,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
                 onChange={handleChange as any}
                 placeholder="Odaberite status"
               />
-            </YearWrapper>
+            </Filters>
           </DropdownsWrapper>
           {canCreatePlan && (
             <ButtonWrapper>

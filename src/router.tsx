@@ -10,6 +10,7 @@ import {ProcurementDetailsRequests} from './screens/procurementDetails/procureme
 import {ProcurementContractsMainPage} from './screens/procurementContracts/contractsOverview';
 import {ContractDetails} from './screens/procurementContracts/contractDetails/contractDetails';
 import {ContractDetailsSigned} from './screens/procurementContracts/contractDetails/contractDetailsSigned';
+import PROCUREMENTS from './screens/landing';
 
 const ProcurementPlanDetailsRegex = /^\/procurements\/plans\/\d+/;
 const OrganizationUnitPublicProcurementsRegex = /^\/procurements\/plans\/\d+\/requests\/\d+$/;
@@ -26,6 +27,7 @@ export const Router: React.FC<MicroserviceProps> = props => {
   });
 
   const renderScreen = () => {
+    if (pathname === '/procurements') return <PROCUREMENTS />;
     if (pathname === '/procurements/plans') return <PublicProcurementsMainPage context={context} />;
     if (OrganizationUnitPublicProcurementsRegex.test(pathname)) {
       return <OrganizationUnitPublicProcurements context={context} />;

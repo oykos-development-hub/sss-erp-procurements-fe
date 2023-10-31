@@ -15,14 +15,6 @@ export const tableHeadsRequests: TableHead[] = [
     type: 'text',
   },
   {
-    title: 'Vrsta',
-    accessor: 'is_pre_budget',
-    type: 'custom',
-    renderContents: (is_pre_budget: any) => {
-      return <Typography variant="bodyMedium" content={is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko'} />;
-    },
-  },
-  {
     title: 'Naslov',
     accessor: 'title',
     type: 'custom',

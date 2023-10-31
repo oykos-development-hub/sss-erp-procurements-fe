@@ -46,7 +46,6 @@ export const TableHeader = styled.div`
 export const DropdownsWrapper = styled.div`
   display: flex;
   align-items: center;
-  flex-grow: 2;
 `;
 
 export const IconsWrapper = styled.div`
@@ -64,9 +63,9 @@ export const IconsWrapper = styled.div`
   }
 `;
 
-export const YearWrapper = styled.div`
+export const Filters = styled.div`
   margin-right: 10px;
-  flex-grow: 1;
+  width: 320px;
 `;
 
 export const AlertWrapper = styled.div`
