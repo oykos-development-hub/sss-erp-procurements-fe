@@ -2,6 +2,7 @@ const insertContractArticleMutation = `mutation($data: PublicProcurementContract
     publicProcurementContractArticle_Insert(data: $data) {
         status 
         message 
+        data
         items {
             id
             public_procurement_article {
@@ -12,7 +13,6 @@ const insertContractArticleMutation = `mutation($data: PublicProcurementContract
                 id
                 title
             }
-            amount
             net_value
             gross_value
         }

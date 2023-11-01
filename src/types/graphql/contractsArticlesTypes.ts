@@ -31,7 +31,6 @@ export interface ContractArticleInsert {
   id?: number;
   public_procurement_article_id: number;
   public_procurement_contract_id: number;
-  amount: number;
   net_value: number;
   gross_value: number;
 }

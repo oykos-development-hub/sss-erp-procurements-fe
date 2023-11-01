@@ -115,18 +115,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
-  const handleInputChangeAmount = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
-    const {value} = event.target;
-    setFilteredArticles(articles =>
-      articles.map(article => {
-        if (article.id === row.id) {
-          return {...article, amount: Number(value)};
-        }
-        return article;
-      }),
-    );
-  };
-
   const handleInputChangeNetValue = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
     const {value} = event.target;
     setFilteredArticles(articles =>
@@ -262,7 +250,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             id: item.id,
             public_procurement_article_id: Number(item?.public_procurement_article.id),
             public_procurement_contract_id: Number(contractID),
-            amount: item?.amount || 0,
             net_value: item?.net_value || 0,
             gross_value: +(
               Number(item.amount || 0) *
