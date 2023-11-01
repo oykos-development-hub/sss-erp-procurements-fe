@@ -353,7 +353,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             <Filters>
               <Dropdown
                 label={<Typography variant="bodySmall" content="GODINA:" />}
-                options={yearsForDropdown(5, true, 1)}
+                options={yearsForDropdown(10, true, 1)}
                 name="year"
                 value={form?.year || null}
                 onChange={handleChange}

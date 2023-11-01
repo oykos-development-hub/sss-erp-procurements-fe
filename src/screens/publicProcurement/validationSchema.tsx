@@ -3,6 +3,6 @@ import {dropdownDataNumberSchema, dropdownDataBooleanSchema} from '../validation
 
 export const planModalConfirmationSchema = yup.object().shape({
   year: dropdownDataNumberSchema,
-  is_pre_budget: dropdownDataBooleanSchema,
+  is_pre_budget: dropdownDataBooleanSchema.notRequired(),
   pre_budget_id: dropdownDataNumberSchema.notRequired(),
 });

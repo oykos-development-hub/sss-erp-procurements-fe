@@ -1,17 +1,15 @@
-import {Dropdown, Modal} from 'client-library';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Dropdown, Input, Modal} from 'client-library';
 import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {ProcurementsPlanModalProps} from '../../screens/procurementsPlan/types';
-import {yearsForDropdown} from '../../services/constants';
-import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
-import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
-import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import {FormWrapper} from './styles';
-import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {DropdownDataNumber} from '../../types/dropdownData';
-import {yupResolver} from '@hookform/resolvers/yup';
 import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
-import {IS_PRE_BUDGET_OPTIONS} from './constants';
+import {yearsForDropdown} from '../../services/constants';
+import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
+import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
+import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
+import {FormWrapper} from './styles';
 
 export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   alert,
@@ -19,7 +17,6 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   selectedItem,
   open,
   onClose,
-  dropdownData,
   navigate,
 }) => {
   const {
@@ -35,7 +32,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
     },
   });
 
-  const [budgetIndent, initialValuesId, selectedYear] = watch(['is_pre_budget', 'pre_budget_id', 'year']);
+  const [initialValuesId, selectedYear] = watch(['pre_budget_id', 'year']);
 
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
   const {mutate: insertProcurement} = useInsertPublicProcurementPlanItem();
@@ -51,8 +48,8 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         serial_number: values.serial_number,
         file_id: values.file_id,
         year: values?.year?.title,
-        is_pre_budget: values?.is_pre_budget?.id,
-        title: values?.is_pre_budget?.title + '-' + 'Plan za ' + values?.year.title,
+        is_pre_budget: false,
+        title: 'Plan za ' + values?.year.title,
         pre_budget_id: values?.pre_budget_id?.id || undefined,
         date_of_publishing: values?.date_of_publishing || undefined,
         date_of_closing: values?.date_of_closing || undefined,
@@ -101,8 +98,8 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         ...selectedItem,
         year: {id: +selectedItem?.year, title: selectedItem?.year},
         is_pre_budget: {
-          id: selectedItem?.is_pre_budget,
-          title: selectedItem?.is_pre_budget ? 'Predbudžetsko' : 'Postbudžetsko',
+          id: false,
+          title: 'Postbudžetsko',
         },
         pre_budget_id:
           selectedItem?.pre_budget_plan.id !== 0
@@ -135,24 +132,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
               />
             )}
           />
-
-          <Controller
-            name="is_pre_budget"
-            control={control}
-            render={({field: {onChange, name, value}}) => {
-              return (
-                <Dropdown
-                  onChange={onChange}
-                  value={value as any}
-                  name={name}
-                  label="VRSTA:"
-                  options={IS_PRE_BUDGET_OPTIONS}
-                  error={errors.is_pre_budget?.message as string}
-                  isDisabled={!!selectedItem}
-                />
-              );
-            }}
-          />
+          <Input name="is_pre_budget" value="Postbudžetsko" label="VRSTA:" disabled />
         </FormWrapper>
       }
       title="NOVI PLAN"
