@@ -1,10 +1,9 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Dropdown, Input, Modal} from 'client-library';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {ProcurementsPlanModalProps} from '../../screens/procurementsPlan/types';
 import {planModalConfirmationSchema} from '../../screens/publicProcurement/validationSchema';
-import {yearsForDropdown} from '../../services/constants';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
@@ -15,6 +14,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
   alert,
   fetch,
   selectedItem,
+  availableYearsForPlan,
   open,
   onClose,
   navigate,
@@ -127,7 +127,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                 value={value as any}
                 name={name}
                 label="GODINA:"
-                options={yearsForDropdown(10, false, 1)}
+                options={availableYearsForPlan}
                 error={errors.year?.message as string}
               />
             )}

@@ -1,4 +1,4 @@
-import {DropdownDataNumber} from '../../types/dropdownData';
+import {DropdownDataNumber, DropdownDataString} from '../../types/dropdownData';
 import {PlanItem} from '../../types/graphql/getPlansTypes';
 import {MicroserviceProps} from '../../types/micro-service-props';
 
@@ -14,6 +14,6 @@ export interface ProcurementsPlanModalProps {
   selectedItem?: PlanItem;
   open: boolean;
   onClose: () => void;
-  dropdownData: DropdownDataNumber[];
+  availableYearsForPlan: DropdownDataString[];
   navigate: (path: any) => void;
 }

@@ -124,7 +124,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     status: undefined,
     year: {id: '', title: 'Odaberite godinu'},
     page: 1,
-    size: 100,
+    size: 1000,
     is_pre_budget: {id: null, title: 'Odaberite vrstu'},
   });
 
@@ -144,22 +144,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const {mutate: insertPlan} = useInsertPublicProcurementPlan();
   const {mutate: addArticle} = useProcurementArticleInsert();
 
-  const initialValuesDropdownData = useMemo(() => {
-    const filteredData =
-      tableData
-        ?.filter(data => {
-          return data.is_pre_budget && (data.status === 'Zaključen' || data.status === 'Objavljen');
-        })
-        .map(item => {
-          return {
-            id: item.id,
-            title: item.title,
-          };
-        }) || [];
-
-    filteredData.unshift({id: 0, title: 'None'});
-    return filteredData;
-  }, [tableData]);
   const handleChange = (value: any, name: string) => {
     setForm((prevState: any) => ({
       ...prevState,
@@ -321,6 +305,15 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     }
   };
 
+  const availableYearsForPlan = useMemo(() => {
+    const years = yearsForDropdown(10, true, 1);
+
+    const existingPlanYears = tableData?.map(plan => plan.year) || [];
+    const filteredYears = years.filter(year => !existingPlanYears.includes(year.id));
+
+    return filteredYears;
+  }, [tableData]);
+
   const handleDelete = () => {
     if (showDeleteModal) {
       deletePlan(
@@ -442,7 +435,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             open={showModal}
             onClose={closeModal}
             selectedItem={selectedItem}
-            dropdownData={initialValuesDropdownData}
+            availableYearsForPlan={availableYearsForPlan}
             navigate={context.navigation.navigate}
           />
         )}

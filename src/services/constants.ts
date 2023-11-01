@@ -21,7 +21,7 @@ export const yearsForDropdown = (maxOffset = 10, isFilter = true, nextYears = 0)
   allYears.push(
     ...Array.from({length: maxOffset}, (_, index) => {
       const yearValue = thisYear - index;
-      return {id: yearValue.toString(), title: `${yearValue}`};
+      return {id: yearValue.toString(), title: yearValue.toString()};
     }),
   );
   return allYears;
