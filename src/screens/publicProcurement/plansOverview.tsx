@@ -1,43 +1,44 @@
 import {
   ArrowLeftCircleIcon,
+  Badge,
   Button,
   Dropdown,
   EditIconTwo,
   RotateCWIcon,
   SendIcon,
   Table,
+  TableHead,
   Theme,
   TrashIcon,
   Typography,
-  TableHead,
-  Badge,
 } from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {ProcurementsPlanModal} from '../../components/procurementsPlanModal/procurementsPlanModal';
 
+import {UserPermission, UserRole, checkPermission} from '../../constants';
+import {yearsForDropdown} from '../../services/constants';
+import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
+import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
+import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
+import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
 import {PlanItem} from '../../types/graphql/getPlansTypes';
 import {ScreenProps} from '../../types/screen-props';
 import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
-import {TypeForPP, getPlanStatuses} from './constants';
+import {getPlanStatuses} from './constants';
 import {
   ButtonWrapper,
   Container,
   CustomDivider,
   DropdownsWrapper,
+  Filters,
   MainTitle,
   StatusTextWrapper,
   TableHeader,
-  Filters,
 } from './styles';
-import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {UserPermission, UserRole, checkPermission} from '../../constants';
-import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
-import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
-import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
-import {yearsForDropdown} from '../../services/constants';
+import {ConvertModal} from '../../components/convertModal/convertModal';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -46,6 +47,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const [showShareModal, setShowShareModal] = useState(false);
   const [showRevertModal, setShowRevertModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showConvertModal, setShowConvertModal] = useState(false);
 
   const role = context?.contextMain?.role_id; // Get the role from context
   const planStatuses = getPlanStatuses(role);
@@ -183,8 +185,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       serial_number: selectedItem.serial_number,
     };
 
-    console.log(selectedItem.pre_budget_plan?.id, 'selectedItem.pre_budget_plan?.id');
-
     insertPlan(payload, () => {
       refetchData();
       context.alert.success('Uspješno ste poslali plan organizacionim jedinicama na pregled.');
@@ -232,7 +232,13 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     setSelectedItemId(0);
   };
 
+  const handleConvertModal = (id: number) => {
+    setShowConvertModal(true);
+    setSelectedItemId(id);
+  };
+
   const handleCloseConvertModal = () => {
+    setShowConvertModal(false);
     setShowConfirmationModal(false);
     setSelectedItemId(0);
   };
@@ -241,10 +247,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     setSelectedItemId(0);
   };
 
-  const handleConvertIconClick = (id: number) => {
-    setSelectedItemId(id);
-    setShowConfirmationModal(true);
-  };
   const handleCloseRevertModal = () => {
     setShowRevertModal(false);
     setSelectedItemId(0);
@@ -255,14 +257,15 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     setShowRevertModal(true);
   };
 
-  const handleConvert = async () => {
+  const handleConvert = async (year?: any) => {
     if (!selectedItem) return;
+
     try {
       const payload = {
         id: undefined,
-        year: selectedItem.year,
+        year: year,
         is_pre_budget: false,
-        title: 'Postbudzetski' + '-' + 'Plan za ' + selectedItem.year,
+        title: 'Plan za ' + year,
         pre_budget_id: selectedItem?.id,
         date_of_publishing: undefined,
         date_of_closing: undefined,
@@ -306,7 +309,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const availableYearsForPlan = useMemo(() => {
-    const years = yearsForDropdown(10, true, 1);
+    const years = yearsForDropdown(10, false, 1);
 
     const existingPlanYears = tableData?.map(plan => plan.year) || [];
     const filteredYears = years.filter(year => !existingPlanYears.includes(year.id));
@@ -391,8 +394,6 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
                 to: `/procurements/plans/${row.id.toString()}`,
               });
             }}
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             tableActions={[
               {
                 name: 'Izmeni',
@@ -416,9 +417,9 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
               },
               {
                 name: 'Konvertuj',
-                onClick: (item: any) => handleConvertIconClick(item.id),
+                onClick: (item: any) => handleConvertModal(item.id),
                 icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
-                shouldRender: (item: any) => item.is_pre_budget === true && item.status === 'Zaključen',
+                shouldRender: (item: any) => item.status === 'Objavljen' && role !== UserRole.MANAGER_OJ,
               },
               {
                 name: 'Vrati',
@@ -463,6 +464,12 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
           onClose={handleCloseRevertModal}
           handleLeftButtomClick={handleRevert}
           subTitle={'Plan će biti povučen iz pregleda organizacionih jedinica.'}
+        />
+        <ConvertModal
+          open={!!showConvertModal}
+          availableYearsForPlan={availableYearsForPlan}
+          onClose={handleCloseConvertModal}
+          handleConvert={(year: any) => handleConvert(year)}
         />
       </Container>
     </ScreenWrapper>
