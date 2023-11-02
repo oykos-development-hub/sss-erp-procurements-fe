@@ -1,10 +1,10 @@
-import {DropdownDataNumber} from '../dropdownData';
+import {DropdownDataBudgetIndent, DropdownDataNumber} from '../dropdownData';
 import {PublicProcurementArticle} from './publicProcurementArticlesTypes';
 import {Response} from './utils';
 
 export interface PublicProcurement {
   id: number;
-  budget_indent: DropdownDataNumber;
+  budget_indent: DropdownDataBudgetIndent;
   plan: DropdownDataNumber;
   is_open_procurement: boolean;
   title: string;

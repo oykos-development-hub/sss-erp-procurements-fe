@@ -6,8 +6,9 @@ export interface PublicProcurementArticleParams {
   public_procurement_id: number;
   title: string;
   description: string;
-  net_price: number;
+  net_price?: number;
   vat_percentage: number;
+  manufacturer?: string;
 }
 
 export interface PublicProcurementArticle {
@@ -18,6 +19,8 @@ export interface PublicProcurementArticle {
   net_price?: number;
   vat_percentage: number;
   total_amount: number;
+  amount: number;
+  manufacturer?: string;
 }
 
 export interface PublicProcurementArticleWithAmount {

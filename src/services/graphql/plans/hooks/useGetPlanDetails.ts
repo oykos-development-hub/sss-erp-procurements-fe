@@ -6,12 +6,17 @@ import {
 import useAppContext from '../../../../context/useAppContext';
 import query from '../queries/getPlanDetails';
 
-const usePublicProcurementPlanDetails = (id: number) => {
+const usePublicProcurementPlanDetails = (id?: number) => {
   const [planDetails, setPlanDetails] = useState<ProcurementPlanDetails>();
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
 
   const fetchPlanDetails = async () => {
+    if (!id) {
+      setPlanDetails(undefined);
+      return;
+    }
+    setLoading(true);
     const response: ProcurementPlanDetailsGetResponse = await fetch(query, {id});
     setPlanDetails(response?.publicProcurementPlan_Details.item);
     setLoading(false);

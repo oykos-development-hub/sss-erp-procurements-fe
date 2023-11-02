@@ -10,7 +10,7 @@ import {Column, FormControls, FormFooter, Price, StatusForm, TotalValues} from '
 import {dropdownProcurementStatusOptions} from '../../constants';
 import {calculateStatus} from '../../utils/getStatus';
 import useProcurementOrganizationUnitArticleInsert from '../../services/graphql/organizationUnitPublicProcurements/hooks/usePublicProcurementOrganizationUnitArticleInsert';
-import {RequestStatus} from '../publicProcurement/constants';
+import {RequestStatus} from './types';
 
 interface OrganizationUnitPublicProcurementsPageProps {
   context?: MicroserviceProps;

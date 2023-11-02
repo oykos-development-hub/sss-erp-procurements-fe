@@ -1,6 +1,7 @@
 import React, {FC, ReactElement, ReactNode} from 'react';
 import {Breadcrumbs} from 'client-library';
 import styled from 'styled-components';
+import useAppContext from '../context/useAppContext';
 
 const Container = styled.div`
   font-family: 'Source Sans Pro', sans-serif;
@@ -21,7 +22,9 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
   margin: 0;
 `;
 
-const ScreenWrapper: FC<{children: ReactNode; context: any}> = ({children, context}) => {
+const ScreenWrapper: FC<{children: ReactNode}> = ({children}) => {
+  const context = useAppContext();
+
   const breadcrumbs = context?.breadcrumbs;
 
   const breadcrumbItems = breadcrumbs?.get();

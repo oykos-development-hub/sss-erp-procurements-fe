@@ -26,7 +26,7 @@ const useGetCounts = (data?: ICountParams) => {
   };
   useEffect(() => {
     fetchCounts();
-  }, []);
+  }, [data]);
   return {counts, total};
 };
 

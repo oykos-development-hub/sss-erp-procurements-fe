@@ -12,6 +12,7 @@ const articleInsertMutation = `mutation($data: PublicProcurementPlanItemArticleI
         description
         net_price
         vat_percentage
+        manufacturer
       }
     }
   }`;

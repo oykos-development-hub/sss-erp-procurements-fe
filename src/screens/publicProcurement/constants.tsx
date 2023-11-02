@@ -7,13 +7,6 @@ export interface ValueType {
   title: ReactNode;
 }
 
-export enum RequestStatus {
-  Pending = 'Na čekanju',
-  Rejected = 'Odbijeno',
-  Approved = 'Odobreno',
-  Sent = 'Poslat',
-}
-
 export const TypeForPP = [
   {id: true, title: 'Predbudžetsko'},
   {id: false, title: 'Postbudžetsko'},

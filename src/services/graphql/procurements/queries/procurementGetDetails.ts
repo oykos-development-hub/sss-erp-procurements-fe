@@ -34,6 +34,7 @@ const procurementDetailsQuery = `query ProcurementDetails($id: Int!) {
                 net_price
                 vat_percentage
                 total_amount
+                manufacturer
             }
         }
     }

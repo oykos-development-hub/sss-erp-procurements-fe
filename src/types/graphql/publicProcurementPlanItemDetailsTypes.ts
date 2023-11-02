@@ -1,16 +1,24 @@
-import {DropdownDataNumber, DropdownDataString} from '../dropdownData';
+import {DropdownDataBudgetIndent, DropdownDataNumber, DropdownDataString} from '../dropdownData';
 import {PublicProcurementArticle, PublicProcurementArticleWithAmount} from './publicProcurementArticlesTypes';
 import {PublicProcurement} from './publicProcurementTypes';
 import {Response, SingularResponse} from './utils';
 
+export enum ProcurementStatus {
+	ProcurementStatusInProgress    =  'U toku',
+	PostProcurementStatusCompleted =  'Objavljen',
+	PostProcurementStatusContracted=  'Ugovoren',
+	PreProcurementStatusCompleted  =  'Zaključen',
+	ProcurementStatusProcessed     =  'Obrađen',
+}
+
 export interface ProcurementItem {
   id: number;
-  budget_indent: DropdownDataNumber;
+  budget_indent?: DropdownDataBudgetIndent;
   plan: DropdownDataNumber;
   is_open_procurement: boolean;
   title: string;
   article_type: string;
-  status: string;
+  status: ProcurementStatus;
   serial_number?: string;
   date_of_publishing?: string;
   date_of_awarding?: string;
@@ -19,6 +27,7 @@ export interface ProcurementItem {
   file_id: number;
   amount: number;
   total_amount: number;
+  contract_id: number;
   articles: PublicProcurementArticle[];
 }
 

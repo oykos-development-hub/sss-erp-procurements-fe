@@ -49,6 +49,7 @@ const insertPublicProcurementPlanMutation = `mutation($data: PublicProcurementPl
                     description
                     net_price
                     vat_percentage
+                    manufacturer
                 }
             }
         }

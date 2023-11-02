@@ -12,11 +12,11 @@ import {RequestArticle} from '../../types/graphql/planRequests';
 import {DropdownDataNumber} from '../../types/dropdownData';
 import {calculateStatus} from '../../utils/getStatus';
 import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
-import {RequestStatus} from '../publicProcurement/constants';
+import {RequestStatus, RequestType} from './types';
+import useAppContext from '../../context/useAppContext';
 
 interface RequestsPageProps {
   plan?: ProcurementPlanDetails;
-  context: MicroserviceProps;
   handleDateOfClosing: (date: string) => void;
 }
 
@@ -38,7 +38,7 @@ const filterTableData = (
   requests: RequestArticle[],
   organizationUnit: DropdownDataNumber,
   plan: ProcurementPlanDetails,
-) => {
+): RequestType => {
   return organizationUnits
     ?.map(item => {
       const organizationUnitsRequests = requests?.filter(request => request?.organization_unit?.id === item?.id) || [];
@@ -80,7 +80,9 @@ const filterTableData = (
     .filter(item => (organizationUnit?.id === 0 ? item : item?.id === organizationUnit?.id));
 };
 
-export const RequestsPage: React.FC<RequestsPageProps> = ({plan, context, handleDateOfClosing}) => {
+export const RequestsPage: React.FC<RequestsPageProps> = ({plan, handleDateOfClosing}) => {
+  const context = useAppContext();
+
   const [organizationUnit, setOrganizationUnit] = useState({id: 0, title: 'Sve'});
   const {organizationUnits} = useGetOrganizationUnits();
   const procurementIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
