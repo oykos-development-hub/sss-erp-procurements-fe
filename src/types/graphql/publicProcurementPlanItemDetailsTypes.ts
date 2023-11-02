@@ -4,11 +4,11 @@ import {PublicProcurement} from './publicProcurementTypes';
 import {Response, SingularResponse} from './utils';
 
 export enum ProcurementStatus {
-	ProcurementStatusInProgress    =  'U toku',
-	PostProcurementStatusCompleted =  'Objavljen',
-	PostProcurementStatusContracted=  'Ugovoren',
-	PreProcurementStatusCompleted  =  'Zaključen',
-	ProcurementStatusProcessed     =  'Obrađen',
+  ProcurementStatusInProgress = 'U toku',
+  PostProcurementStatusCompleted = 'Objavljen',
+  PostProcurementStatusContracted = 'Ugovoren',
+  PreProcurementStatusCompleted = 'Zaključen',
+  ProcurementStatusProcessed = 'Obrađen',
 }
 
 export interface ProcurementItem {
@@ -37,7 +37,15 @@ export interface ProcurementItemForOrganizationUnit extends Omit<ProcurementItem
 export interface ProcurementItemInsert
   extends Omit<
     ProcurementItem,
-    'budget_indent' | 'plan' | 'articles' | 'created_at' | 'updated_at' | 'id' | 'total_amount' | 'amount'
+    | 'budget_indent'
+    | 'plan'
+    | 'articles'
+    | 'created_at'
+    | 'updated_at'
+    | 'id'
+    | 'total_amount'
+    | 'amount'
+    | 'contract_id'
   > {
   budget_indent_id: number | null;
   plan_id: number;

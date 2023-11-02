@@ -7,7 +7,7 @@ import {FormGroup, ModalContentWrapper} from './styles';
 import useAppContext from '../../context/useAppContext';
 import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import {ProcurementItemInsert} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {ProcurementItemInsert, ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
 import {dropdownDataNumberSchema} from '../../screens/validationSchema';
@@ -80,7 +80,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
         is_open_procurement: values.is_open_procurement?.id === 1 ? true : false,
         title: values.title,
         article_type: values.article_type,
-        status: 'U toku',
+        status: ProcurementStatus.ProcurementStatusInProgress,
         serial_number: values.serial_number,
         date_of_publishing: undefined,
         date_of_awarding: undefined,

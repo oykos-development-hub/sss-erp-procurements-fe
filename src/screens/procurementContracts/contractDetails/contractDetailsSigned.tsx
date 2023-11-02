@@ -160,7 +160,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   };
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle
           variant="bodyMedium"

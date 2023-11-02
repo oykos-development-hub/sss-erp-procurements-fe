@@ -175,7 +175,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   const isEditProcurementDisabled = isEditProcurementAndPlanDisabled(planDetails?.status || '');
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle
           variant="bodyMedium"

@@ -100,7 +100,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   }, [procurements]);
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle variant="bodyMedium" content={`${title.toUpperCase()}`} />
         <CustomDivider />

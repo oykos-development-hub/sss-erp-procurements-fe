@@ -1,4 +1,5 @@
 import {DropdownDataNumber} from '../dropdownData';
+import {ProcurementStatus} from './publicProcurementPlanItemDetailsTypes';
 import {Response} from './utils';
 
 export interface PlanOverviewResponse {
@@ -26,7 +27,7 @@ export interface PlanItem {
     is_open_procurement: boolean;
     title: string;
     article_type: string;
-    status: string;
+    status: ProcurementStatus;
     serial_number: string;
     date_of_publishing: string;
     date_of_awarding: string;

@@ -101,6 +101,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             description: article.description,
             total_amount: article.total_amount,
             net_price: article.net_price,
+            amount: article.amount,
           },
           amount: article.total_amount,
           contract: {id: 0, title: ''},
@@ -277,7 +278,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   };
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle
           variant="bodyMedium"

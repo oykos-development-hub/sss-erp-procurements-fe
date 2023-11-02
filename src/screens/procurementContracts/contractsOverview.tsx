@@ -89,7 +89,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
   };
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <Container>
         <MainTitle content="LISTA SVIH UGOVORA" variant="bodyMedium" />
         <CustomDivider />

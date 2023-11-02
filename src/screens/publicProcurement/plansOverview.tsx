@@ -340,7 +340,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   }, [form]);
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <Container>
         <MainTitle content="LISTA SVIH PLANOVA JAVNIH NABAVKI" variant="bodyMedium" />
         <CustomDivider />

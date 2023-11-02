@@ -185,7 +185,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   }, [procurement]);
 
   return (
-    <ScreenWrapper context={context}>
+    <ScreenWrapper>
       <SectionBox>
         <MainTitle
           variant="bodyMedium"

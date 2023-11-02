@@ -1,6 +1,6 @@
 import {DropdownDataNumber, DropdownDataString} from '../../types/dropdownData';
 import {PlanItem} from '../../types/graphql/getPlansTypes';
-import { ProcurementPlanDetails } from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {ProcurementPlanDetails} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {MicroserviceProps} from '../../types/micro-service-props';
 
 export interface ProcurementsPlanPageProps {

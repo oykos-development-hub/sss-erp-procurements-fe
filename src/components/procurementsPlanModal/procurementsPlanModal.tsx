@@ -59,7 +59,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
         if (planDetails) {
           for (const item of planDetails.items) {
             const insertItem = {
-              budget_indent_id: item.budget_indent.id || null,
+              budget_indent_id: item.budget_indent?.id || null,
               plan_id: planID,
               is_open_procurement: item.is_open_procurement,
               title: item.title,

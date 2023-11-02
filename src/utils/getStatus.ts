@@ -1,4 +1,4 @@
-import { RequestStatus } from '../screens/procurementsPlan/types';
+import {RequestStatus} from '../screens/procurementsPlan/types';
 import {RequestArticle} from '../types/graphql/planRequests';
 
 export const calculateStatus = (items: RequestArticle[]): RequestStatus => {
