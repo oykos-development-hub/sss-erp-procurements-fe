@@ -79,7 +79,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
         plan_id: planID as number,
         is_open_procurement: values.is_open_procurement?.id === 1 ? true : false,
         title: values.title,
-        article_type: values.article_type,
+        article_type: values.article_type.title,
         status: ProcurementStatus.ProcurementStatusInProgress,
         serial_number: values.serial_number,
         date_of_publishing: undefined,
