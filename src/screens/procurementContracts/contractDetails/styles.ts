@@ -51,3 +51,8 @@ export const FileUploadWrapper = styled.div`
     }
   }
 `;
+
+export const ErrorText = styled.span`
+  color: ${Theme.palette.error500};
+  font-size: 12px;
+`;

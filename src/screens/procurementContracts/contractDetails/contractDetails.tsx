@@ -17,7 +17,7 @@ import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSup
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
 import {parseDate} from '../../../utils/dateUtils';
-import {Column, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
+import {Column, ErrorText, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
@@ -64,6 +64,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const handleUpload = (files: FileList) => {
     setUploadedFile(files[0]);
+    clearErrors('file_id');
   };
 
   useEffect(() => {
@@ -86,7 +87,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     formState: {errors},
     control,
     watch,
-    setValue,
+    setError,
+    clearErrors,
   } = useForm({defaultValues: defaultValuesData});
 
   useEffect(() => {
@@ -239,7 +241,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   }, [filteredArticles]);
 
   const handleSave = async () => {
-    if (!uploadedFile && !watch('file_id')) return;
+    if (!uploadedFile && !watch('file_id')) {
+      setError('file_id', {type: 'required', message: 'Ovo polje je obavezno'});
+
+      return;
+    }
 
     if (uploadedFile) {
       const formData = new FormData();
@@ -253,8 +259,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
       return;
     }
-
-    handleInsertContract();
   };
 
   const handleInsertContract = async (file_id?: number) => {
@@ -397,16 +401,20 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <Filters style={{marginTop: '10px'}}>
           <Column>
             <FileUploadWrapper>
-              <FileUpload
-                icon={<></>}
-                style={{width: '100%'}}
-                variant="secondary"
-                onUpload={handleUpload}
-                note={<Typography variant="bodySmall" content="Ugovor" />}
-                buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
-              />
+              <div>
+                <FileUpload
+                  icon={<></>}
+                  style={{width: '100%'}}
+                  variant="secondary"
+                  onUpload={handleUpload}
+                  note={<Typography variant="bodySmall" content="Ugovor" />}
+                  buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
+                />
+                {errors?.file_id?.message && <ErrorText>{errors?.file_id?.message}</ErrorText>}
+              </div>
+
               {!!watch('file_id') && (
-                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15}} />
+                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 40}} />
               )}
             </FileUploadWrapper>
           </Column>

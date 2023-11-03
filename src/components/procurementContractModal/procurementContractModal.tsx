@@ -83,7 +83,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
         date_of_expiry: parseDateForBackend(values?.date_of_expiry),
         net_value: values?.net_value || 0.0,
         gross_value: values?.gross_value || 0.0,
-        file_id: 1,
+        file_id: 0,
       };
 
       await insertContract(
