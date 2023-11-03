@@ -12,7 +12,7 @@ export interface ContractArticle {
 }
 
 export interface ContractArticleGet {
-  id: number | undefined;
+  id: number | null;
   public_procurement_article: PublicProcurementArticle;
   contract: DropdownDataNumber;
   amount?: number;
@@ -28,7 +28,7 @@ export interface ContractArticleGet {
 }
 
 export interface ContractArticleInsert {
-  id?: number;
+  id: number | null;
   public_procurement_article_id: number;
   public_procurement_contract_id: number;
   net_value: number;

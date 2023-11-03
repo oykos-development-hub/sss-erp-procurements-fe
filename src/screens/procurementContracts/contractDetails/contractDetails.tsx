@@ -93,7 +93,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         );
         if (matchArticle) return matchArticle;
         return {
-          id: undefined,
+          id: null,
           public_procurement_article: {
             id: article.id,
             title: article.title,
