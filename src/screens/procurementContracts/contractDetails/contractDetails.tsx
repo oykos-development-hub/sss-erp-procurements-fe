@@ -22,6 +22,8 @@ import usePublicProcurementGetDetails from '../../../services/graphql/procuremen
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
+import useAppContext from '../../../context/useAppContext';
+import {REQUEST_STATUSES} from '../../../services/constants';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -35,12 +37,17 @@ const initialValues = {
   vat_value: '',
   net_value: '',
   gross_value: '',
+  file_id: 0,
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFile, setUploadedFile] = useState<File>();
+
+  const {
+    fileService: {uploadFile, downloadFile},
+  } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
@@ -56,8 +63,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
   const handleUpload = (files: FileList) => {
-    const fileList = Array.from(files);
-    setUploadedFiles(fileList);
+    setUploadedFile(files[0]);
   };
 
   useEffect(() => {
@@ -69,6 +75,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       net_value: contract?.net_value,
       gross_value: contract?.gross_value,
       vat_value: contract?.vat_value,
+      file_id: contract?.file_id,
     });
   }, [contract]);
 
@@ -79,6 +86,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     formState: {errors},
     control,
     watch,
+    setValue,
   } = useForm({defaultValues: defaultValuesData});
 
   useEffect(() => {
@@ -231,6 +239,25 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   }, [filteredArticles]);
 
   const handleSave = async () => {
+    if (!uploadedFile && !watch('file_id')) return;
+
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+
+      const response = await uploadFile(formData);
+
+      if (response.status === REQUEST_STATUSES.success) {
+        handleInsertContract(response.data.id);
+      }
+
+      return;
+    }
+
+    handleInsertContract();
+  };
+
+  const handleInsertContract = async (file_id?: number) => {
     const insertContractData = {
       id: +contractID,
       public_procurement_id: contract.public_procurement.id,
@@ -241,6 +268,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       net_value: net_value,
       gross_value: gross_value,
       vat_value: vat_value,
+      file_id: file_id ?? watch('file_id'),
     };
 
     insertContract(insertContractData, async () => {
@@ -275,6 +303,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         }
       }
     });
+  };
+
+  const downloadContract = async () => {
+    if (watch('file_id')) {
+      await downloadFile(watch('file_id'));
+    }
   };
 
   return (
@@ -369,8 +403,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                 variant="secondary"
                 onUpload={handleUpload}
                 note={<Typography variant="bodySmall" content="Ugovor" />}
-                buttonText="Učitaj"
+                buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
               />
+              {!!watch('file_id') && (
+                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15}} />
+              )}
             </FileUploadWrapper>
           </Column>
         </Filters>

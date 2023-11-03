@@ -2,6 +2,7 @@ const insertContractArticleMutation = `mutation($data: PublicProcurementContract
     publicProcurementContractArticle_Insert(data: $data) {
         status 
         message 
+        data
         item {
             id
             public_procurement_article {

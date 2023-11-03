@@ -8,6 +8,7 @@ import {
   PlusIcon,
   Theme,
   Dropdown,
+  FileTextIcon,
 } from 'client-library';
 import React, {useEffect, useMemo, useState} from 'react';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
@@ -22,6 +23,7 @@ import useGetOrganizationUnits from '../../../services/graphql/organizationUnits
 import {DropdownDataNumber} from '../../../types/dropdownData';
 import {OveragesModal} from '../../../components/overagesModal/overagesModal';
 import {UserRole} from '../../../constants';
+import useAppContext from '../../../context/useAppContext';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -30,7 +32,7 @@ interface ContractDetailsPageProps {
 export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File>();
   const {organizationUnits} = useGetOrganizationUnits();
   const unitsforDropdown = useMemo(() => {
     return [
@@ -40,6 +42,10 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       }) || []),
     ];
   }, [organizationUnits]);
+
+  const {
+    fileService: {downloadFile},
+  } = useAppContext();
 
   const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(unitsforDropdown[0]);
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -56,7 +62,8 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
   const handleUpload = (files: FileList) => {
     const fileList = Array.from(files);
-    setUploadedFiles(fileList);
+
+    setUploadedFiles(fileList[0]);
   };
 
   const {
@@ -159,6 +166,12 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     refetchAvailableArticles();
   };
 
+  const downloadContract = async () => {
+    if (contractData && contractData[0]?.file_id) {
+      await downloadFile(contractData[0]?.file_id);
+    }
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -201,7 +214,11 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
                 onUpload={handleUpload}
                 note={<Typography variant="bodySmall" content="Ugovor" />}
                 buttonText="Učitaj"
+                disabled={true}
               />
+              {contractData && contractData[0]?.file_id && (
+                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15}} />
+              )}
             </FileUploadWrapper>
           </Column>
         </Filters>
