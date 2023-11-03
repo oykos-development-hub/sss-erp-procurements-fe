@@ -3387,8 +3387,7 @@ attempted value: ${nr}
     publicProcurementContractArticle_Insert(data: $data) {
         status 
         message 
-        data
-        items {
+        item {
             id
             public_procurement_article {
                 id
@@ -3398,6 +3397,7 @@ attempted value: ${nr}
                 id
                 title
             }
+            amount
             net_value
             gross_value
         }
