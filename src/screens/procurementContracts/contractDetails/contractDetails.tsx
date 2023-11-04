@@ -47,6 +47,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {
     fileService: {uploadFile, downloadFile},
+    alert,
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -63,8 +64,16 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
   const handleUpload = (files: FileList) => {
-    setUploadedFile(files[0]);
-    clearErrors('file_id');
+    const allowedSize = 1048576;
+    if (files && files[0] && files[0].size > allowedSize) {
+      console.log(files[0].size);
+      setError('file_id', {type: 'custom', message: 'Maksimalna veličina fajla je 1MB.'});
+      return;
+    } else {
+      console.log('aaaaaaaaaaa');
+      setUploadedFile(files[0]);
+      clearErrors('file_id');
+    }
   };
 
   useEffect(() => {
