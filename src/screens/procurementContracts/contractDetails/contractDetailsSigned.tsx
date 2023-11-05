@@ -1,29 +1,29 @@
 import {
   Button,
+  Dropdown,
   FileUpload,
   Input,
   MicroserviceProps,
-  TableHead,
-  Typography,
   PlusIcon,
+  TableHead,
   Theme,
-  Dropdown,
-  FileTextIcon,
+  Typography,
 } from 'client-library';
 import React, {useEffect, useMemo, useState} from 'react';
-import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
-import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
-import ScreenWrapper from '../../../shared/screenWrapper';
-import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
-import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
-import {parseDate} from '../../../utils/dateUtils';
-import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
-import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
-import useGetOrganizationUnits from '../../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
-import {DropdownDataNumber} from '../../../types/dropdownData';
 import {OveragesModal} from '../../../components/overagesModal/overagesModal';
 import {UserRole} from '../../../constants';
 import useAppContext from '../../../context/useAppContext';
+import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
+import useGetContractPDFUrl from '../../../services/graphql/contractPDF/useGetContractPDFUrl';
+import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
+import useGetOrganizationUnits from '../../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
+import ScreenWrapper from '../../../shared/screenWrapper';
+import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
+import {DropdownDataNumber} from '../../../types/dropdownData';
+import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
+import {parseDate} from '../../../utils/dateUtils';
+import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -55,6 +55,12 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   });
 
   const procurementID = contractData?.[0].public_procurement.id;
+
+  const {fetchPDFUrl} = useGetContractPDFUrl({
+    id: procurementID ?? 0,
+    organization_unit_id: selectedOrganizationUnit.id,
+  });
+
   const {articles, fetch: refetchAvailableArticles} = useGetOrderProcurementAvailableArticles(
     procurementID as number,
     selectedOrganizationUnit.id,
@@ -172,6 +178,10 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     }
   };
 
+  const generatePDF = () => {
+    fetchPDFUrl();
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -204,24 +214,19 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           </Column>
         </Filters>
 
-        <Filters style={{marginTop: '10px'}}>
-          <Column>
-            <FileUploadWrapper>
-              <FileUpload
-                icon={<></>}
-                style={{width: '100%'}}
-                variant="secondary"
-                onUpload={handleUpload}
-                note={<Typography variant="bodySmall" content="Ugovor" />}
-                buttonText="Učitaj"
-                disabled={true}
-              />
-              {contractData && contractData[0]?.file_id && (
-                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15}} />
-              )}
-            </FileUploadWrapper>
-          </Column>
-        </Filters>
+        <FileUploadWrapper>
+          <FileUpload
+            icon={<></>}
+            variant="secondary"
+            onUpload={handleUpload}
+            note={<Typography variant="bodySmall" content="Ugovor" />}
+            buttonText="Učitaj"
+            disabled={true}
+          />
+          {contractData && contractData[0]?.file_id && (
+            <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15, width: 'auto'}} />
+          )}
+        </FileUploadWrapper>
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
@@ -245,7 +250,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
-        <Filters style={{marginBlock: '12px'}}>
+        <Filters style={{marginBlock: '12px', alignItems: 'center', justifyContent: 'space-between'}}>
           <Column>
             <Dropdown
               label={<Typography variant="bodySmall" content="ORGANIZACIONA JEDINICA:" />}
@@ -254,6 +259,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
             />
           </Column>
+          <Button content="Generiši izvještaj" onClick={generatePDF} />
         </Filters>
         <TableContainer
           tableHeads={tableHeads}

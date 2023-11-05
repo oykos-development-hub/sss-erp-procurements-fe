@@ -38,9 +38,11 @@ export const Plan = styled.div`
 `;
 
 export const FileUploadWrapper = styled.div`
+  max-width: 600px;
   display: flex;
   align-items: center;
   width: 100%;
+  margin-top: 10px;
   > div > div {
     display: flex;
     width: 100%;

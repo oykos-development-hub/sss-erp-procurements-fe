@@ -407,27 +407,22 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           </Column>
         </Filters>
 
-        <Filters style={{marginTop: '10px'}}>
-          <Column>
-            <FileUploadWrapper>
-              <div>
-                <FileUpload
-                  icon={<></>}
-                  style={{width: '100%'}}
-                  variant="secondary"
-                  onUpload={handleUpload}
-                  note={<Typography variant="bodySmall" content="Ugovor" />}
-                  buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
-                />
-                {errors?.file_id?.message && <ErrorText>{errors?.file_id?.message}</ErrorText>}
-              </div>
+        <FileUploadWrapper>
+          <div>
+            <FileUpload
+              icon={<></>}
+              variant="secondary"
+              onUpload={handleUpload}
+              note={<Typography variant="bodySmall" content="Ugovor" />}
+              buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
+            />
+            {errors?.file_id?.message && <ErrorText>{errors?.file_id?.message}</ErrorText>}
+          </div>
 
-              {!!watch('file_id') && (
-                <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 40}} />
-              )}
-            </FileUploadWrapper>
-          </Column>
-        </Filters>
+          {!!watch('file_id') && (
+            <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 40}} />
+          )}
+        </FileUploadWrapper>
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
