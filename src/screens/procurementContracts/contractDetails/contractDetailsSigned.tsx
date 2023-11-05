@@ -56,7 +56,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
   const procurementID = contractData?.[0].public_procurement.id;
 
-  const {fetchPDFUrl} = useGetContractPDFUrl({
+  const {fetchPDFUrl, loading: loadingReport} = useGetContractPDFUrl({
     id: procurementID ?? 0,
     organization_unit_id: selectedOrganizationUnit.id,
   });
@@ -259,7 +259,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
             />
           </Column>
-          <Button content="Generiši izvještaj" onClick={generatePDF} />
+          <Button content="Generiši izvještaj" onClick={generatePDF} isLoading={loadingReport} />
         </Filters>
         <TableContainer
           tableHeads={tableHeads}
