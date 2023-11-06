@@ -2486,7 +2486,7 @@ attempted value: ${nr}
             limit
         }
     }
-}`,useInsertProcurementPlanItemLimit=()=>{const[Zt,Xt]=reactExports.useState(!1),{fetch:Jt}=useAppContext();return{loading:Zt,mutate:async(tr,rr,nr)=>{Xt(!0);const ir=await Jt(planItemLimitInsertMutation,{data:tr});ir.publicProcurementPlanItemLimit_Insert.status===REQUEST_STATUSES.success?rr&&rr(ir.publicProcurementPlanItemLimit_Insert.item):nr&&nr(ir.publicProcurementPlanItemLimit_Insert.message),Xt(!1)}}},planItemLimitsQuery=`query ProcurementLimits($procurement_id: Int) {
+}`,useInsertProcurementPlanItemLimit=()=>{const[Zt,Xt]=reactExports.useState(!1),{fetch:Jt}=useAppContext();return{loading:Zt,mutate:async(tr,rr,nr)=>{Xt(!0);const ir=await Jt(planItemLimitInsertMutation,{data:tr});ir.publicProcurementPlanItemLimit_Insert.status===REQUEST_STATUSES.success?rr&&rr(ir.publicProcurementPlanItemLimit_Insert.item):nr&&nr(ir.publicProcurementPlanItemLimit_Insert.message),Xt(!1)}}},planItemLimitsQuery=`query ProcurementLimits($procurement_id: Int!) {
   publicProcurementPlanItem_Limits(procurement_id: $procurement_id) {
       status 
       message
