@@ -13,8 +13,8 @@ interface ProcurementDetailsPageProps {
 export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> = ({context}) => {
   const url = context.navigation.location.pathname;
   const procurementID = url.split('/').at(-1);
-  const organizationUnitId = url.split('/').at(-3);
-  const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(1);
+  const organizationUnitId = +url.split('/').at(-3);
+  const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementID);
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
     undefined,
     +organizationUnitId,
@@ -99,9 +99,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
     }, 0) || 0;
 
   const findIdForOrganisationUnit = () => {
-    const desiredItem = procurementPlanLimits?.find(item => {
-      return item?.organization_unit?.id === organizationUnitId;
-    });
+    const desiredItem = procurementPlanLimits?.find(item => item?.organization_unit?.id === organizationUnitId);
 
     if (desiredItem) {
       return `€ ${desiredItem.limit}`;
@@ -134,8 +132,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
           </Filters>
         </Header>
 
-        <SubTitle variant="bodySmall" content="LIMIT:" />
-        <Price variant="bodySmall" content={findIdForOrganisationUnit()} />
+        <SubTitle variant="bodySmall" content={`LIMIT: ${findIdForOrganisationUnit()}`} />
         <Plan>
           <Typography
             content={procurements?.[0]?.plan?.id === 1 ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}

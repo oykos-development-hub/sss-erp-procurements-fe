@@ -70,7 +70,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       setError('file_id', {type: 'custom', message: 'Maksimalna veličina fajla je 1MB.'});
       return;
     } else {
-      console.log('aaaaaaaaaaa');
       setUploadedFile(files[0]);
       clearErrors('file_id');
     }
@@ -171,7 +170,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
         <Input
-          type="number"
           value={row?.net_value?.toString() || ''}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}

@@ -125,7 +125,6 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
     accessor: 'total',
     type: 'custom',
     renderContents: (_, row: any) => {
-      console.log(row);
       const totalPdv =
         row?.articles?.reduce((sum: any, article: any) => {
           const pdv =
