@@ -11,11 +11,12 @@ export enum ProcurementStatus {
   ProcurementStatusProcessed = 'Obrađen',
 }
 
-export const isProcurementFinished = (status: ProcurementStatus) => [
-  ProcurementStatus.PostProcurementStatusCompleted,
-  ProcurementStatus.PostProcurementStatusContracted,
-  ProcurementStatus.PreProcurementStatusCompleted,
-].includes(status);
+export const isProcurementFinished = (status: ProcurementStatus) =>
+  [
+    ProcurementStatus.PostProcurementStatusCompleted,
+    ProcurementStatus.PostProcurementStatusContracted,
+    ProcurementStatus.PreProcurementStatusCompleted,
+  ].includes(status);
 
 export interface ProcurementItem {
   id: number;
