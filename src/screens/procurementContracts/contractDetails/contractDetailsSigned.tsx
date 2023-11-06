@@ -223,7 +223,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
             buttonText="Učitaj"
             disabled={true}
           />
-          {contractData && contractData[0]?.file_id && (
+          {contractData && !!contractData[0]?.file_id && (
             <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15, width: 'auto'}} />
           )}
         </FileUploadWrapper>
