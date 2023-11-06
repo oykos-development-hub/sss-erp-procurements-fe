@@ -309,7 +309,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const availableYearsForPlan = useMemo(() => {
-    const years = yearsForDropdown(10, false, 5);
+    const years = yearsForDropdown(10, false, 1);
 
     const existingPlanYears = tableData?.map(plan => plan.year) || [];
     const filteredYears = years.filter(year => !existingPlanYears.includes(year.id));
@@ -349,7 +349,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             <Filters>
               <Dropdown
                 label={<Typography variant="bodySmall" content="GODINA:" />}
-                options={yearsForDropdown(10, true, 5)}
+                options={yearsForDropdown(10, true, 1)}
                 name="year"
                 value={form?.year || null}
                 onChange={handleChange}
