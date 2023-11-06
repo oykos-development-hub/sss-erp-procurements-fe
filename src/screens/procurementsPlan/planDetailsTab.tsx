@@ -5,7 +5,7 @@ import {PublicProcurementModal} from '../../components/pocurementsModal/newPubli
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import {checkPermission, isEditProcurementAndPlanDisabled, UserPermission, UserRole} from '../../constants';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
-import {ProcurementItem} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {ProcurementItem, isProcurementFinished} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {Column, Price} from './styles';
 import {PlanDetailsTabProps} from './types';
 import useDeletePublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useDeletePublicProcurementPlanItem';
@@ -41,26 +41,30 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
   const procurements = items?.filter(item => item.is_open_procurement === !isSimpleProcurement) || [];
 
   const totalNet =
-    procurements?.reduce((total: number, item) => {
-      const netPrices = item.articles.map(article =>
-        article?.amount ? (article.net_price || 0) * article.amount : article.net_price || 0,
-      );
-      const itemTotalPrice = netPrices.reduce((sum, price) => (sum || 0) + (price || 0), 0);
-      return total + itemTotalPrice;
-    }, 0) || 0;
+    procurements
+      ?.filter(procurement => isProcurementFinished(procurement.status))
+      .reduce((total: number, item) => {
+        const netPrices = item.articles.map(article =>
+          article?.amount ? (article.net_price || 0) * article.amount : article.net_price || 0,
+        );
+        const itemTotalPrice = netPrices.reduce((sum, price) => (sum || 0) + (price || 0), 0);
+        return total + itemTotalPrice;
+      }, 0) || 0;
 
   const totalPrice =
-    procurements?.reduce((total: number, item) => {
-      const itemTotalPrice = item.articles.reduce((sum, article) => {
-        const netPrice = article.net_price || 0;
-        const vatPercentage = article.vat_percentage;
-        const articleTotalPrice = article.amount
-          ? article?.amount * (netPrice + (netPrice * vatPercentage) / 100)
-          : netPrice + (netPrice * vatPercentage) / 100;
-        return sum + articleTotalPrice;
-      }, 0);
-      return total + itemTotalPrice;
-    }, 0) || 0;
+    procurements
+      ?.filter(procurement => isProcurementFinished(procurement.status))
+      .reduce((total: number, item) => {
+        const itemTotalPrice = item.articles.reduce((sum, article) => {
+          const netPrice = article.net_price || 0;
+          const vatPercentage = article.vat_percentage;
+          const articleTotalPrice = article.amount
+            ? article?.amount * (netPrice + (netPrice * vatPercentage) / 100)
+            : netPrice + (netPrice * vatPercentage) / 100;
+          return sum + articleTotalPrice;
+        }, 0);
+        return total + itemTotalPrice;
+      }, 0) || 0;
 
   const {mutate} = useDeletePublicProcurementPlanItem();
 

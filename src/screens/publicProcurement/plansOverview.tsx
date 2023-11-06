@@ -39,6 +39,11 @@ import {
   TableHeader,
 } from './styles';
 import {ConvertModal} from '../../components/convertModal/convertModal';
+import {
+  ProcurementItem,
+  ProcurementStatus,
+  isProcurementFinished,
+} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -69,17 +74,14 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       accessor: 'items',
       type: 'custom',
       renderContents: item => {
-        const calculateTotalValue = (items: any[]) => {
+        const calculateTotalValue = (items: ProcurementItem[]) => {
           let totalValue = 0;
           items.forEach(item => {
-            if (item && item.articles && item.articles.length > 0) {
-              item.articles.forEach((article: {net_price: string; vat_percentage: string}) => {
+            if (item && isProcurementFinished(item.status)) {
+              item?.articles?.forEach(article => {
                 if (article && article.net_price) {
-                  const price =
-                    Number(article.net_price) + (Number(article.net_price) * Number(article.vat_percentage)) / 100;
-                  if (!isNaN(price)) {
-                    totalValue += price;
-                  }
+                  const price = article.net_price + (article.net_price * article.vat_percentage) / 100;
+                  totalValue += price;
                 }
               });
             }

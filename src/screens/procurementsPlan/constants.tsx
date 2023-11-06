@@ -6,6 +6,7 @@ import {UserRole} from '../../constants';
 import {
   ProcurementItem,
   ProcurementItemForOrganizationUnit,
+  isProcurementFinished,
 } from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {
   PublicProcurementArticle,
@@ -204,9 +205,10 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     accessor: 'articles',
     type: 'custom',
     shouldRender: role !== UserRole.MANAGER_OJ,
-    renderContents: (articles: PublicProcurementArticle[]) => {
+    renderContents: (articles: PublicProcurementArticle[], row: ProcurementItem) => {
+      if (!isProcurementFinished(row.status)) return 0;
       const totalPrice =
-        articles?.reduce((sum, article) => {
+        articles.reduce((sum, article) => {
           const price = (article?.amount ? (article.net_price || 0) * article?.amount : article.net_price) || 0;
           return sum + price;
         }, 0) || 0;
@@ -222,9 +224,11 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     accessor: 'articles',
     type: 'custom',
     shouldRender: role !== UserRole.MANAGER_OJ,
-    renderContents: (articles: PublicProcurementArticle[]) => {
+    renderContents: (articles: PublicProcurementArticle[], row: ProcurementItem) => {
+      if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =
         articles?.reduce((sum, article) => {
+          if (!isProcurementFinished(row.status)) return 0;
           const pdv = article?.amount
             ? ((article.net_price || 0) * article.vat_percentage * article?.amount) / 100
             : ((article.net_price || 0) * article.vat_percentage) / 100;
@@ -243,6 +247,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     type: 'custom',
     shouldRender: role !== UserRole.MANAGER_OJ,
     renderContents: (_, row: ProcurementItem) => {
+      if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =
         row?.articles?.reduce((sum, article) => {
           const pdv = article?.amount
