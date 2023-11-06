@@ -134,7 +134,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
           </Filters>
         </Header>
 
-        <SubTitle variant="bodySmall" content="OPREDIJELJENI BUDŽET ZA NABAVKU KANC. MATERIJALA:" />
+        <SubTitle variant="bodySmall" content="LIMIT:" />
         <Price variant="bodySmall" content={findIdForOrganisationUnit()} />
         <Plan>
           <Typography

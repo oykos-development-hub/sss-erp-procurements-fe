@@ -206,7 +206,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
           </Filters>
         </Header>
 
-        <SubTitle variant="bodySmall" content="OPREDIJELJENI BUDŽET ZA NABAVKU KANC. MATERIJALA:" />
+        <SubTitle variant="bodySmall" content="LIMIT:" />
         <Price variant="bodySmall" content={`€ ${limit ? limit.toFixed(2) : ''}`} />
         <Plan>
           <Typography
