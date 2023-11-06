@@ -44,27 +44,23 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
     procurements
       ?.filter(procurement => isProcurementFinished(procurement.status))
       .reduce((total: number, item) => {
-        const netPrices = item.articles.map(article =>
-          article?.amount ? (article.net_price || 0) * article.amount : article.net_price || 0,
-        );
-        const itemTotalPrice = netPrices.reduce((sum, price) => (sum || 0) + (price || 0), 0);
-        return total + itemTotalPrice;
+        const netPriceTotal = item.articles
+          .map(article => (article.net_price || 0) * article.total_amount)
+          .reduce((sum, price) => sum + price, 0);
+        return total + netPriceTotal;
       }, 0) || 0;
 
-  const totalPrice =
-    procurements
-      ?.filter(procurement => isProcurementFinished(procurement.status))
-      .reduce((total: number, item) => {
-        const itemTotalPrice = item.articles.reduce((sum, article) => {
-          const netPrice = article.net_price || 0;
-          const vatPercentage = article.vat_percentage;
-          const articleTotalPrice = article.amount
-            ? article?.amount * (netPrice + (netPrice * vatPercentage) / 100)
-            : netPrice + (netPrice * vatPercentage) / 100;
-          return sum + articleTotalPrice;
-        }, 0);
-        return total + itemTotalPrice;
-      }, 0) || 0;
+  const totalPrice = procurements
+    ?.filter(procurement => isProcurementFinished(procurement.status))
+    .reduce((total: number, item) => {
+      const itemTotalPrice = item.articles.reduce((sum, article) => {
+        const netPrice = article.net_price || 0;
+        const vatPercentage = article.vat_percentage;
+        const articleTotalPrice = article.total_amount * (netPrice + (netPrice * vatPercentage) / 100);
+        return sum + articleTotalPrice;
+      }, 0);
+      return total + itemTotalPrice;
+    }, 0);
 
   const {mutate} = useDeletePublicProcurementPlanItem();
 

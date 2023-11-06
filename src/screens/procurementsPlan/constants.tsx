@@ -250,17 +250,11 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
       if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =
         row?.articles?.reduce((sum, article) => {
-          const pdv = article?.amount
-            ? ((article.net_price || 0) * article.vat_percentage * article?.amount) / 100
-            : ((article.net_price || 0) * article.vat_percentage) / 100;
+          const pdv = ((article.net_price || 0) * article.vat_percentage * article?.total_amount) / 100;
           return sum + pdv;
         }, 0) || 0;
       const totalNet =
-        row.articles?.reduce(
-          (sum, article) =>
-            article?.amount ? sum + (article.net_price || 0) * article?.amount : sum + (article.net_price || 0),
-          0,
-        ) || 0;
+        row.articles?.reduce((sum, article) => sum + (article.net_price || 0) * article?.total_amount, 0) || 0;
       const total = totalNet + totalPdv;
       return (
         <InlineText>

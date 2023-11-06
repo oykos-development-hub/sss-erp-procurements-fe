@@ -52,6 +52,7 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
                     net_price
                     vat_percentage
                     manufacturer
+                    total_amount
                 }
             }
         }

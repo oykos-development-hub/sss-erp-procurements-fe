@@ -80,7 +80,9 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             if (item && isProcurementFinished(item.status)) {
               item?.articles?.forEach(article => {
                 if (article && article.net_price) {
-                  const price = article.net_price + (article.net_price * article.vat_percentage) / 100;
+                  console.log(article);
+                  const price =
+                    (article.net_price + (article.net_price * article.vat_percentage) / 100) * article.total_amount;
                   totalValue += price;
                 }
               });
