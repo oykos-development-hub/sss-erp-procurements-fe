@@ -1,16 +1,19 @@
-import {Typography, Theme} from 'client-library';
-import {FileItem} from '../../types/graphql/procurementContractsTypes';
-import {FileList as List, FileItem as File, Controls, CloseIcon, SmallButton} from './styles';
+import {Theme, Typography} from 'client-library';
 import useAppContext from '../../context/useAppContext';
+import {FileItem} from '../../types/graphql/procurementContractsTypes';
+import {Controls, DeleteFileIcon, DownloadFileIcon, FileItem as File, FileIconButton, FileList as List} from './styles';
 
 type FileListProps = {
   files: FileItem[];
-  onDelete: (id: number) => void;
+  // Delete will be done in the component. It needs to happen after saving the contract,
+  // because it is more important to delete it from the contract than it is from the server.
+  // Once the contract is saved, it can be deleted from the server
+  onDelete?: (id: number) => void;
 };
 
-const FileList = ({files}: FileListProps) => {
+const FileList = ({files, onDelete}: FileListProps) => {
   const {
-    fileService: {downloadFile},
+    fileService: {downloadFile, deleteFile},
     alert,
   } = useAppContext();
 
@@ -26,10 +29,6 @@ const FileList = ({files}: FileListProps) => {
     );
   };
 
-  const handleDelete = (file: FileItem) => {
-    console.log('delete');
-  };
-
   return (
     <List>
       {files &&
@@ -37,10 +36,14 @@ const FileList = ({files}: FileListProps) => {
           <File key={file.id}>
             <Typography content={file.name} />
             <Controls>
-              <SmallButton content="Preuzmi" onClick={() => handleDownload(file)} />
-              <SmallButton content="Obriši" onClick={() => handleDelete(file)} />
-              {/* <SmallButton content="Otvori" onClick={() => handleView(file)} /> */}
-              <CloseIcon stroke={Theme.palette.gray700} />
+              <FileIconButton onClick={() => handleDownload(file)}>
+                <DownloadFileIcon stroke={Theme.palette.gray700} />
+              </FileIconButton>
+              {onDelete && (
+                <FileIconButton>
+                  <DeleteFileIcon stroke={Theme.palette.gray700} onClick={() => onDelete(file.id)} />
+                </FileIconButton>
+              )}
             </Controls>
           </File>
         ))}

@@ -24,6 +24,7 @@ import {DropdownDataNumber} from '../../../types/dropdownData';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import FileList from '../../../components/fileList/fileList';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -208,17 +209,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           </Column>
         </Filters>
 
-        <FileUploadWrapper>
-          <FileUpload
-            icon={<></>}
-            variant="secondary"
-            onUpload={handleUpload}
-            note={<Typography variant="bodySmall" content="Ugovor" />}
-            buttonText="Učitaj"
-            disabled={true}
-          />
-        </FileUploadWrapper>
-
         <Filters style={{marginTop: '44px'}}>
           <Column>
             <Input label="UKUPNA NETO VRIJEDNOST" value={contractData && contractData[0]?.net_value} disabled={true} />
@@ -238,6 +228,17 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
             />
           </Column>
         </Filters>
+        <FileUploadWrapper>
+          <FileUpload
+            icon={<></>}
+            variant="secondary"
+            onUpload={handleUpload}
+            note={<Typography variant="bodySmall" content="Ugovor" />}
+            buttonText="Učitaj"
+            disabled={true}
+          />
+        </FileUploadWrapper>
+        <FileList files={(contractData && contractData[0].file) ?? []} />
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>

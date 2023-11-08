@@ -17,7 +17,7 @@ import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSup
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
 import {parseDate} from '../../../utils/dateUtils';
-import {Column, ErrorText, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
@@ -26,6 +26,7 @@ import useAppContext from '../../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../../services/constants';
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
 import FileList from '../../../components/fileList/fileList';
+import {FileResponseItem} from '../../../types/files';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -56,10 +57,11 @@ const initialValues: ContractForm = {
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
-  const [files, setFiles] = useState<FileList>();
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
 
   const {
-    fileService: {uploadFile},
+    fileService: {uploadFile, batchDeleteFiles},
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -261,13 +263,15 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   }, [filteredArticles]);
 
   const handleSave = async () => {
-    if (!files && !watch('file')) {
+    // Files are mandatory
+    if (!files?.length && !watch('file').length) {
       setError('file', {type: 'required', message: 'Ovo polje je obavezno'});
 
       return;
     }
 
     if (files) {
+      // If there are files to upload
       const formData = new FormData();
       const fileArray = Array.from(files);
 
@@ -275,19 +279,28 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         formData.append('file', fileArray[i]);
       }
 
-      const response = await uploadFile(formData);
-
-      if (response.status === REQUEST_STATUSES.success) {
-        console.log(response);
-        handleInsertContract(response.data.id);
-      }
+      await uploadFile(
+        formData,
+        (files: FileResponseItem[]) => {
+          setFiles(null);
+          setValue('file', watch('file').concat(files));
+          handleInsertContract();
+        },
+        () => {
+          context?.alert.error('Greška pri čuvanju! Fajlovi nisu učitani.');
+        },
+      );
 
       return;
+    } else {
+      // If no files are to be uploaded
+      handleInsertContract();
     }
   };
 
-  const handleInsertContract = async (files?: number[]) => {
-    const currentFiles = watch('file').map((item: FileItem) => item.id);
+  const handleInsertContract = async () => {
+    const files = watch('file').map((item: FileItem) => item.id);
+
     const insertContractData = {
       id: +contractID,
       public_procurement_id: contract.public_procurement.id,
@@ -298,10 +311,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       net_value: net_value,
       gross_value: gross_value,
       vat_value: vat_value,
-      file: files ? [...files, ...currentFiles] : currentFiles,
+      file: files,
     };
 
     insertContract(insertContractData, async () => {
+      if (filesToDelete.length) {
+        await batchDeleteFiles(filesToDelete);
+      }
+
       if (filteredArticles) {
         let counter = 0;
         for (const item of filteredArticles) {
@@ -318,7 +335,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           };
           await insertContractArticle(
             insertItem,
-            () => {
+            async () => {
               counter++;
               if (counter === filteredArticles.length) {
                 context?.alert.success('Uspješno sačuvano');
@@ -338,6 +355,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const onDeleteFile = (id: number) => {
     const filteredFiles = watch('file').filter((item: FileItem) => item.id !== id);
     setValue('file', filteredFiles);
+    setFilesToDelete(filesToDelete => [...filesToDelete, id]);
   };
 
   return (
@@ -423,23 +441,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           </Column>
         </Filters>
 
-        <FileUploadWrapper>
-          <div>
-            <FileUpload
-              icon={null}
-              files={files}
-              variant="secondary"
-              onUpload={handleUpload}
-              note={<Typography variant="bodySmall" content="Ugovor" />}
-              buttonText={watch('file') ? 'Zamijeni' : 'Učitaj'}
-              style={{marginRight: 12}}
-            />
-            {errors?.file?.message && <ErrorText>{errors?.file?.message}</ErrorText>}
-          </div>
-
-          <FileList files={watch('file')} onDelete={onDeleteFile} />
-        </FileUploadWrapper>
-
         <Filters style={{marginTop: '44px'}}>
           <Column>
             <Input
@@ -473,6 +474,21 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             />
           </Column>
         </Filters>
+
+        <FileUploadWrapper>
+          <FileUpload
+            icon={null}
+            files={files}
+            variant="secondary"
+            onUpload={handleUpload}
+            note={<Typography variant="bodySmall" content="Ugovor" />}
+            hint="Fajlovi neće biti učitani dok ne sačuvate ugovor"
+            buttonText="Učitaj"
+            multiple={true}
+            error={errors.file?.message}
+          />
+        </FileUploadWrapper>
+        <FileList files={watch('file')} onDelete={onDeleteFile} />
 
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
