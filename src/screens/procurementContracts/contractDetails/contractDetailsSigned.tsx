@@ -172,12 +172,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     refetchAvailableArticles();
   };
 
-  const downloadContract = async () => {
-    if (contractData && contractData[0]?.file_id) {
-      await downloadFile(contractData[0]?.file_id);
-    }
-  };
-
   const generatePDF = () => {
     fetchPDFUrl();
   };
@@ -223,9 +217,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
             buttonText="Učitaj"
             disabled={true}
           />
-          {contractData && !!contractData[0]?.file_id && (
-            <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 15, width: 'auto'}} />
-          )}
         </FileUploadWrapper>
 
         <Filters style={{marginTop: '44px'}}>

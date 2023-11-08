@@ -21,7 +21,11 @@ const contractInsertMutation = `mutation($data: PublicProcurementContractInsertM
             vat_value
             created_at
             updated_at
-            file_id
+            file {
+              id
+              name
+              type
+            }
         }
     }
 }`;

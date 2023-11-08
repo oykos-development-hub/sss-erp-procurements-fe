@@ -1,6 +1,8 @@
 import {DropdownDataNumber} from '../dropdownData';
 import {Response, SingularResponse} from './utils';
 
+export type FileItem = {id: number; name: string; type: string};
+
 export interface ProcurementContract {
   id: number;
   public_procurement: DropdownDataNumber;
@@ -12,7 +14,7 @@ export interface ProcurementContract {
   gross_value: string;
   created_at: string;
   updated_at: string;
-  file_id: number;
+  file: FileItem[];
   vat_value: string;
 }
 
@@ -25,7 +27,7 @@ export interface ProcurementContractInsert {
   date_of_expiry: string;
   net_value: string;
   gross_value: string;
-  file_id?: number;
+  file?: number[];
   vat_value?: string;
 }
 

@@ -15,21 +15,34 @@ import useInsertProcurementContract from '../../../services/graphql/procurementC
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
 import ScreenWrapper from '../../../shared/screenWrapper';
-import {CustomDivider, Filters, MainTitle, SectionBox, SubTitle, TableContainer} from '../../../shared/styles';
+import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
 import {parseDate} from '../../../utils/dateUtils';
-import {Column, ErrorText, FileUploadWrapper, FormControls, FormFooter, Plan, Price} from './styles';
+import {Column, ErrorText, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
 import useAppContext from '../../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../../services/constants';
+import {FileItem} from '../../../types/graphql/procurementContractsTypes';
+import FileList from '../../../components/fileList/fileList';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
 }
 
-const initialValues = {
+type ContractForm = {
+  serial_number: string;
+  date_of_signing: string;
+  date_of_expiry: string;
+  supplier: {id: number; title: string};
+  vat_value: string;
+  net_value: string;
+  gross_value: string;
+  file: FileItem[];
+};
+
+const initialValues: ContractForm = {
   serial_number: '',
   date_of_signing: '',
   date_of_expiry: '',
@@ -37,17 +50,16 @@ const initialValues = {
   vat_value: '',
   net_value: '',
   gross_value: '',
-  file_id: 0,
+  file: [],
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
-  const [uploadedFile, setUploadedFile] = useState<File>();
+  const [files, setFiles] = useState<FileList>();
 
   const {
-    fileService: {uploadFile, downloadFile},
-    alert,
+    fileService: {uploadFile},
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -67,11 +79,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     const allowedSize = 1048576;
     if (files && files[0] && files[0].size > allowedSize) {
       console.log(files[0].size);
-      setError('file_id', {type: 'custom', message: 'Maksimalna veličina fajla je 1MB.'});
+      setError('file', {type: 'custom', message: 'Maksimalna veličina fajla je 1MB.'});
       return;
     } else {
-      setUploadedFile(files[0]);
-      clearErrors('file_id');
+      setFiles(files);
+      clearErrors('file');
     }
   };
 
@@ -84,7 +96,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       net_value: contract?.net_value,
       gross_value: contract?.gross_value,
       vat_value: contract?.vat_value,
-      file_id: contract?.file_id,
+      file: contract?.file,
     });
   }, [contract]);
 
@@ -97,6 +109,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     watch,
     setError,
     clearErrors,
+    setValue,
   } = useForm({defaultValues: defaultValuesData});
 
   useEffect(() => {
@@ -248,19 +261,24 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   }, [filteredArticles]);
 
   const handleSave = async () => {
-    if (!uploadedFile && !watch('file_id')) {
-      setError('file_id', {type: 'required', message: 'Ovo polje je obavezno'});
+    if (!files && !watch('file')) {
+      setError('file', {type: 'required', message: 'Ovo polje je obavezno'});
 
       return;
     }
 
-    if (uploadedFile) {
+    if (files) {
       const formData = new FormData();
-      formData.append('file', uploadedFile);
+      const fileArray = Array.from(files);
+
+      for (let i = 0; i < fileArray.length; i++) {
+        formData.append('file', fileArray[i]);
+      }
 
       const response = await uploadFile(formData);
 
       if (response.status === REQUEST_STATUSES.success) {
+        console.log(response);
         handleInsertContract(response.data.id);
       }
 
@@ -268,7 +286,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     }
   };
 
-  const handleInsertContract = async (file_id?: number) => {
+  const handleInsertContract = async (files?: number[]) => {
+    const currentFiles = watch('file').map((item: FileItem) => item.id);
     const insertContractData = {
       id: +contractID,
       public_procurement_id: contract.public_procurement.id,
@@ -279,7 +298,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       net_value: net_value,
       gross_value: gross_value,
       vat_value: vat_value,
-      file_id: file_id ?? watch('file_id'),
+      file: files ? [...files, ...currentFiles] : currentFiles,
     };
 
     insertContract(insertContractData, async () => {
@@ -316,10 +335,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     });
   };
 
-  const downloadContract = async () => {
-    if (watch('file_id')) {
-      await downloadFile(watch('file_id'));
-    }
+  const onDeleteFile = (id: number) => {
+    const filteredFiles = watch('file').filter((item: FileItem) => item.id !== id);
+    setValue('file', filteredFiles);
   };
 
   return (
@@ -408,18 +426,18 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <FileUploadWrapper>
           <div>
             <FileUpload
-              icon={<></>}
+              icon={null}
+              files={files}
               variant="secondary"
               onUpload={handleUpload}
               note={<Typography variant="bodySmall" content="Ugovor" />}
-              buttonText={watch('file_id') ? 'Zamijeni' : 'Učitaj'}
+              buttonText={watch('file') ? 'Zamijeni' : 'Učitaj'}
+              style={{marginRight: 12}}
             />
-            {errors?.file_id?.message && <ErrorText>{errors?.file_id?.message}</ErrorText>}
+            {errors?.file?.message && <ErrorText>{errors?.file?.message}</ErrorText>}
           </div>
 
-          {!!watch('file_id') && (
-            <Button content="Preuzmi ugovor" onClick={downloadContract} style={{marginLeft: 40}} />
-          )}
+          <FileList files={watch('file')} onDelete={onDeleteFile} />
         </FileUploadWrapper>
 
         <Filters style={{marginTop: '44px'}}>

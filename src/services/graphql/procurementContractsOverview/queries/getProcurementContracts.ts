@@ -21,7 +21,11 @@ const contractsOverviewQuery = `query Contracts($id: Int, $procurement_id: Int, 
             vat_value
             created_at
             updated_at
-            file_id
+            file {
+              id
+              name
+              type
+            }
         }
     }
 }`;
