@@ -149,7 +149,14 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       <FormFooter>
         <FormControls>
           <>
-            <Button content="Generiši izvještaj" variant="secondary" onClick={generatePDF} isLoading={loadingReport} />
+            {planDetails?.status === 'Objavljen' && (
+              <Button
+                content="Generiši izvještaj"
+                variant="secondary"
+                onClick={generatePDF}
+                isLoading={loadingReport}
+              />
+            )}
             <Button
               content="Nazad"
               variant="secondary"
