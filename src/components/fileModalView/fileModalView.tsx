@@ -10,7 +10,7 @@ type FileModalViewProps = {
 
 const setMIMEType = (type: string) => {
   if (type === '.pdf') {
-    return `application/.pdf`;
+    return 'application/.pdf';
   } else {
     return `image/${type.substring(1)}`;
   }
