@@ -17,6 +17,7 @@ import {PlanCloseModal} from '../../components/planCloseModal/planCloseModal';
 import {PlanDetailsTab} from './planDetailsTab';
 import {ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import useAppContext from '../../context/useAppContext';
+import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   const {
@@ -109,6 +110,15 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     }
   };
 
+  const {fetchPDFUrl, loading: loadingReport} = useGetPlanPDFUrl({
+    plan_id: planID,
+    organization_unit_id: 0,
+  });
+
+  const generatePDF = () => {
+    fetchPDFUrl();
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -140,6 +150,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       <FormFooter>
         <FormControls>
           <>
+            <Button content="Generiši izvještaj" variant="secondary" onClick={generatePDF} isLoading={loadingReport} />
             <Button
               content="Nazad"
               variant="secondary"
