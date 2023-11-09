@@ -112,7 +112,6 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
 
   const {fetchPDFUrl, loading: loadingReport} = useGetPlanPDFUrl({
     plan_id: planID,
-    organization_unit_id: 0,
   });
 
   const generatePDF = () => {
