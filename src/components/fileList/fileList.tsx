@@ -2,6 +2,10 @@ import {Theme, Typography} from 'client-library';
 import useAppContext from '../../context/useAppContext';
 import {FileItem} from '../../types/graphql/procurementContractsTypes';
 import {Controls, DeleteFileIcon, DownloadFileIcon, FileItem as File, FileIconButton, FileList as List} from './styles';
+import FileModalView from '../fileModalView/fileModalView';
+import {useState} from 'react';
+
+const allowedTypes = ['.pdf', '.jpg', '.png'];
 
 type FileListProps = {
   files: FileItem[];
@@ -12,41 +16,62 @@ type FileListProps = {
 };
 
 const FileList = ({files, onDelete}: FileListProps) => {
+  const [fileToView, setFileToView] = useState<FileItem>();
+
   const {
     fileService: {downloadFile, deleteFile},
     alert,
   } = useAppContext();
 
   const handleDownload = async (file: FileItem) => {
-    await downloadFile(
-      file.id,
-      () => {
+    await downloadFile(file.id, {
+      onSuccess: () => {
         alert.success(`Fajl ${file.name} uspješno preuzet`);
       },
-      () => {
+      onError: () => {
         alert.error('Došlo je do greške prilikom preuzimanja fajla');
       },
-    );
+    });
+  };
+
+  const handleViewFile = (file: FileItem) => {
+    if (allowedTypes.includes(file.type)) {
+      setFileToView(file);
+    }
+  };
+
+  const toggleModal = () => {
+    setFileToView(undefined);
   };
 
   return (
     <List>
       {files &&
         files.map((file: FileItem) => (
-          <File key={file.id}>
+          <File key={file.id} onClick={() => handleViewFile(file)} viewable={allowedTypes.includes(file.type)}>
             <Typography content={file.name} />
             <Controls>
-              <FileIconButton onClick={() => handleDownload(file)}>
+              <FileIconButton
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  handleDownload(file);
+                }}>
                 <DownloadFileIcon stroke={Theme.palette.gray700} />
               </FileIconButton>
               {onDelete && (
-                <FileIconButton>
-                  <DeleteFileIcon stroke={Theme.palette.gray700} onClick={() => onDelete(file.id)} />
+                <FileIconButton
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    onDelete(file.id);
+                  }}>
+                  <DeleteFileIcon stroke={Theme.palette.gray700} />
                 </FileIconButton>
               )}
             </Controls>
           </File>
         ))}
+
+      {fileToView && <FileModalView file={fileToView} onClose={toggleModal} />}
     </List>
   );
 };

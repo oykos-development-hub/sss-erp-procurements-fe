@@ -15,18 +15,18 @@ export const Controls = styled.div`
   gap: 10px;
 `;
 
-export const FileItem = styled.div`
+export const FileItem = styled.div<{viewable: boolean}>`
   display: flex;
   justify-content: space-between;
   background-color: ${Theme.palette.gray50};
   padding: 3px 6px;
   border-radius: 4px;
   gap: 15px;
-  cursor: pointer;
+  cursor: ${({viewable}) => (viewable ? 'pointer' : 'default')};
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: ${Theme.palette.gray100};
+    background-color: ${({viewable}) => (viewable ? Theme.palette.gray100 : 'none')};
   }
 `;
 
