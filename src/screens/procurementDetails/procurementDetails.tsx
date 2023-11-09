@@ -173,7 +173,10 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   };
   const role = context?.contextMain?.role_id;
 
-  const isEditProcurementDisabled = isEditProcurementAndPlanDisabled(planDetails?.status || '');
+  const isEditProcurementDisabled =
+    publicProcurement?.is_open_procurement === false
+      ? false
+      : isEditProcurementAndPlanDisabled(planDetails?.status || '');
 
   return (
     <ScreenWrapper>
@@ -266,6 +269,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           onClose={refetch => handleCloseArticleModal(refetch)}
           selectedItem={selectedItem}
           procurementId={publicProcurement?.id}
+          procurementItem={publicProcurement}
           alert={context?.alert}
         />
       )}

@@ -17,7 +17,7 @@ const useProcurementArticleInsert = () => {
     onError?: () => void,
   ) => {
     setLoading(true);
-    const response: PublicProcurementArticleInsertResponse = await fetch(mutation, {data});
+    const response: PublicProcurementArticleInsertResponse = await fetch(mutation, {data: [data]});
     if (response.publicProcurementPlanItemArticle_Insert.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {

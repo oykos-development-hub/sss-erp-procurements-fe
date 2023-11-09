@@ -25,6 +25,7 @@ import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes'
 import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import FileList from '../../../components/fileList/fileList';
+import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -56,6 +57,8 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   });
 
   const procurementID = contractData?.[0].public_procurement.id;
+
+  const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
 
   const {fetchPDFUrl, loading: loadingReport} = useGetContractPDFUrl({
     id: procurementID ?? 0,
@@ -147,7 +150,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       title: 'Prekoračenje',
       accessor: 'overage_total',
       type: 'custom',
-      renderContents: overage_total => <Typography content={overage_total} variant="bodySmall" />,
+      renderContents: overage_total => <Typography content={overage_total || 0} variant="bodySmall" />,
     },
     {
       title: '',
@@ -175,6 +178,18 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
   const generatePDF = () => {
     fetchPDFUrl();
+  };
+
+  const getTooltip = () => {
+    if (!publicProcurement?.is_open_procurement) {
+      return 'Jednostavna nabavka ne može imati prekoračenja';
+    }
+
+    if (selectedOrganizationUnit.id === 0) {
+      return 'Organizaciona jedinica nije odabrana';
+    }
+
+    return '';
   };
 
   return (
@@ -262,8 +277,8 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               name: 'add overages',
               onClick: (item: any) => handleIconClick(item.id),
               icon: <PlusIcon stroke={Theme?.palette?.gray800} />,
-              disabled: () => selectedOrganizationUnit.id === 0,
-              tooltip: () => (selectedOrganizationUnit.id === 0 ? 'Organizaciona jedinica nije odabrana' : ''),
+              disabled: () => selectedOrganizationUnit.id === 0 || !publicProcurement?.is_open_procurement,
+              tooltip: () => getTooltip(),
             },
           ]}
         />

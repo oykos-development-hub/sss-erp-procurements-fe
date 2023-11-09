@@ -9,6 +9,7 @@ export interface PublicProcurementArticleParams {
   net_price?: number;
   vat_percentage: number;
   manufacturer?: string;
+  amount?: number;
 }
 
 export interface PublicProcurementArticle {

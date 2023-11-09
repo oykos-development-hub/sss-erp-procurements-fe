@@ -1,8 +1,8 @@
-const articleInsertMutation = `mutation($data: PublicProcurementPlanItemArticleInsertMutation!) {
+const articleInsertMutation = `mutation($data: [PublicProcurementPlanItemArticleInsertMutation]) {
   publicProcurementPlanItemArticle_Insert(data: $data) {
       status
       message
-      item {
+      items {
         id
         public_procurement {
             id
@@ -13,6 +13,8 @@ const articleInsertMutation = `mutation($data: PublicProcurementPlanItemArticleI
         net_price
         vat_percentage
         manufacturer
+        amount
+        total_amount
       }
     }
   }`;

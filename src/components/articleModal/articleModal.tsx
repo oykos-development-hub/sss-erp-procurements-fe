@@ -1,22 +1,31 @@
 import {Dropdown, Input, Modal, Theme} from 'client-library';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {FormGroup, FormWrapper, Row} from './styles';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {articleModalConfirmationSchema} from './validationSchema.ts';
-import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts.ts';
-import {generateDropdownOptions, pdvOptions} from '../../constants.ts';
+import {pdvOptions} from '../../constants.ts';
+import {PublicProcurement} from '../../types/graphql/publicProcurementTypes.ts';
+import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes.ts';
 
 interface ArticleModalProps {
   selectedItem?: any;
+  procurementItem?: PublicProcurement;
   open: boolean;
   onClose: (refetch?: any, message?: any) => void;
   procurementId?: number;
   alert?: any;
 }
 
-export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, onClose, procurementId, alert}) => {
+export const ArticleModal: React.FC<ArticleModalProps> = ({
+  selectedItem,
+  procurementItem,
+  open,
+  onClose,
+  procurementId,
+  alert,
+}) => {
   const {
     register,
     handleSubmit,
@@ -46,7 +55,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
   }, [selectedItem]);
 
   const onSubmit = (data: any) => {
-    const payload = {
+    const payload: PublicProcurementArticleParams = {
       id: data?.id,
       public_procurement_id: data.public_procurement_id || procurementId,
       title: data.title,
@@ -54,6 +63,10 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
       net_price: parseFloat(data.net_price),
       vat_percentage: data.vat_percentage?.id.toString(),
     };
+
+    if (!procurementItem?.is_open_procurement) {
+      payload.amount = data.amount;
+    }
 
     addArticle(
       payload,
@@ -130,6 +143,17 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({selectedItem, open, o
               disabled
             />
           </Row>
+          {!procurementItem?.is_open_procurement && (
+            <Row>
+              <Input
+                type="number"
+                inputMode="numeric"
+                {...register('amount')}
+                label="KOLIČINA:"
+                error={errors.amount?.message}
+              />
+            </Row>
+          )}
         </FormWrapper>
       }
       title={'DODAJTE NOVI ARTIKAL'}

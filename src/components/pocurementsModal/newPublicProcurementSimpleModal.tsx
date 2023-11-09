@@ -53,7 +53,6 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
   const {mutate: addArticle} = useProcurementArticleInsert();
   const {counts} = useGetCounts({level: 3});
 
-  const [loadProcurementID, setLoadProcurementID] = useState<number | undefined>(undefined);
   const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
 
   const {
@@ -90,20 +89,6 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
       await addProcurement(
         payload,
         async item => {
-          const articlesToCopy = planDetails?.items.find(item => item.id === loadProcurementID)?.articles || [];
-
-          for (const article of articlesToCopy) {
-            const insertArticle: PublicProcurementArticleParams = {
-              public_procurement_id: item.id as number,
-              title: article?.title,
-              description: article?.description,
-              net_price: article.net_price,
-              vat_percentage: article?.vat_percentage,
-              manufacturer: article.manufacturer,
-            };
-            await addArticle(insertArticle);
-          }
-
           fetch();
           alert.success('Uspješno ste dodali javnu nabavku.');
           onClose();
@@ -122,35 +107,6 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
     }
   };
 
-  const publicProcurementOptions = [
-    {id: 0, title: 'Odaberi'},
-    ...(planDetails?.items
-      .filter(item => item.is_open_procurement)
-      .map(item => ({
-        id: item.id,
-        title: item.title,
-      })) || []),
-  ];
-
-  useEffect(() => {
-    const selectedItem = planDetails?.items.find(item => item.id === loadProcurementID);
-    if (selectedItem) {
-      reset({
-        ...selectedItem,
-        budget_indent: {
-          id: selectedItem.budget_indent?.id,
-          title: selectedItem.budget_indent?.serial_number,
-        },
-        article_type: dropdownArticleTypeOptions.find(option => option.title === selectedItem.article_type),
-        is_open_procurement: dropdownProcurementTypeOptions[1],
-      });
-      setOrginalTitle(selectedItem?.budget_indent?.title || '');
-    } else {
-      reset(defaultValues);
-      setOrginalTitle('');
-    }
-  }, [loadProcurementID]);
-
   return (
     <Modal
       open={open}
@@ -160,17 +116,6 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
       rightButtonOnClick={handleSubmit(onSubmit)}
       content={
         <ModalContentWrapper>
-          <FormGroup>
-            <Dropdown
-              onChange={selectedOption => {
-                setLoadProcurementID(selectedOption.id as number);
-              }}
-              label="UČITAJ JAVNU NABAVKU:"
-              value={publicProcurementOptions.find(option => option.id === loadProcurementID)}
-              options={publicProcurementOptions as any}
-              rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
-            />
-          </FormGroup>
           <FormGroup>
             <Controller
               name="budget_indent"
