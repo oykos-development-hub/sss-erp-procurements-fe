@@ -87,3 +87,5 @@ export const dropdownProcurementStatusOptions: DropdownDataNumber[] = [
   {id: 2, title: 'Odobreno'},
   {id: 3, title: 'Odbijeno'},
 ];
+
+export const backendFileUrl = 'https://sss-erp-files-be.oykos.me/api';

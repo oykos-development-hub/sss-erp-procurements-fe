@@ -2,8 +2,9 @@ import {Theme, Typography} from 'client-library';
 import useAppContext from '../../context/useAppContext';
 import {FileItem} from '../../types/graphql/procurementContractsTypes';
 import {Controls, DeleteFileIcon, DownloadFileIcon, FileItem as File, FileIconButton, FileList as List} from './styles';
-import FileModalView from '../fileModalView/fileModalView';
+
 import {useState} from 'react';
+import FileModalView from '../fileModalView/fileModalView';
 
 const allowedTypes = ['.pdf', '.jpg', '.png'];
 

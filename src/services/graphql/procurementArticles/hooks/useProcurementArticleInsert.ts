@@ -12,12 +12,14 @@ const useProcurementArticleInsert = () => {
   const {fetch} = useAppContext();
 
   const insertProcurementArticle = async (
-    data: PublicProcurementArticleParams,
+    data: PublicProcurementArticleParams | PublicProcurementArticleParams[],
     onSuccess?: () => void,
     onError?: () => void,
   ) => {
     setLoading(true);
-    const response: PublicProcurementArticleInsertResponse = await fetch(mutation, {data: [data]});
+    const response: PublicProcurementArticleInsertResponse = await fetch(mutation, {
+      data: Array.isArray(data) ? data : [data],
+    });
     if (response.publicProcurementPlanItemArticle_Insert.status === REQUEST_STATUSES.success) {
       onSuccess && onSuccess();
     } else {

@@ -1,3 +1,6 @@
+import {REQUEST_STATUSES} from '../services/constants';
+import {PublicProcurementArticleParams} from './graphql/publicProcurementArticlesTypes';
+
 export type FileResponseItem = {
   id: number;
   parent_id: number;
@@ -7,4 +10,12 @@ export type FileResponseItem = {
   type: string;
   created_at: string;
   updated_at: string;
+};
+
+export type UploadBatchArticlesResponse = {
+  message: string;
+  data: {
+    data: PublicProcurementArticleParams[];
+    status: keyof typeof REQUEST_STATUSES;
+  };
 };

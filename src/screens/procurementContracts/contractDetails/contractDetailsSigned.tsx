@@ -245,7 +245,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         </Filters>
         <FileUploadWrapper>
           <FileUpload
-            icon={<></>}
+            icon={null}
             variant="secondary"
             onUpload={handleUpload}
             note={<Typography variant="bodySmall" content="Ugovor" />}

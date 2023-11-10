@@ -21,6 +21,7 @@ import {
 } from '../../shared/styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
+import ImportArticlesModal from '../../components/importArticles/importArticlesModal';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -31,6 +32,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [importModal, setImportModal] = useState(false);
   const procurementID = context.navigation.location.pathname.split('/').pop();
   const url = context.navigation.location.pathname;
   const planID = context.navigation.location.pathname.split('/').at(-3);
@@ -202,6 +204,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           </Filters>
 
           <Controls>
+            <Button content="Uvezi artikle" onClick={() => setImportModal(true)} disabled={isEditProcurementDisabled} />
             <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
             <Button content="Novi Artikal" onClick={handleAddArticle} disabled={isEditProcurementDisabled} />
           </Controls>
@@ -280,6 +283,12 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         procurementId={procurementID}
         navigate={context?.navigation.navigate}
         organizationUnitList={organizationUnits}
+      />
+      <ImportArticlesModal
+        onClose={() => setImportModal(false)}
+        open={importModal}
+        procurementId={procurementID}
+        refetch={refetchData}
       />
     </ScreenWrapper>
   );
