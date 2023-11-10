@@ -107,23 +107,32 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     },
     {
       title: 'Jedinična cijena',
-      accessor: 'public_procurement_article',
+      accessor: 'net_value',
       type: 'custom',
-      renderContents: (_, row: ContractArticleGet) => <Typography content={row?.net_value} variant="bodySmall" />,
+      renderContents: (net_value, row: ContractArticleGet) => (
+        <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />
+      ),
     },
     {
       title: 'Ukupno neto',
       accessor: 'net_value',
       type: 'custom',
-      renderContents: net_value => <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />,
+      renderContents: (_, row: ContractArticleGet) => {
+        const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
+        const taken = (row.amount || 0) - available;
+        const netValue = (row.net_value || 0) * taken;
+        return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
+      },
     },
     {
       title: 'Ukupno bruto',
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
-        const pdvValue = (Number(row?.net_value || 0) * Number(row?.public_procurement_article.vat_percentage)) / 100;
-        const total = (+(row?.net_value || 0) + +pdvValue) * (row.amount || 0);
+        const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
+        const taken = (row.amount || 0) - available;
+        const pdvValue = +(row.net_value || 0 * row.public_procurement_article.vat_percentage) / 100;
+        const total = (+(row.net_value || 0) + pdvValue) * taken;
         return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
