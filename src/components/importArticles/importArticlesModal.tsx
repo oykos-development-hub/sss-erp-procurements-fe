@@ -54,6 +54,14 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
     onClose();
   };
 
+  const getEnvUrl = () => {
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:3002/excel-table.xlsx';
+    } else {
+      return 'https://sss-erp-procurements-fe.oykos.me/excel-table.xlsx';
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -62,7 +70,7 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
       customButtonsControls={
         <CustomFooter>
           <FooterText>
-            <a href="http://localhost:3002/excel-table.xlsx" download="tabela-za-artikle.xlsx" rel="noreferrer">
+            <a href={getEnvUrl()} download="tabela-za-artikle.xlsx" rel="noreferrer">
               Ovdje
             </a>{' '}
             <span>možete da preuzmete tabelu za popunjavanje artikala.</span>
