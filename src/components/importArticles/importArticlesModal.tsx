@@ -5,7 +5,7 @@ import {REQUEST_STATUSES} from '../../services/constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import uploadArticlesXls from '../../services/uploadArticlesXls';
 import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
-import {CustomFooter, FooterText, ModalButtons} from './styles';
+import {CustomFooter, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
 
 type ImportArticlesModalProps = {
   onClose: () => void;
@@ -19,7 +19,11 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
   const [articles, setArticles] = useState<PublicProcurementArticleParams[]>([]);
   const [showError, setShowError] = useState(false);
 
-  const {alert} = useAppContext();
+  const {
+    alert,
+    fileService: {downloadStaticFile},
+    constants: {staticFileNameMap},
+  } = useAppContext();
   const {mutate: addArticle, loading} = useProcurementArticleInsert();
 
   const handleUpload = async (files: FileList) => {
@@ -54,12 +58,15 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
     onClose();
   };
 
-  const getEnvUrl = () => {
-    if (window.location.hostname === 'localhost') {
-      return 'http://localhost:3002/excel-table.xlsx';
-    } else {
-      return 'https://sss-erp-procurements-fe.oykos.me/excel-table.xlsx';
-    }
+  const downloadTemplate = async () => {
+    await downloadStaticFile(staticFileNameMap.article_table, {
+      onSuccess: () => {
+        alert.success('Uspješno preuzet fajl');
+      },
+      onError: () => {
+        alert.error('Došlo je do greške prilikom preuzimanja fajla');
+      },
+    });
   };
 
   return (
@@ -70,9 +77,7 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
       customButtonsControls={
         <CustomFooter>
           <FooterText>
-            <a href={getEnvUrl()} download="tabela-za-artikle.xlsx" rel="noreferrer">
-              Ovdje
-            </a>{' '}
+            <TemplateDownloadButton onClick={downloadTemplate}>Ovdje</TemplateDownloadButton>{' '}
             <span>možete da preuzmete tabelu za popunjavanje artikala.</span>
           </FooterText>
 

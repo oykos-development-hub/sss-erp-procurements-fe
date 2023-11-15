@@ -17,3 +17,9 @@ export const FooterText = styled.span`
   font-size: 16px;
   font-family: ${Theme.fontFamily.two};
 `;
+
+export const TemplateDownloadButton = styled.span`
+  color: #017698;
+  text-decoration: underline;
+  cursor: pointer;
+`;

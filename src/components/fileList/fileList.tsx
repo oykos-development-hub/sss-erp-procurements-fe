@@ -20,7 +20,7 @@ const FileList = ({files, onDelete}: FileListProps) => {
   const [fileToView, setFileToView] = useState<FileItem>();
 
   const {
-    fileService: {downloadFile, deleteFile},
+    fileService: {downloadFile},
     alert,
   } = useAppContext();
 
