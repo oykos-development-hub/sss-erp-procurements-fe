@@ -80,7 +80,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const handleUpload = (files: FileList) => {
     const allowedSize = 1048576;
     if (files && files[0] && files[0].size > allowedSize) {
-      console.log(files[0].size);
       setError('file', {type: 'custom', message: 'Maksimalna veličina fajla je 1MB.'});
       return;
     } else {
