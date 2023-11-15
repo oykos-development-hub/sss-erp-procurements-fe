@@ -86,6 +86,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     } else {
       setFiles(files);
       clearErrors('file');
+      context.alert.success('Fajlovi uspješno učitani');
     }
   };
 
