@@ -26,3 +26,18 @@ export const yearsForDropdown = (maxOffset = 10, isFilter = true, nextYears = 0)
   );
   return allYears;
 };
+
+export const downloadPDF = (blob: Blob | null) => {
+  if (blob === null) return;
+  const blobUrl = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = 'izvještaj.pdf';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+
+  link.click();
+
+  URL.revokeObjectURL(blobUrl);
+};

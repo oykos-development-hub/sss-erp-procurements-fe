@@ -1,43 +1,28 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import getContractPDFUrl from './getContractPDFUrl';
 import {REQUEST_STATUSES} from '../../constants';
+import {ContractPDFResponse, PdfData} from '../../../types/graphql/contractPDFTypes';
 
 type GetContractPDFParams = {
-  id: number;
+  id?: number;
   organization_unit_id?: number;
 };
 
-const useGetContractPDFUrl = (data: GetContractPDFParams) => {
-  // const [url, setUrl] = useState([]);
+const useGetContractPDFUrl = ({id, organization_unit_id}: GetContractPDFParams) => {
+  const [pdfData, setPdfData] = useState<PdfData>();
   const [loading, setLoading] = useState(false);
 
   const {fetch, alert} = useAppContext();
-
-  const fetchPDFUrl = async () => {
-    if (loading) return;
+  const fetchPDf = async () => {
+    // id is mandatory
+    if (loading || !id) return;
 
     setLoading(true);
-    const response: any = await fetch(getContractPDFUrl, data);
+
+    const response: ContractPDFResponse = await fetch(getContractPDFUrl, {id, organization_unit_id});
     if (response.publicProcurementPlanItem_PDF.status === REQUEST_STATUSES.success) {
-      const binaryData = atob(response.publicProcurementPlanItem_PDF.item);
-      const byteArray = new Uint8Array(binaryData.length);
-      for (let i = 0; i < binaryData.length; i++) {
-        byteArray[i] = binaryData.charCodeAt(i);
-      }
-
-      const blob = new Blob([byteArray], {type: 'application/octet-stream'});
-      const blobUrl = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'izvještaj.pdf';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-
-      link.click();
-
-      URL.revokeObjectURL(blobUrl);
+      setPdfData(response.publicProcurementPlanItem_PDF.item);
     } else {
       alert.error('Došlo je do greške prilikom preuzimanja izvještaja');
     }
@@ -45,7 +30,11 @@ const useGetContractPDFUrl = (data: GetContractPDFParams) => {
     setLoading(false);
   };
 
-  return {fetchPDFUrl, loading};
+  useEffect(() => {
+    fetchPDf();
+  }, [id, organization_unit_id]);
+
+  return {pdfData, loading};
 };
 
 export default useGetContractPDFUrl;

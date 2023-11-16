@@ -26,15 +26,22 @@ import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import FileList from '../../../components/fileList/fileList';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
+import {usePDF} from '@react-pdf/renderer';
+import {downloadPDF} from '../../../services/constants';
+import MyPdfDocument from './contractPDF';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
 }
 
 export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({context}) => {
-  const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
-  const [uploadedFiles, setUploadedFiles] = useState<File>();
+
+  const {data: contractData} = useProcurementContracts({
+    id: contractID,
+  });
+
+  const procurementID = contractData?.[0].public_procurement.id;
   const {organizationUnits} = useGetOrganizationUnits();
   const unitsforDropdown = useMemo(() => {
     return [
@@ -45,25 +52,30 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     ];
   }, [organizationUnits]);
 
+  const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(unitsforDropdown[0]);
+
+  const {pdfData, loading: loadingReport} = useGetContractPDFUrl({
+    id: procurementID,
+    organization_unit_id: selectedOrganizationUnit.id,
+  });
+
+  const [contractPDF, updateInstance] = usePDF({});
+
+  const [uploadedFiles, setUploadedFiles] = useState<File>();
+
+  useEffect(() => {
+    if (pdfData) {
+      updateInstance(<MyPdfDocument data={pdfData} />);
+    }
+  }, [pdfData]);
+
   const {
     fileService: {downloadFile},
   } = useAppContext();
 
-  const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(unitsforDropdown[0]);
   const [selectedItemId, setSelectedItemId] = useState(0);
 
-  const {data: contractData} = useProcurementContracts({
-    id: contractID,
-  });
-
-  const procurementID = contractData?.[0].public_procurement.id;
-
   const {publicProcurement} = usePublicProcurementGetDetails(procurementID);
-
-  const {fetchPDFUrl, loading: loadingReport} = useGetContractPDFUrl({
-    id: procurementID ?? 0,
-    organization_unit_id: selectedOrganizationUnit.id,
-  });
 
   const {articles, fetch: refetchAvailableArticles} = useGetOrderProcurementAvailableArticles(
     procurementID as number,
@@ -81,12 +93,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     loading: isLoadingContractArticles,
     refetchData: refetchContractArticles,
   } = useContractArticles(contractID, selectedOrganizationUnit.id);
-
-  useEffect(() => {
-    if (contractArticles) {
-      setFilteredArticles(contractArticles);
-    }
-  }, [contractArticles]);
 
   const role = context?.contextMain?.role_id;
 
@@ -185,10 +191,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     refetchAvailableArticles();
   };
 
-  const generatePDF = () => {
-    fetchPDFUrl();
-  };
-
   const getTooltip = () => {
     if (!publicProcurement?.is_open_procurement) {
       return 'Jednostavna nabavka ne može imati prekoračenja';
@@ -275,7 +277,12 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
             />
           </Column>
-          <Button content="Generiši izvještaj" onClick={generatePDF} isLoading={loadingReport} />
+          <Button
+            content="Generiši izvještaj"
+            onClick={() => downloadPDF(contractPDF.blob)}
+            isLoading={loadingReport || contractPDF.loading || !contractPDF.blob}
+            disabled={loadingReport || contractPDF.loading || !contractPDF.blob}
+          />
         </Filters>
         <TableContainer
           tableHeads={tableHeads}
