@@ -7,13 +7,13 @@ import {styles} from '../../../services/pdf/styles';
 // Register custom fonts
 Font.register({
   family: 'RobotoSlab',
-  src: '/fonts/RobotoSlab-VariableFont_wght.ttf', // Adjust the path as needed
+  src: '/pdf-fonts/RobotoSlab-VariableFont_wght.ttf', // Adjust the path as needed
   fontWeight: 'bold',
 });
 
 Font.register({
   family: 'RobotoSlabBold',
-  src: '/fonts/RobotoSlab-Bold.ttf',
+  src: '/pdf-fonts/RobotoSlab-Bold.ttf',
 });
 
 const tableHeaders: TableColumn[] = [
