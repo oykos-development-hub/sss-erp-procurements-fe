@@ -1,11 +1,14 @@
-import {Button, FileUpload, Modal, Typography} from 'client-library';
+import {Button, FileUpload, Typography} from 'client-library';
 import {useState} from 'react';
 import useAppContext from '../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../services/constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import uploadArticlesXls from '../../services/uploadArticlesXls';
 import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
-import {CustomFooter, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
+import {CustomFooter, CustomModal, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
+
+const missingFileError = 'Morate učitati fajl!';
+const emptyTableError = 'Tabela je prazna!';
 
 type ImportArticlesModalProps = {
   onClose: () => void;
@@ -17,7 +20,8 @@ type ImportArticlesModalProps = {
 const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArticlesModalProps) => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [articles, setArticles] = useState<PublicProcurementArticleParams[]>([]);
-  const [showError, setShowError] = useState(false);
+  const [error, setError] = useState('');
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const {
     alert,
@@ -27,34 +31,47 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
   const {mutate: addArticle, loading} = useProcurementArticleInsert();
 
   const handleUpload = async (files: FileList) => {
+    setUploadLoading(true);
     setFiles(files);
-    setShowError(false);
+    setError('');
 
     if (files.length && procurementId) {
       const response = await uploadArticlesXls(files[0], procurementId);
       if (response.status === REQUEST_STATUSES.success) {
-        setArticles(response.data);
+        if (response.data?.length) {
+          setArticles(response.data);
+        } else {
+          setError(emptyTableError);
+        }
       } else {
         alert.error('Došlo je do greške prilikom učitavanja fajla!');
       }
+    } else {
+      // if no files present, it means the user deleted the uploaded file
+      setArticles([]);
     }
+
+    setUploadLoading(false);
   };
 
   const handleSubmit = async () => {
-    if (articles.length) {
-      await addArticle(articles, () => {
-        alert.success('Artikli uspješno uvezeni');
-        refetch();
-        handleClose();
-      });
-    } else {
-      setShowError(true);
+    if (articles && !articles.length && !error) {
+      setError(missingFileError);
+      return;
     }
+
+    if (error) return;
+
+    await addArticle(articles, () => {
+      alert.success('Artikli uspješno uvezeni');
+      refetch();
+      handleClose();
+    });
   };
 
   const handleClose = () => {
     setFiles(null);
-    setShowError(false);
+    setError('');
     onClose();
   };
 
@@ -69,11 +86,14 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
     });
   };
 
+  const buttonLoader = uploadLoading || loading;
+
   return (
-    <Modal
+    <CustomModal
       open={open}
       onClose={handleClose}
       title="UVEZI TABELU"
+      width={680}
       customButtonsControls={
         <CustomFooter>
           <FooterText>
@@ -83,7 +103,7 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
 
           <ModalButtons>
             <Button onClick={handleClose} content="Otkaži" />
-            <Button onClick={handleSubmit} content="Sačuvaj" variant="primary" isLoading={loading} />
+            <Button onClick={handleSubmit} content="Sačuvaj" variant="primary" isLoading={buttonLoader} />
           </ModalButtons>
         </CustomFooter>
       }
@@ -97,7 +117,7 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
             note={<Typography variant="bodySmall" content="Ugovor" />}
             buttonText="Učitaj"
             multiple={true}
-            error={showError ? 'Morate učitati fajl' : undefined}
+            error={error}
             accept=".xlsx, .xls"
           />
         </div>

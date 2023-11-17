@@ -1,11 +1,18 @@
 import styled from 'styled-components';
-import {Theme} from 'client-library';
+import {Theme, Modal} from 'client-library';
+
+export const CustomModal = styled(Modal)`
+  & > div:nth-child(2) p {
+    display: none;
+  }
+`;
 
 export const CustomFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 30px;
+  width: 100%;
 `;
 
 export const ModalButtons = styled.div`
