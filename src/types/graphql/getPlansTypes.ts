@@ -1,4 +1,4 @@
-import { TableRow } from '../../services/pdf/pdfTable';
+import {TableRow} from '../../services/pdf/pdfTable';
 import {DropdownDataNumber} from '../dropdownData';
 import {ProcurementStatus} from './publicProcurementPlanItemDetailsTypes';
 import {Response, SingularResponse} from './utils';
@@ -66,11 +66,11 @@ export enum PlanSubtitleKey {
 }
 
 export interface PdfPlanData {
-  plan_id: string,
-  year: string,
-  published_date: string,
-  total_gross: string,
-  total_vat: string,
+  plan_id: string;
+  year: string;
+  published_date: string;
+  total_gross: string;
+  total_vat: string;
   table_data: TableRow[];
 }
 

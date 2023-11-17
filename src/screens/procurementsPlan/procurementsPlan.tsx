@@ -20,7 +20,7 @@ import useAppContext from '../../context/useAppContext';
 import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
 import PlanPDFDocument from './planPDF';
 import {usePDF} from '@react-pdf/renderer';
-import { downloadPDF } from '../../services/constants';
+import {downloadPDF} from '../../services/constants';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   const {
@@ -124,7 +124,6 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       updateInstance(<PlanPDFDocument data={pdfData} />);
     }
   }, [pdfData]);
-
 
   return (
     <ScreenWrapper>

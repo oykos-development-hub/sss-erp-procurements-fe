@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../constants';
-import { PdfPlanData, PlanPDFResponse } from '../../../types/graphql/getPlansTypes';
+import {PdfPlanData, PlanPDFResponse} from '../../../types/graphql/getPlansTypes';
 import getPlanPDFUrl from './getPlanPDFUrl';
 
 type GetPlanPDFParams = {

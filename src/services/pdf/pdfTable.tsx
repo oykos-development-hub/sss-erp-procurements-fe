@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: 'row',
-    alignItems: 'center', 
+    alignItems: 'center',
     borderBottom: 1,
     borderColor: '#000',
   },
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     padding: 5,
     borderRightWidth: 1,
     borderColor: '#000',
-    height: '100%'
+    height: '100%',
   },
   headerCell: {
     fontWeight: 'bold',
