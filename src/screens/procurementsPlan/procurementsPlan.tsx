@@ -1,6 +1,6 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {Button} from 'client-library';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
 import {UserPermission, checkPermission} from '../../constants';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
@@ -18,6 +18,9 @@ import {PlanDetailsTab} from './planDetailsTab';
 import {ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import useAppContext from '../../context/useAppContext';
 import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
+import PlanPDFDocument from './planPDF';
+import {usePDF} from '@react-pdf/renderer';
+import { downloadPDF } from '../../services/constants';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   const {
@@ -110,13 +113,18 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     }
   };
 
-  const {fetchPDFUrl, loading: loadingReport} = useGetPlanPDFUrl({
+  const [contractPDF, updateInstance] = usePDF({});
+
+  const {pdfData, loading: loadingReport} = useGetPlanPDFUrl({
     plan_id: planID,
   });
 
-  const generatePDF = () => {
-    fetchPDFUrl();
-  };
+  useEffect(() => {
+    if (pdfData) {
+      updateInstance(<PlanPDFDocument data={pdfData} />);
+    }
+  }, [pdfData]);
+
 
   return (
     <ScreenWrapper>
@@ -153,7 +161,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
               <Button
                 content="Generiši izvještaj"
                 variant="secondary"
-                onClick={generatePDF}
+                onClick={() => downloadPDF(contractPDF.blob)}
                 isLoading={loadingReport}
               />
             )}

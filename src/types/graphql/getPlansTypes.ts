@@ -1,6 +1,7 @@
+import { TableRow } from '../../services/pdf/pdfTable';
 import {DropdownDataNumber} from '../dropdownData';
 import {ProcurementStatus} from './publicProcurementPlanItemDetailsTypes';
-import {Response} from './utils';
+import {Response, SingularResponse} from './utils';
 
 export interface PlanOverviewResponse {
   publicProcurementPlans_Overview: Response<PlanItem>;
@@ -56,4 +57,23 @@ export interface GetPlansOverviewParams {
   size: number;
   is_pre_budget: boolean;
   contract?: boolean;
+}
+
+export enum PlanSubtitleKey {
+  PublicProcurement = 'public_procurement',
+  OrganizationUnit = 'organization_unit',
+  Supplier = 'supplier',
+}
+
+export interface PdfPlanData {
+  plan_id: string,
+  year: string,
+  published_date: string,
+  total_gross: string,
+  total_vat: string,
+  table_data: TableRow[];
+}
+
+export interface PlanPDFResponse {
+  publicProcurementPlan_PDF: SingularResponse<PdfPlanData>;
 }

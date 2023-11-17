@@ -1,41 +1,29 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import useAppContext from '../../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../constants';
+import { PdfPlanData, PlanPDFResponse } from '../../../types/graphql/getPlansTypes';
 import getPlanPDFUrl from './getPlanPDFUrl';
 
 type GetPlanPDFParams = {
-  plan_id: number;
+  plan_id?: number;
+  organization_unit_id?: number;
 };
 
-const useGetPlanPDFUrl = ({plan_id}: GetPlanPDFParams) => {
+const useGetPlanPDFData = ({plan_id, organization_unit_id}: GetPlanPDFParams) => {
+  const [pdfData, setPdfData] = useState<PdfPlanData>();
   const [loading, setLoading] = useState(false);
 
   const {fetch, alert} = useAppContext();
-
-  const fetchPDFUrl = async () => {
-    if (loading) return;
+  const fetchPDf = async () => {
+    // id is mandatory
+    if (loading || !plan_id) return;
 
     setLoading(true);
-    const response: any = await fetch(getPlanPDFUrl, {plan_id});
+
+    const response: PlanPDFResponse = await fetch(getPlanPDFUrl, {plan_id, organization_unit_id});
+    console.log(response);
     if (response.publicProcurementPlan_PDF.status === REQUEST_STATUSES.success) {
-      const binaryData = atob(response.publicProcurementPlan_PDF.item);
-      const byteArray = new Uint8Array(binaryData.length);
-      for (let i = 0; i < binaryData.length; i++) {
-        byteArray[i] = binaryData.charCodeAt(i);
-      }
-
-      const blob = new Blob([byteArray], {type: 'application/octet-stream'});
-      const blobUrl = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'Izvještaj-plana.pdf';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-
-      link.click();
-
-      URL.revokeObjectURL(blobUrl);
+      setPdfData(response.publicProcurementPlan_PDF.item);
     } else {
       alert.error('Došlo je do greške prilikom preuzimanja izvještaja');
     }
@@ -43,7 +31,11 @@ const useGetPlanPDFUrl = ({plan_id}: GetPlanPDFParams) => {
     setLoading(false);
   };
 
-  return {fetchPDFUrl, loading};
+  useEffect(() => {
+    fetchPDf();
+  }, [plan_id, organization_unit_id]);
+
+  return {pdfData, loading};
 };
 
-export default useGetPlanPDFUrl;
+export default useGetPlanPDFData;
