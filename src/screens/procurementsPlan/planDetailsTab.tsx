@@ -141,11 +141,11 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
       <Header>
         <Filters>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST PLANA:" />
+            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PLANA BEZ PDV-A:" />
             <Price variant="bodySmall" content={`€ ${totalNet?.toFixed(2)}`} />
           </Column>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST PLANA:" />
+            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PLANA SA PDV-OM:" />
             <Price variant="bodySmall" content={`€ ${totalPrice?.toFixed(2)}`} />
           </Column>
         </Filters>

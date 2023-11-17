@@ -204,9 +204,9 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           </Filters>
 
           <Controls>
-            <Button content="Uvezi artikle" onClick={() => setImportModal(true)} disabled={isEditProcurementDisabled} />
             <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
             <Button content="Novi Artikal" onClick={handleAddArticle} disabled={isEditProcurementDisabled} />
+            <Button content="Uvezi artikle" onClick={() => setImportModal(true)} disabled={isEditProcurementDisabled} />
           </Controls>
         </Header>
 
