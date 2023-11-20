@@ -32,7 +32,7 @@ export interface ProcurementContractInsert {
 }
 
 export interface GetProcurementContractParams {
-  id: number;
+  id?: number;
   supplier_id?: number;
   procurement_id?: number;
 }

@@ -96,19 +96,19 @@ export const Reports = () => {
 
   const onSubmit = (data: FormData) => {
     switch (data.type_of_report.id) {
-    case 1:
-      if (pdfPlanData) {
-        updatePlanInstance(<PlanPDFDocument data={pdfPlanData} />);
-        setShouldDownloadPDF(true); // Set the flag for downloading the PDF
-      }
-      break;
+      case 1:
+        if (pdfPlanData) {
+          updatePlanInstance(<PlanPDFDocument data={pdfPlanData} />);
+          setShouldDownloadPDF(true); // Set the flag for downloading the PDF
+        }
+        break;
 
-    case 2:
-      if (pdfData) {
-        updateInstance(<MyPdfDocument data={pdfData} />);
-        setShouldDownloadPDF(true); // Set the flag for downloading the PDF
-      }
-      break;
+      case 2:
+        if (pdfData) {
+          updateInstance(<MyPdfDocument data={pdfData} />);
+          setShouldDownloadPDF(true); // Set the flag for downloading the PDF
+        }
+        break;
     }
   };
 

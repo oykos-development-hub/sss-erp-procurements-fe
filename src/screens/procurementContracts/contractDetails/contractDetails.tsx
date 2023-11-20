@@ -23,7 +23,6 @@ import useContractArticles from '../../../services/graphql/contractArticles/hook
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
 import useAppContext from '../../../context/useAppContext';
-import {REQUEST_STATUSES} from '../../../services/constants';
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
 import FileList from '../../../components/fileList/fileList';
 import {FileResponseItem} from '../../../types/files';
@@ -149,14 +148,16 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
-  const handleInputChangeNetValue = (event: React.ChangeEvent<HTMLInputElement>, row: any) => {
-    const {value} = event.target;
+  const handleInputChangeNetValue = (event: React.ChangeEvent<HTMLInputElement>, row: ContractArticleGet) => {
+    const inputValue = event.target.value;
+
+    // Store the input value as a string to maintain any non-numeric characters
     setFilteredArticles(articles =>
       articles.map(article => {
         if (article.public_procurement_article.id === row.public_procurement_article.id) {
           return {
             ...article,
-            net_value: value !== '' ? +value : undefined,
+            net_value: inputValue as any, // Store as string
           };
         }
         return article;
@@ -185,7 +186,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
         <Input
-          value={row?.net_value?.toString() || ''}
+          value={row.net_value !== undefined ? row.net_value.toString().replace(',', '.') : ''}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
         />
@@ -326,7 +327,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             id: item.id,
             public_procurement_article_id: Number(item?.public_procurement_article.id),
             public_procurement_contract_id: Number(contractID),
-            net_value: item?.net_value || 0,
+            net_value: Number(item?.net_value) || 0,
             gross_value: +(
               Number(item.amount || 0) *
               (Number(item?.net_value) +

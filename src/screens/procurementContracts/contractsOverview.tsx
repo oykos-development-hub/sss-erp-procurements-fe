@@ -24,8 +24,8 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
     refetchData,
     loading,
   } = useProcurementContracts({
-    id: 0,
-    procurement_id: 0,
+    id: undefined,
+    procurement_id: undefined,
     supplier_id: selectedSupplier,
   });
 
