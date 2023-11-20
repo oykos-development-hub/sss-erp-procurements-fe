@@ -41,6 +41,7 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
                 created_at
                 updated_at
                 file_id
+                contract_id
                 articles {
                     id
                     public_procurement {

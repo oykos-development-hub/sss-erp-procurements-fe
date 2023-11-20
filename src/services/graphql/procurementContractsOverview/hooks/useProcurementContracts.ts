@@ -14,15 +14,20 @@ const useProcurementContracts = ({id, procurement_id, supplier_id}: GetProcureme
   const {fetch} = useAppContext();
 
   const fetchProcurementContracts = async () => {
-    const response: ProcurementContractsGetResponse = await fetch(query, {
-      id,
-      procurement_id,
-      supplier_id,
-    });
-
-    if (response.publicProcurementContracts_Overview.status === REQUEST_STATUSES.success) {
-      setProcurementContracts(response?.publicProcurementContracts_Overview.items);
+    if (id === 0) {
+      setProcurementContracts([]);
       setLoading(false);
+    } else {
+      const response: ProcurementContractsGetResponse = await fetch(query, {
+        id,
+        procurement_id,
+        supplier_id,
+      });
+
+      if (response.publicProcurementContracts_Overview.status === REQUEST_STATUSES.success) {
+        setProcurementContracts(response?.publicProcurementContracts_Overview.items);
+        setLoading(false);
+      }
     }
   };
 

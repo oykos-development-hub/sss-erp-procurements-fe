@@ -102,14 +102,14 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
 
   const getTitle = () => {
     switch (activeTab) {
-      case TabsEnum.Overview:
-        return `PLAN ZA ${planDetails?.year} - ${planDetails?.is_pre_budget ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}`;
-      case TabsEnum.Requests:
-        return 'ZAHTJEVI';
-      case TabsEnum.SimpleProcurement:
-        return `JEDNOSTAVNE NABAVKE ZA PLAN ${planDetails?.year}`;
-      default:
-        throw new Error(`Tab ${activeTab} does not exist`);
+    case TabsEnum.Overview:
+      return `PLAN ZA ${planDetails?.year} - ${planDetails?.is_pre_budget ? 'PREDBUDŽETSKO' : 'POSTBUDŽETSKO'}`;
+    case TabsEnum.Requests:
+      return 'ZAHTJEVI';
+    case TabsEnum.SimpleProcurement:
+      return `JEDNOSTAVNE NABAVKE ZA PLAN ${planDetails?.year}`;
+    default:
+      throw new Error(`Tab ${activeTab} does not exist`);
     }
   };
 
@@ -150,8 +150,8 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       {planDetails?.status === 'Obradi' &&
         planDetails.rejected_description !== null &&
         checkPermission(role_id, UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT) && (
-          <MessageBox>{`Razlog odbijanja: ${planDetails.rejected_description}`}</MessageBox>
-        )}
+        <MessageBox>{`Razlog odbijanja: ${planDetails.rejected_description}`}</MessageBox>
+      )}
 
       <FormFooter>
         <FormControls>
@@ -174,24 +174,24 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
             />
             {checkPermission(role_id, UserPermission.SEND_PROCUREMENTS) &&
               planDetails?.rejected_description === null && (
-                <Button
-                  content="Pošalji"
-                  variant="primary"
-                  onClick={() => setIsNotificationModalActive(true)}
-                  disabled={!buttonSendEnable || planDetails?.status === 'Na čekanju'}
-                />
-              )}
+              <Button
+                content="Pošalji"
+                variant="primary"
+                onClick={() => setIsNotificationModalActive(true)}
+                disabled={!buttonSendEnable || planDetails?.status === 'Na čekanju'}
+              />
+            )}
 
             {checkPermission(role_id, UserPermission.SEND_PROCUREMENTS) &&
               planDetails?.status === 'Obradi' &&
               planDetails.rejected_description !== null && (
-                <Button
-                  content="Pošalji"
-                  variant="primary"
-                  onClick={() => setIsRejectedModalActive(true)}
-                  disabled={!buttonSendEnable}
-                />
-              )}
+              <Button
+                content="Pošalji"
+                variant="primary"
+                onClick={() => setIsRejectedModalActive(true)}
+                disabled={!buttonSendEnable}
+              />
+            )}
 
             <NotificationsModal
               open={!!isNotificationModalActive}

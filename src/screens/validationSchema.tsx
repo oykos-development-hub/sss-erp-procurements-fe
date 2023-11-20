@@ -1,11 +1,14 @@
 import * as yup from 'yup';
 
+export const dropdownNumberSchema = {id: yup.number().required(), title: yup.string().required()};
+export const requiredError = 'Ovo polje je obavezno';
+
 export const dropdownDataNumberSchema = yup
   .object({
     id: yup.number().required(),
     title: yup.string().required(),
   })
-  .required('Ovo polje je obavezno')
+  .required(requiredError)
   .default(undefined);
 
 export const dropdownDataBooleanSchema = yup
@@ -13,7 +16,7 @@ export const dropdownDataBooleanSchema = yup
     id: yup.bool().required(),
     title: yup.string().required(),
   })
-  .required('Ovo polje je obavezno')
+  .required(requiredError)
   .default(undefined);
 
 export const stringRequiredSchema = yup.string().required('Ovo polje je obavezno').default(undefined);

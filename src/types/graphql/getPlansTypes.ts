@@ -22,7 +22,7 @@ export interface PlanItem {
   file_id: number;
   status: string;
   items: {
-    id: string;
+    id: number;
     budget_indent: DropdownDataNumber;
     plan: DropdownDataNumber;
     is_open_procurement: boolean;
@@ -36,6 +36,7 @@ export interface PlanItem {
     updated_at: string;
     file_id: number;
     articles: Article[];
+    contract_id: number;
   }[];
 }
 
@@ -52,7 +53,7 @@ export interface Article {
 export interface GetPlansOverviewParams {
   fetch?: any;
   status?: string;
-  year: string;
+  year?: string;
   page: number;
   size: number;
   is_pre_budget: boolean;

@@ -34,12 +34,12 @@ export const PlanStatusesForManager: any[] = [
 
 export const getPlanStatuses = (role: UserRole) => {
   switch (role) {
-    case UserRole.ADMIN:
-    case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
-      return PlanStatusesForAdmin;
-    case UserRole.MANAGER_OJ:
-      return PlanStatusesForManager;
-    default:
-      return []; // Default case, if role does not match any of the above
+  case UserRole.ADMIN:
+  case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
+    return PlanStatusesForAdmin;
+  case UserRole.MANAGER_OJ:
+    return PlanStatusesForManager;
+  default:
+    return []; // Default case, if role does not match any of the above
   }
 };

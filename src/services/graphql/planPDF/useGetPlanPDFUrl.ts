@@ -21,7 +21,6 @@ const useGetPlanPDFData = ({plan_id, organization_unit_id}: GetPlanPDFParams) =>
     setLoading(true);
 
     const response: PlanPDFResponse = await fetch(getPlanPDFUrl, {plan_id, organization_unit_id});
-    console.log(response);
     if (response.publicProcurementPlan_PDF.status === REQUEST_STATUSES.success) {
       setPdfData(response.publicProcurementPlan_PDF.item);
     } else {
