@@ -7,6 +7,11 @@ import uploadArticlesXls from '../../services/uploadArticlesXls';
 import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
 import {CustomFooter, CustomModal, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
 
+const staticFileNameMap = {
+  article_table: 'tabela_za_dodavanje_artikala.xlsx',
+  contract_articles_table: 'tabela_za_artikl_ugovora.xlsx',
+};
+
 const missingFileError = 'Morate učitati fajl!';
 const emptyTableError = 'Tabela je prazna!';
 
@@ -15,9 +20,10 @@ type ImportArticlesModalProps = {
   refetch: () => void;
   open: boolean;
   procurementId: number;
+  type: keyof typeof staticFileNameMap;
 };
 
-const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArticlesModalProps) => {
+const ImportArticlesModal = ({onClose, open, procurementId, refetch, type}: ImportArticlesModalProps) => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [articles, setArticles] = useState<PublicProcurementArticleParams[]>([]);
   const [error, setError] = useState('');
@@ -76,7 +82,7 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch}: ImportArti
   };
 
   const downloadTemplate = async () => {
-    await downloadStaticFile(staticFileNameMap.article_table, {
+    await downloadStaticFile(staticFileNameMap[type], {
       onSuccess: () => {
         alert.success('Uspješno preuzet fajl');
       },

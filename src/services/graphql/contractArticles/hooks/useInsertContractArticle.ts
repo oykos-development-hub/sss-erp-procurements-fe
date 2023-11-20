@@ -8,7 +8,7 @@ const useInsertContractArticle = () => {
   const [loading, setLoading] = useState(false);
   const {fetch} = useAppContext();
 
-  const insertContractArticle = async (data: ContractArticleInsert, onSuccess?: () => void, onError?: () => void) => {
+  const insertContractArticle = async (data: ContractArticleInsert[], onSuccess?: () => void, onError?: () => void) => {
     setLoading(true);
     const response: ContractArticlesInsertResponse = await fetch(insertContractArticleMutation, {data});
 

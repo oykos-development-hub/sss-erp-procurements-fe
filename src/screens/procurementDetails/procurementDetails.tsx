@@ -289,6 +289,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         open={importModal}
         procurementId={procurementID}
         refetch={refetchData}
+        type="article_table"
       />
     </ScreenWrapper>
   );

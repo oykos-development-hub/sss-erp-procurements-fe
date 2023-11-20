@@ -1,8 +1,7 @@
-const insertContractArticleMutation = `mutation($data: PublicProcurementContractArticleInsertMutation!) {
+const insertContractArticleMutation = `mutation($data: [PublicProcurementContractArticleInsertMutation]!) {
     publicProcurementContractArticle_Insert(data: $data) {
         status 
         message 
-        data
         item {
             id
             public_procurement_article {

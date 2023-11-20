@@ -58,3 +58,9 @@ export const ErrorText = styled.span`
   color: ${Theme.palette.error500};
   font-size: 12px;
 `;
+
+export const Controls = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+`;

@@ -2,30 +2,31 @@ import {
   Button,
   Datepicker,
   Dropdown,
+  FileUpload,
   Input,
   MicroserviceProps,
   TableHead,
   Typography,
-  FileUpload,
 } from 'client-library';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
+import FileList from '../../../components/fileList/fileList';
+import useAppContext from '../../../context/useAppContext';
+import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
+import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
 import useInsertProcurementContract from '../../../services/graphql/procurementContractsOverview/hooks/useInsertProcurementContract';
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
+import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
-import {parseDate} from '../../../utils/dateUtils';
-import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
-import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
-import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
-import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
-import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
-import useAppContext from '../../../context/useAppContext';
-import {FileItem} from '../../../types/graphql/procurementContractsTypes';
-import FileList from '../../../components/fileList/fileList';
 import {FileResponseItem} from '../../../types/files';
+import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
+import {FileItem} from '../../../types/graphql/procurementContractsTypes';
+import {parseDate} from '../../../utils/dateUtils';
+import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import ImportArticlesModal from '../../../components/importArticles/importArticlesModal';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -58,6 +59,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
   const [files, setFiles] = useState<FileList | null>(null);
   const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
+  const [importModal, setImportModal] = useState(false);
 
   const {
     fileService: {uploadFile, batchDeleteFiles},
@@ -72,7 +74,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const procurementID = contract?.public_procurement.id;
   const {publicProcurement: procurement} = usePublicProcurementGetDetails(procurementID);
-  const {articles} = useGetOrderProcurementAvailableArticles(procurementID, 0);
+  const {articles, fetch} = useGetOrderProcurementAvailableArticles(procurementID, 0);
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -321,34 +323,29 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       }
 
       if (filteredArticles) {
-        let counter = 0;
-        for (const item of filteredArticles) {
-          const insertItem = {
-            id: item.id,
-            public_procurement_article_id: Number(item?.public_procurement_article.id),
-            public_procurement_contract_id: Number(contractID),
-            net_value: Number(item?.net_value) || 0,
-            gross_value: +(
-              Number(item.amount || 0) *
-              (Number(item?.net_value) +
-                (Number(item?.net_value) * Number(item?.public_procurement_article.vat_percentage)) / 100)
-            )?.toFixed(2),
-          };
-          await insertContractArticle(
-            insertItem,
-            async () => {
-              counter++;
-              if (counter === filteredArticles.length) {
-                context?.alert.success('Uspješno sačuvano');
-                context?.navigation.navigate('/procurements/contracts');
-                context.breadcrumbs.remove();
-              }
-            },
-            () => {
-              context?.alert.error('Greška pri čuvanju!');
-            },
-          );
-        }
+        const items: any = filteredArticles.map(item => ({
+          id: item.id,
+          public_procurement_article_id: Number(item?.public_procurement_article.id),
+          public_procurement_contract_id: Number(contractID),
+          net_value: item?.net_value || 0,
+          gross_value: +(
+            Number(item.amount || 0) *
+            (Number(item?.net_value) +
+              (Number(item?.net_value) * Number(item?.public_procurement_article.vat_percentage)) / 100)
+          )?.toFixed(2),
+        }));
+
+        await insertContractArticle(
+          items,
+          async () => {
+            context?.alert.success('Uspješno sačuvano');
+            context?.navigation.navigate('/procurements/contracts');
+            context.breadcrumbs.remove();
+          },
+          () => {
+            context?.alert.error('Greška pri čuvanju!');
+          },
+        );
       }
     });
   };
@@ -491,6 +488,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         </FileUploadWrapper>
         <FileList files={watch('file')} onDelete={onDeleteFile} />
 
+        <Controls>
+          <Button content="Uvezi artikle" onClick={() => setImportModal(true)} />
+        </Controls>
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
         </Plan>
@@ -519,6 +519,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           />
         </FormControls>
       </FormFooter>
+
+      <ImportArticlesModal
+        onClose={() => setImportModal(false)}
+        refetch={fetch}
+        open={importModal}
+        procurementId={procurementID}
+        type="contract_articles_table"
+      />
     </ScreenWrapper>
   );
 };
