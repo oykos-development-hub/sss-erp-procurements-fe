@@ -15,6 +15,7 @@ const articleInsertMutation = `mutation($data: [PublicProcurementPlanItemArticle
         manufacturer
         amount
         total_amount
+        visibility_type
       }
     }
   }`;

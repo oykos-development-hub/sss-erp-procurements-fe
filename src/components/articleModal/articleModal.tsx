@@ -10,6 +10,7 @@ import {PublicProcurement} from '../../types/graphql/publicProcurementTypes.ts';
 import {
   PublicProcurementArticleParams,
   getVisibilityOptions,
+  getVisibilityTypeName,
 } from '../../types/graphql/publicProcurementArticlesTypes.ts';
 
 interface ArticleModalProps {
@@ -53,6 +54,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         public_procurement_id: selectedItem?.public_procurement_id || procurementId,
         vat_percentage: {id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %`},
         total_price: '',
+        visibility_type: selectedItem?.visibility_type ? {id: selectedItem?.visibility_type, title: getVisibilityTypeName(selectedItem?.visibility_type)} : undefined
       });
     }
   }, [selectedItem]);
@@ -65,7 +67,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
       description: data.description,
       net_price: parseFloat(data.net_price),
       vat_percentage: data.vat_percentage?.id.toString(),
-      visibility_type: data.visibility_type.id,
+      visibility_type: data?.visibility_type?.id,
     };
 
     if (!procurementItem?.is_open_procurement) {

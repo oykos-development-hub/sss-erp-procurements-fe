@@ -8,5 +8,5 @@ export const articleModalConfirmationSchema = yup.object().shape({
   vat_percentage: dropdownDataNumberSchema,
   total_price: yup.string().optional(),
   amount: yup.number().optional(),
-  visibility_type: dropdownDataNumberSchema,
+  visibility_type: dropdownDataNumberSchema.optional(),
 });
