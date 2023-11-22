@@ -15,7 +15,7 @@ export type FileResponseItem = {
 export type UploadBatchArticlesResponse = {
   message: string;
   data: {
-    data: PublicProcurementArticleParams[];
+    data: any[];
     status: keyof typeof REQUEST_STATUSES;
   };
 };

@@ -2,7 +2,10 @@ import {exec} from 'child_process';
 
 const env = {...process.env};
 
-const ClientLibraryCommand = `npm install git+ssh://git@${env.GITLAB_CLIENT_LIBRARY.replace('https://', '').replace('/', ':')} --no-save`;
+const ClientLibraryCommand = `npm install git+ssh://git@${env.VITE_GITLAB_CLIENT_LIBRARY.replace(
+  'https://',
+  '',
+).replace('/', ':')} --no-save`;
 
 console.log(`\nNPM install Client Library initialized...\nCommand run - `, ClientLibraryCommand);
 

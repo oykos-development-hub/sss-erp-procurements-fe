@@ -3,9 +3,19 @@ import {useState} from 'react';
 import useAppContext from '../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../services/constants';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import uploadArticlesXls from '../../services/uploadArticlesXls';
-import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
+import {uploadArticlesXls, uploadContractArticlesXls} from '../../services/uploadArticlesXls';
+import {
+  PublicProcurementArticle,
+  PublicProcurementArticleParams,
+} from '../../types/graphql/publicProcurementArticlesTypes';
 import {CustomFooter, CustomModal, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
+import ExcelJS from 'exceljs';
+import useInsertContractArticle from '../../services/graphql/contractArticles/hooks/useInsertContractArticle';
+import {ContractArticleInsert} from '../../types/graphql/contractsArticlesTypes';
+
+// This component is used for generating articles in procurement plans and contracts.
+// 1. In case of plans, excel file is to be downloaded from the server, filled in and uploaded back.
+// 2. In case of contracts, excel file is to be downloaded from the server, updated from the contractArticles props, filled in (only price), and uploaded back.
 
 const staticFileNameMap = {
   article_table: 'tabela_za_dodavanje_artikala.xlsx',
@@ -20,47 +30,81 @@ type ImportArticlesModalProps = {
   refetch: () => void;
   open: boolean;
   procurementId: number;
+  contractId?: number;
   type: keyof typeof staticFileNameMap;
+  contractArticles?: PublicProcurementArticle[];
 };
 
-const ImportArticlesModal = ({onClose, open, procurementId, refetch, type}: ImportArticlesModalProps) => {
+const ImportArticlesModal = ({
+  onClose,
+  open,
+  procurementId,
+  refetch,
+  type,
+  contractArticles = [],
+  contractId,
+}: ImportArticlesModalProps) => {
+  const isContractArticles = type === 'contract_articles_table';
   const [files, setFiles] = useState<FileList | null>(null);
   const [articles, setArticles] = useState<PublicProcurementArticleParams[]>([]);
+  const [filledContractArticles, setFilledContractArticles] = useState<ContractArticleInsert[]>([]);
   const [error, setError] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
 
   const {
     alert,
-    fileService: {downloadStaticFile},
+    fileService: {
+      downloadStaticFile,
+      helpers: {download},
+    },
     constants: {staticFileNameMap},
   } = useAppContext();
-  const {mutate: addArticle, loading} = useProcurementArticleInsert();
+  const {mutate: addArticles, loading} = useProcurementArticleInsert();
+  const {mutate: addContractArticles} = useInsertContractArticle();
 
   const handleUpload = async (files: FileList) => {
     setUploadLoading(true);
     setFiles(files);
     setError('');
 
-    if (files.length && procurementId) {
-      const response = await uploadArticlesXls(files[0], procurementId);
-      if (response.status === REQUEST_STATUSES.success) {
-        if (response.data?.length) {
-          setArticles(response.data);
+    let response;
+    // article_table
+    if (isContractArticles) {
+      if (files.length && procurementId && contractId) {
+        response = await uploadContractArticlesXls(files[0], procurementId, contractId);
+        if (response?.status === REQUEST_STATUSES.success) {
+          if (response?.data?.length) {
+            setFilledContractArticles(response?.data);
+          } else {
+            setError(emptyTableError);
+          }
         } else {
-          setError(emptyTableError);
+          alert.error('Došlo je do greške prilikom učitavanja fajla!');
         }
       } else {
-        alert.error('Došlo je do greške prilikom učitavanja fajla!');
+        setFilledContractArticles([]);
       }
     } else {
-      // if no files present, it means the user deleted the uploaded file
-      setArticles([]);
+      if (files.length && procurementId) {
+        response = await uploadArticlesXls(files[0], procurementId);
+        if (response?.status === REQUEST_STATUSES.success) {
+          if (response?.data?.length) {
+            setArticles(response?.data);
+          } else {
+            setError(emptyTableError);
+          }
+        } else {
+          alert.error('Došlo je do greške prilikom učitavanja fajla!');
+        }
+      } else {
+        setArticles([]);
+      }
     }
 
     setUploadLoading(false);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitPlanArticles = async () => {
     if (articles && !articles.length && !error) {
       setError(missingFileError);
       return;
@@ -68,7 +112,30 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch, type}: Impo
 
     if (error) return;
 
-    await addArticle(articles, () => {
+    await addArticles(articles, () => {
+      alert.success('Artikli uspješno uvezeni');
+      refetch();
+      handleClose();
+    });
+  };
+
+  const handleSubmitContractArticles = async () => {
+    if (filledContractArticles && !filledContractArticles.length && !error) {
+      setError(missingFileError);
+      return;
+    }
+
+    if (error) return;
+
+    const articles = filledContractArticles.map(item => ({
+      id: item.id,
+      public_procurement_article_id: item.public_procurement_article_id,
+      public_procurement_contract_id: item.public_procurement_contract_id,
+      net_value: item?.net_value,
+      gross_value: item.gross_value,
+    }));
+
+    await addContractArticles(articles, () => {
       alert.success('Artikli uspješno uvezeni');
       refetch();
       handleClose();
@@ -82,13 +149,81 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch, type}: Impo
   };
 
   const downloadTemplate = async () => {
-    await downloadStaticFile(staticFileNameMap[type], {
-      onSuccess: () => {
-        alert.success('Uspješno preuzet fajl');
-      },
-      onError: () => {
-        alert.error('Došlo je do greške prilikom preuzimanja fajla');
-      },
+    if (isContractArticles) {
+      await getContractTable();
+    } else {
+      await downloadStaticFile(staticFileNameMap[type], {
+        onSuccess: () => {
+          alert.success('Uspješno preuzet fajl');
+        },
+        onError: () => {
+          alert.error('Došlo je do greške prilikom preuzimanja fajla');
+        },
+        // Do not download the file automatically if this is for contract articles
+        // because in this case there is some editing to be done on the xlsx file
+        download: !isContractArticles,
+      });
+    }
+  };
+
+  const getContractTable = async () => {
+    if (!contractArticles?.length) {
+      alert.error('Ovaj ugovor nema artikala!');
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    worksheet.columns = [
+      {header: 'Opis predmeta nabavke', key: 'title'},
+      {header: 'Bitne karakteristike predmeta nabavke', key: 'description'},
+      {header: 'Jedinična cijena', key: 'price'},
+    ];
+
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell(cell => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: {argb: 'FFD3D3D3'}, // Light gray background
+      };
+      cell.border = {
+        bottom: {style: 'thick', color: {argb: 'FF696969'}}, // Dark grey border-bottom
+      };
+    });
+
+    contractArticles.forEach(item => {
+      worksheet.addRow({title: item.title, description: item.description, price: ''});
+    });
+
+    worksheet.eachRow({includeEmpty: true}, function (row, rowNumber) {
+      row.eachCell({includeEmpty: true}, function (cell, colNumber) {
+        if (colNumber > 2) {
+          // Assuming you want to lock the first two columns
+          cell.protection = {
+            locked: false,
+          };
+        }
+      });
+    });
+
+    worksheet.columns.forEach(function (column, i) {
+      let maxLength = 0;
+      column['eachCell']?.({includeEmpty: true}, function (cell) {
+        const columnLength = cell.value ? cell.value.toString().length : 10;
+        if (columnLength > maxLength) {
+          maxLength = columnLength;
+        }
+      });
+      column.width = maxLength < 10 ? 10 : maxLength;
+    });
+
+    workbook.xlsx.writeBuffer().then(buffer => {
+      const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url = URL.createObjectURL(blob);
+      download(url, staticFileNameMap[type]);
     });
   };
 
@@ -109,7 +244,18 @@ const ImportArticlesModal = ({onClose, open, procurementId, refetch, type}: Impo
 
           <ModalButtons>
             <Button onClick={handleClose} content="Otkaži" />
-            <Button onClick={handleSubmit} content="Sačuvaj" variant="primary" isLoading={buttonLoader} />
+            <Button
+              onClick={() => {
+                if (isContractArticles) {
+                  handleSubmitContractArticles();
+                } else {
+                  handleSubmitPlanArticles();
+                }
+              }}
+              content="Sačuvaj"
+              variant="primary"
+              isLoading={buttonLoader}
+            />
           </ModalButtons>
         </CustomFooter>
       }

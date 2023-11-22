@@ -529,7 +529,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         refetch={fetch}
         open={importModal}
         procurementId={procurementID}
+        contractId={contractID}
         type="contract_articles_table"
+        contractArticles={procurement?.articles}
       />
     </ScreenWrapper>
   );
