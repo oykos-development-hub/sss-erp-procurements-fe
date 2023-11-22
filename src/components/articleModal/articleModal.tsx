@@ -7,7 +7,10 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {articleModalConfirmationSchema} from './validationSchema.ts';
 import {pdvOptions} from '../../constants.ts';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes.ts';
-import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes.ts';
+import {
+  PublicProcurementArticleParams,
+  getVisibilityOptions,
+} from '../../types/graphql/publicProcurementArticlesTypes.ts';
 
 interface ArticleModalProps {
   selectedItem?: any;
@@ -62,6 +65,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
       description: data.description,
       net_price: parseFloat(data.net_price),
       vat_percentage: data.vat_percentage?.id.toString(),
+      visibility_type: data.visibility_type.id,
     };
 
     if (!procurementItem?.is_open_procurement) {
@@ -143,8 +147,24 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               disabled
             />
           </Row>
-          {!procurementItem?.is_open_procurement && (
-            <Row>
+          <Row>
+            <Controller
+              name="visibility_type"
+              control={control}
+              render={({field: {onChange, name, value}}) => {
+                return (
+                  <Dropdown
+                    onChange={onChange}
+                    value={value}
+                    name={name}
+                    label="Modul:"
+                    options={getVisibilityOptions()}
+                    error={errors.vat_percentage?.message}
+                  />
+                );
+              }}
+            />
+            {!procurementItem?.is_open_procurement && (
               <Input
                 type="number"
                 inputMode="numeric"
@@ -152,8 +172,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 label="KOLIČINA:"
                 error={errors.amount?.message}
               />
-            </Row>
-          )}
+            )}
+          </Row>
         </FormWrapper>
       }
       title={'DODAJTE NOVI ARTIKAL'}

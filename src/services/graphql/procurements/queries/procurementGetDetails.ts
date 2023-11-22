@@ -35,6 +35,7 @@ const procurementDetailsQuery = `query ProcurementDetails($id: Int!) {
                 vat_percentage
                 total_amount
                 manufacturer
+                visibility_type
             }
         }
     }

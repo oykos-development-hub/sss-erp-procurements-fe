@@ -297,6 +297,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
                 description: article?.description,
                 net_price: article?.net_price,
                 vat_percentage: article?.vat_percentage,
+                visibility_type: article.visibility_type,
               };
               await addArticle(insertArticle);
             }

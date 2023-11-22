@@ -136,6 +136,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             total_amount: article.total_amount,
             net_price: article.net_price,
             amount: article.amount,
+            visibility_type: article.visibility_type,
           },
           amount: article.total_amount,
           contract: {id: 0, title: ''},

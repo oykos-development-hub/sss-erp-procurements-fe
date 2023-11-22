@@ -1,6 +1,33 @@
 import {DropdownDataNumber} from '../dropdownData';
 import {SingularResponse} from './utils';
 
+export enum VisibilityType {
+  None = 1,
+  Accounting = 2,
+  Inventory = 3,
+}
+
+export function getVisibilityTypeName(visibilityType: VisibilityType) {
+  switch (visibilityType) {
+    case VisibilityType.Accounting:
+      return 'Materijalno knjigovodstvo';
+    case VisibilityType.Inventory:
+      return 'Osnovna sredstva';
+    case VisibilityType.None:
+    default:
+      return '';
+  }
+}
+
+export function getVisibilityOptions(): DropdownDataNumber[] {
+  return Object.values(VisibilityType)
+    .filter((value): value is VisibilityType => typeof value === 'number')
+    .map(value => ({
+      id: value,
+      title: getVisibilityTypeName(value),
+    }));
+}
+
 export interface PublicProcurementArticleParams {
   id?: number;
   public_procurement_id: number;
@@ -10,6 +37,7 @@ export interface PublicProcurementArticleParams {
   vat_percentage: number;
   manufacturer?: string;
   amount?: number;
+  visibility_type: number;
 }
 
 export interface PublicProcurementArticle {
@@ -22,6 +50,7 @@ export interface PublicProcurementArticle {
   total_amount: number;
   amount: number;
   manufacturer?: string;
+  visibility_type: VisibilityType;
 }
 
 export interface PublicProcurementArticleWithAmount {

@@ -22,6 +22,7 @@ import {
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import ImportArticlesModal from '../../components/importArticles/importArticlesModal';
+import {VisibilityType, getVisibilityTypeName} from '../../types/graphql/publicProcurementArticlesTypes';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -87,6 +88,14 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         const calculateTotal = total * row.total_amount;
 
         return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
+      },
+    },
+    {
+      title: 'Modul',
+      accessor: 'visibility_type',
+      type: 'custom',
+      renderContents: (visibilityType: VisibilityType) => {
+        return <Typography content={getVisibilityTypeName(visibilityType)} variant="bodySmall" />;
       },
     },
 

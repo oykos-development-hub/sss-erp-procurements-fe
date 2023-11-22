@@ -48,6 +48,7 @@ export interface Article {
   description: string;
   net_price: number;
   vat_percentage: number;
+  visibility_type: number;
 }
 
 export interface GetPlansOverviewParams {
