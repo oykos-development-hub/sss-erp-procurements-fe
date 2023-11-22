@@ -113,7 +113,7 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
       const totalPdv =
         row.articles.reduce((sum, article) => {
           const pdv =
-            ((article.public_procurement_article.net_price || 0) * article.public_procurement_article.vat_percentage) /
+            ((article.public_procurement_article.net_price || 0) * +article.public_procurement_article.vat_percentage) /
             100;
           const total = pdv * article.amount;
           return sum + total;
@@ -230,8 +230,8 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
         articles?.reduce((sum, article) => {
           if (!isProcurementFinished(row.status)) return 0;
           const pdv = article?.amount
-            ? ((article.net_price || 0) * article.vat_percentage * article?.amount) / 100
-            : ((article.net_price || 0) * article.vat_percentage) / 100;
+            ? ((article.net_price || 0) * Number(article.vat_percentage) * article?.amount) / 100
+            : ((article.net_price || 0) * Number(article.vat_percentage)) / 100;
           return sum + pdv;
         }, 0) || 0;
       return (
@@ -250,7 +250,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
       if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =
         row?.articles?.reduce((sum, article) => {
-          const pdv = ((article.net_price || 0) * article.vat_percentage * article?.total_amount) / 100;
+          const pdv = ((article.net_price || 0) * Number(article.vat_percentage) * article?.total_amount) / 100;
           return sum + pdv;
         }, 0) || 0;
       const totalNet =

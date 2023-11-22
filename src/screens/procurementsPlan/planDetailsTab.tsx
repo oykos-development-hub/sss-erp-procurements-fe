@@ -56,7 +56,7 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
       const itemTotalPrice = item.articles.reduce((sum, article) => {
         const netPrice = article.net_price || 0;
         const vatPercentage = article.vat_percentage;
-        const articleTotalPrice = article.total_amount * (netPrice + (netPrice * vatPercentage) / 100);
+        const articleTotalPrice = article.total_amount * (netPrice + (netPrice * Number(vatPercentage)) / 100);
         return sum + articleTotalPrice;
       }, 0);
       return total + itemTotalPrice;

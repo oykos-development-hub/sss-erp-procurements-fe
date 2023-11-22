@@ -18,7 +18,7 @@ export interface PublicProcurementArticle {
   title: string;
   description: string;
   net_price?: number;
-  vat_percentage: number;
+  vat_percentage: string;
   total_amount: number;
   amount: number;
   manufacturer?: string;

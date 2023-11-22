@@ -126,7 +126,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       renderContents: (_, row: ContractArticleGet) => {
         const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
         const taken = (row.amount || 0) - available;
-        const netValue = (row.net_value || 0) * taken;
+        const netValue = (Number(row.net_value) || 0) * taken;
         return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
       },
     },
@@ -137,7 +137,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       renderContents: (_, row: ContractArticleGet) => {
         const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
         const taken = (row.amount || 0) - available;
-        const pdvValue = +(row.net_value || 0 * row.public_procurement_article.vat_percentage) / 100;
+        const pdvValue = +(row.net_value || 0 * +row.public_procurement_article.vat_percentage) / 100;
         const total = (+(row.net_value || 0) + pdvValue) * taken;
         return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
       },

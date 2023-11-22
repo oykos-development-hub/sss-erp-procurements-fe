@@ -16,7 +16,7 @@ export interface ContractArticleGet {
   public_procurement_article: PublicProcurementArticle;
   contract: DropdownDataNumber;
   amount?: number;
-  net_value?: number;
+  net_value?: string;
   gross_value?: number;
   overage_total?: string;
   overages?: {

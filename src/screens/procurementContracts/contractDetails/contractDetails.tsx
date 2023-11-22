@@ -198,7 +198,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       title: 'Ukupno neto',
       accessor: 'net_value',
       type: 'custom',
-      renderContents: net_value => <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />,
+      renderContents: (net_value: string, row) => {
+        const total = Number(net_value) * (row.amount || 0);
+        return <Typography content={`${total.toFixed(2)} €`} variant="bodySmall" />;
+      },
     },
     {
       title: 'Ukupno bruto',
@@ -247,10 +250,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const totals = useMemo(() => {
     return filteredArticles.reduce(
       (accumulator, article) => {
-        const totalNetPriceForArticle = (article.amount || 0) * (article.net_value || 0);
+        const totalNetPriceForArticle = (article.amount || 0) * Number(article.net_value);
         const grossPricePerUnit = calculateGrossPrice(
-          article.net_value || 0,
-          article.public_procurement_article.vat_percentage,
+          Number(article.net_value),
+          Number(article.public_procurement_article.vat_percentage),
         );
         const totalGrossPriceForArticle = (article.amount || 0) * grossPricePerUnit;
 
@@ -462,10 +465,11 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             <Input
               {...register('gross_value', {
                 required: 'Ovo polje je obavezno',
-                validate: value =>
-                  +value < totals.totalGrossValue
+                validate: value => {
+                  return +value < totals.totalGrossValue
                     ? 'Obračunata bruto vrijednost je veća od navedene vrijednosti'
-                    : true,
+                    : true;
+                },
               })}
               error={errors?.gross_value?.message as string}
               label="UKUPNA VRIJEDNOST UGOVORA"
