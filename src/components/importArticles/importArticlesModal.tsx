@@ -183,7 +183,7 @@ const ImportArticlesModal = ({
     ];
 
     const headerRow = worksheet.getRow(1);
-    headerRow.eachCell(cell => {
+    headerRow.eachCell((cell: any) => {
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
@@ -198,8 +198,8 @@ const ImportArticlesModal = ({
       worksheet.addRow({title: item.title, description: item.description, price: ''});
     });
 
-    worksheet.eachRow({includeEmpty: true}, function (row, rowNumber) {
-      row.eachCell({includeEmpty: true}, function (cell, colNumber) {
+    worksheet.eachRow({includeEmpty: true}, function (row: any) {
+      row.eachCell({includeEmpty: true}, function (cell: any, colNumber: any) {
         if (colNumber > 2) {
           // Assuming you want to lock the first two columns
           cell.protection = {
@@ -209,9 +209,9 @@ const ImportArticlesModal = ({
       });
     });
 
-    worksheet.columns.forEach(function (column, i) {
+    worksheet.columns.forEach(function (column: any) {
       let maxLength = 0;
-      column['eachCell']?.({includeEmpty: true}, function (cell) {
+      column['eachCell']?.({includeEmpty: true}, function (cell: any) {
         const columnLength = cell.value ? cell.value.toString().length : 10;
         if (columnLength > maxLength) {
           maxLength = columnLength;
@@ -220,7 +220,7 @@ const ImportArticlesModal = ({
       column.width = maxLength < 10 ? 10 : maxLength;
     });
 
-    workbook.xlsx.writeBuffer().then(buffer => {
+    workbook.xlsx.writeBuffer().then((buffer: any) => {
       const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       const url = URL.createObjectURL(blob);
       download(url, staticFileNameMap[type]);
