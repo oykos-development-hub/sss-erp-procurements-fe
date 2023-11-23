@@ -68,13 +68,13 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
   });
-  const {data: contractArticles} = useContractArticles(contractID);
+  const {data: contractArticles, refetchData} = useContractArticles(contractID);
 
   const [contract] = contractData || [];
 
   const procurementID = contract?.public_procurement.id;
-  const {publicProcurement: procurement} = usePublicProcurementGetDetails(procurementID);
-  const {articles, fetch} = useGetOrderProcurementAvailableArticles(procurementID, 0);
+  const {publicProcurement: procurement, refetch} = usePublicProcurementGetDetails(procurementID);
+  const {articles} = useGetOrderProcurementAvailableArticles(procurementID, 0);
 
   const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
@@ -121,29 +121,34 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   useEffect(() => {
     if (procurement?.articles) {
+      setFilteredArticles([]);
       const articles = procurement.articles.map(article => {
         const matchArticle = contractArticles?.find(
           contractArticle => contractArticle?.public_procurement_article.id === article.id,
         );
-        if (matchArticle) return matchArticle;
-        return {
-          id: null,
-          public_procurement_article: {
-            id: article.id,
-            title: article.title,
-            vat_percentage: article.vat_percentage,
-            description: article.description,
-            total_amount: article.total_amount,
-            net_price: article.net_price,
-            amount: article.amount,
-            visibility_type: article.visibility_type,
-          },
-          amount: article.total_amount,
-          contract: {id: 0, title: ''},
-          net_value: undefined,
-          gross_value: undefined,
-        };
+
+        return matchArticle
+          ? matchArticle
+          : {
+              // Dobro je to, potrosio sam dobrih 3 sata na ovo
+              id: Math.random() * 1000000 + article.id,
+              public_procurement_article: {
+                id: article.id,
+                title: article.title,
+                vat_percentage: article.vat_percentage,
+                description: article.description,
+                total_amount: article.total_amount,
+                net_price: article.net_price,
+                amount: article.amount,
+                visibility_type: article.visibility_type,
+              },
+              amount: article.total_amount,
+              contract: {id: 0, title: ''},
+              net_value: undefined,
+              gross_value: undefined,
+            };
       });
+
       setFilteredArticles(articles);
     }
   }, [procurement, contractArticles]);
@@ -527,7 +532,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
       <ImportArticlesModal
         onClose={() => setImportModal(false)}
-        refetch={fetch}
+        refetch={() => {
+          refetch();
+          refetchData();
+        }}
         open={importModal}
         procurementId={procurementID}
         contractId={contractID}
