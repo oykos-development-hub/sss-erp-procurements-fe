@@ -122,6 +122,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
+  useEffect(() => {
+    if (contractArticles) {
+      setFilteredArticles(contractArticles);
+    }
+  }, [contractArticles]);
+
   const handleInputChangeNetValue = (event: React.ChangeEvent<HTMLInputElement>, row: ContractArticleGet) => {
     const inputValue = event.target.value;
 
@@ -473,7 +479,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <TableContainer
           isLoading={isLoadingProcurementContracts}
           tableHeads={tableHeads}
-          data={(contractArticles as any) || []}
+          data={(filteredArticles as any) || []}
         />
       </SectionBox>
 
