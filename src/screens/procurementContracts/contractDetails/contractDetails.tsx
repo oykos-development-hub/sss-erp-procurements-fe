@@ -11,6 +11,7 @@ import {
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import FileList from '../../../components/fileList/fileList';
+import ImportArticlesModal from '../../../components/importArticles/importArticlesModal';
 import useAppContext from '../../../context/useAppContext';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
@@ -24,9 +25,8 @@ import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../
 import {FileResponseItem} from '../../../types/files';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
-import {parseDate} from '../../../utils/dateUtils';
 import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
-import ImportArticlesModal from '../../../components/importArticles/importArticlesModal';
+import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -34,8 +34,8 @@ interface ContractDetailsPageProps {
 
 type ContractForm = {
   serial_number: string;
-  date_of_signing: string;
-  date_of_expiry: string;
+  date_of_signing: Date | null;
+  date_of_expiry: Date | null;
   supplier: {id: number; title: string};
   vat_value: string;
   net_value: string;
@@ -45,8 +45,8 @@ type ContractForm = {
 
 const initialValues: ContractForm = {
   serial_number: '',
-  date_of_signing: '',
-  date_of_expiry: '',
+  date_of_signing: null,
+  date_of_expiry: null,
   supplier: {id: 0, title: ''},
   vat_value: '',
   net_value: '',
@@ -76,7 +76,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {publicProcurement: procurement, refetch} = usePublicProcurementGetDetails(procurementID);
   const {articles} = useGetOrderProcurementAvailableArticles(procurementID, 0);
 
-  const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
+  // const [defaultValuesData, setDefaultValuesData] = useState(initialValues);
 
   const handleUpload = (files: FileList) => {
     const allowedSize = 1048576;
@@ -91,10 +91,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   };
 
   useEffect(() => {
-    setDefaultValuesData({
+    reset({
       serial_number: contract?.serial_number,
-      date_of_signing: contract?.date_of_signing,
-      date_of_expiry: contract?.date_of_expiry,
+      date_of_signing: parseToDate(contract?.date_of_signing),
+      date_of_expiry: parseToDate(contract?.date_of_expiry),
       supplier: contract?.supplier,
       net_value: contract?.net_value,
       gross_value: contract?.gross_value,
@@ -113,11 +113,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     setError,
     clearErrors,
     setValue,
-  } = useForm({defaultValues: defaultValuesData});
-
-  useEffect(() => {
-    reset(defaultValuesData);
-  }, [defaultValuesData, reset]);
+  } = useForm();
 
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
@@ -290,8 +286,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       public_procurement_id: contract.public_procurement.id,
       supplier_id: Number(watch('supplier').id) || Number(contract?.supplier.id),
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
-      date_of_signing: watch('date_of_signing').toString() || parseDate(contract?.date_of_signing).toString(),
-      date_of_expiry: watch('date_of_expiry').toString() || parseDate(contract?.date_of_expiry).toString(),
+      date_of_signing: parseDateForBackend(watch('date_of_signing')) ?? '',
+      date_of_expiry: parseDateForBackend(watch('date_of_expiry')) ?? '',
       net_value: net_value,
       gross_value: gross_value,
       vat_value: vat_value,
@@ -361,17 +357,17 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               control={control}
               rules={{
                 required: 'Ovo polje je obavezno',
-                validate: value =>
-                  !value || !watch('date_of_signing') || new Date(value) >= new Date(watch('date_of_signing'))
-                    ? true
-                    : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
+                // validate: value =>
+                //   !value || new Date(value) >= value
+                //     ? true
+                //     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
               }}
               render={({field: {onChange, name, value}}) => (
                 <Datepicker
                   onChange={onChange}
                   label="DATUM ZAKLJUČENJA UGOVORA:"
                   name={name}
-                  value={value ? parseDate(value) : ''}
+                  selected={value ? new Date(value) : ''}
                   error={errors.date_of_signing?.message}
                 />
               )}
@@ -384,7 +380,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               rules={{
                 required: 'Ovo polje je obavezno',
                 validate: value =>
-                  !value || !watch('date_of_signing') || new Date(value) >= new Date(watch('date_of_signing'))
+                  !value || new Date(value) >= value
                     ? true
                     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
               }}
@@ -393,7 +389,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                   onChange={onChange}
                   label="DATUM ZAVRŠETKA UGOVORA:"
                   name={name}
-                  value={value ? parseDate(value) : ''}
+                  selected={value ? new Date(value) : ''}
                   error={errors.date_of_expiry?.message}
                 />
               )}
@@ -465,7 +461,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             hint="Fajlovi neće biti učitani dok ne sačuvate ugovor"
             buttonText="Učitaj"
             multiple={true}
-            error={errors.file?.message}
+            error={errors.file?.message as string}
           />
         </FileUploadWrapper>
         <FileList files={watch('file')} onDelete={onDeleteFile} />

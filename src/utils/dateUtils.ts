@@ -26,3 +26,9 @@ export const calculateExperience = (startDate: Date | string, endDate: Date | st
 
   return diffInMonths;
 };
+
+export const parseToDate = (dateString: string | null) => {
+  if (!dateString) return null;
+
+  return new Date(dateString);
+};

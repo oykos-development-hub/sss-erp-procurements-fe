@@ -223,7 +223,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                     onChange={onChange}
                     label="DATUM ZAKLJUČENJA UGOVORA:"
                     name={name}
-                    value={value ? parseDate(value) : ''}
+                    selected={value ? new Date(value) : null}
                     error={errors.date_of_signing?.message}
                   />
                 )}
@@ -245,7 +245,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                     onChange={onChange}
                     label="DATUM ZAVRŠETKA UGOVORA:"
                     name={name}
-                    value={value ? parseDate(value) : ''}
+                    selected={value ? new Date(value) : null}
                     error={errors.date_of_expiry?.message}
                   />
                 )}

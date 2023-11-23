@@ -17,6 +17,7 @@ export enum UserPermission {
   CREATE_PROCUREMENT = 'CREATE_PROCUREMENT',
   VIEW_PROCUREMENT_REQUESTS = 'VIEW_PROCUREMENT_REQUESTS',
   EDIT_PROCUREMENTS = 'EDIT_PROCUREMENTS',
+  DELETE_CONTRACT = 'DELETE_CONTRACT',
 }
 
 export const isEditProcurementAndPlanDisabled = (planStatus: string) =>
