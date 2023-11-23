@@ -119,40 +119,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     reset(defaultValuesData);
   }, [defaultValuesData, reset]);
 
-  useEffect(() => {
-    if (procurement?.articles) {
-      setFilteredArticles([]);
-      const articles = procurement.articles.map(article => {
-        const matchArticle = contractArticles?.find(
-          contractArticle => contractArticle?.public_procurement_article.id === article.id,
-        );
-
-        return matchArticle
-          ? matchArticle
-          : {
-              // Dobro je to, potrosio sam dobrih 3 sata na ovo
-              id: Math.random() * 1000000 + article.id,
-              public_procurement_article: {
-                id: article.id,
-                title: article.title,
-                vat_percentage: article.vat_percentage,
-                description: article.description,
-                total_amount: article.total_amount,
-                net_price: article.net_price,
-                amount: article.amount,
-                visibility_type: article.visibility_type,
-              },
-              amount: article.total_amount,
-              contract: {id: 0, title: ''},
-              net_value: undefined,
-              gross_value: undefined,
-            };
-      });
-
-      setFilteredArticles(articles);
-    }
-  }, [procurement, contractArticles]);
-
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
 
@@ -499,7 +465,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <FileList files={watch('file')} onDelete={onDeleteFile} />
 
         <Controls>
-          <Button content="Uvezi artikle" onClick={() => setImportModal(true)} />
+          <Button content="Dodaj jedinične cijene" onClick={() => setImportModal(true)} />
         </Controls>
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
@@ -507,7 +473,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <TableContainer
           isLoading={isLoadingProcurementContracts}
           tableHeads={tableHeads}
-          data={(filteredArticles as any) || []}
+          data={(contractArticles as any) || []}
         />
       </SectionBox>
 
