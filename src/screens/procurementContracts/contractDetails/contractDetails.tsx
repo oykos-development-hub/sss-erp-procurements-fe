@@ -325,6 +325,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     setFilesToDelete(filesToDelete => [...filesToDelete, id]);
   };
 
+  const netValue = watch('net_value');
+  const grossValue = watch('gross_value');
+  const vatValue = grossValue - netValue;
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -410,36 +414,13 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
-            <Input
-              {...register('net_value', {
-                required: 'Ovo polje je obavezno',
-                validate: value =>
-                  +value < totals.totalNetValue ? 'Obračunata neto vrijednost je veća od navedene vrijednosti.' : true,
-              })}
-              error={errors?.net_value?.message as string}
-              label="UKUPNA NETO VRIJEDNOST"
-            />
+            <Input value={netValue} label="UKUPNA NETO VRIJEDNOST" disabled />
           </Column>
           <Column>
-            <Input
-              {...register('vat_value', {required: 'Ovo polje je obavezno'})}
-              error={errors?.vat_value?.message as string}
-              label="UKUPNA VRIJEDNOST PDV-A"
-            />
+            <Input value={vatValue ? vatValue.toString() : ''} label="UKUPNA VRIJEDNOST PDV-A" disabled />
           </Column>
           <Column>
-            <Input
-              {...register('gross_value', {
-                required: 'Ovo polje je obavezno',
-                validate: value => {
-                  return +value < totals.totalGrossValue
-                    ? 'Obračunata bruto vrijednost je veća od navedene vrijednosti'
-                    : true;
-                },
-              })}
-              error={errors?.gross_value?.message as string}
-              label="UKUPNA VRIJEDNOST UGOVORA"
-            />
+            <Input value={grossValue} label="UKUPNA VRIJEDNOST UGOVORA" disabled />
           </Column>
         </Filters>
 

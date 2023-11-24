@@ -202,6 +202,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     return '';
   };
 
+  const VatValue = contractData && +contractData[0].gross_value - +contractData[0].net_value;
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -239,17 +240,13 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
             <Input label="UKUPNA NETO VRIJEDNOST" value={contractData && contractData[0]?.net_value} disabled={true} />
           </Column>
           <Column>
-            <Input
-              label="UKUPNA VRIJEDNOST PDV-A"
-              disabled={true}
-              value={contractData && contractData[0]?.gross_value}
-            />
+            <Input label="UKUPNA VRIJEDNOST PDV-A" disabled={true} value={VatValue ? VatValue.toString() : ''} />
           </Column>
           <Column>
             <Input
               label="UKUPNA VRIJEDNOST UGOVORA"
               disabled={true}
-              value={contractData && contractData[0]?.vat_value}
+              value={contractData && contractData[0]?.gross_value}
             />
           </Column>
         </Filters>
