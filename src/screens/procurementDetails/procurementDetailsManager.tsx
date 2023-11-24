@@ -112,7 +112,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
             type="number"
             value={row.amount}
             onChange={event => handleInputChange(event, row)}
-            disabled={planDetails?.status === 'Odobren'}
+            disabled={planDetails?.status === 'Odobren' || planDetails?.status === 'Objavljen'}
           />
         );
       },
