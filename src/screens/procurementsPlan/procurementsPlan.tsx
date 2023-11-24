@@ -60,9 +60,9 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     },
   ];
 
-  const buttonSendEnable = planDetails?.items.every(
-    item => item.status === ProcurementStatus.ProcurementStatusProcessed,
-  );
+  const buttonSendEnable = planDetails?.items
+    ?.filter(item => item.is_open_procurement === true)
+    .every(item => item.status === ProcurementStatus.ProcurementStatusProcessed);
 
   const onTabChange = (tab: Tab) => {
     setActiveTab(tab.id as number);
