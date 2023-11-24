@@ -25,8 +25,9 @@ import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../
 import {FileResponseItem} from '../../../types/files';
 import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
-import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
+import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import {UserRole} from '../../../constants';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -41,17 +42,6 @@ type ContractForm = {
   net_value: string;
   gross_value: string;
   file: FileItem[];
-};
-
-const initialValues: ContractForm = {
-  serial_number: '',
-  date_of_signing: null,
-  date_of_expiry: null,
-  supplier: {id: 0, title: ''},
-  vat_value: '',
-  net_value: '',
-  gross_value: '',
-  file: [],
 };
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {

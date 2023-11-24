@@ -37,6 +37,10 @@ interface ContractDetailsPageProps {
 export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({context}) => {
   const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
 
+  const {
+    contextMain: {organization_unit, role_id},
+  } = useAppContext();
+
   const {data: contractData} = useProcurementContracts({
     id: contractID,
   });
@@ -52,7 +56,9 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     ];
   }, [organizationUnits]);
 
-  const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(unitsforDropdown[0]);
+  const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(
+    role_id === UserRole.MANAGER_OJ ? organization_unit : unitsforDropdown[0],
+  );
 
   const {pdfData, loading: loadingReport} = useGetContractPDFUrl({
     id: procurementID,
@@ -68,10 +74,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       updateInstance(<MyPdfDocument data={pdfData} />);
     }
   }, [pdfData]);
-
-  const {
-    fileService: {downloadFile},
-  } = useAppContext();
 
   const [selectedItemId, setSelectedItemId] = useState(0);
 

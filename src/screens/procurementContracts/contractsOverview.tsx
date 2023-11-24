@@ -16,6 +16,8 @@ import {UserRole} from '../../constants';
 export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [showModal, setShowModal] = useState(false);
 
+  const role = context?.contextMain?.role_id;
+
   const [selectedSupplier, setSelectedSupplier] = useState(0);
   // const [selectedYear, setSelectedYear] = useState();
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,8 +90,6 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
     }
     setSelectedItemId(0);
   };
-
-  const role = context?.contextMain?.role_id;
 
   return (
     <ScreenWrapper>
