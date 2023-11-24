@@ -279,13 +279,14 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               />
             )}
           </Column>
-
-          <Button
-            content="Generiši izvještaj"
-            onClick={() => downloadPDF(contractPDF.blob)}
-            isLoading={loadingReport || contractPDF.loading || !contractPDF.blob}
-            disabled={loadingReport || contractPDF.loading || !contractPDF.blob}
-          />
+          {role !== UserRole.MANAGER_OJ && (
+            <Button
+              content="Generiši izvještaj"
+              onClick={() => downloadPDF(contractPDF.blob)}
+              isLoading={loadingReport || contractPDF.loading || !contractPDF.blob}
+              disabled={loadingReport || contractPDF.loading || !contractPDF.blob}
+            />
+          )}
         </Filters>
         <TableContainer
           tableHeads={tableHeads}
