@@ -113,10 +113,10 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     },
     {
       title: 'Jedinična cijena',
-      accessor: 'net_value',
+      accessor: 'public_procurement_article',
       type: 'custom',
       renderContents: (net_value, row: ContractArticleGet) => (
-        <Typography content={`${Number(net_value).toFixed(2)} €`} variant="bodySmall" />
+        <Typography content={`${Number(row.net_value).toFixed(2)} €`} variant="bodySmall" />
       ),
     },
     {
@@ -124,9 +124,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       accessor: 'net_value',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
-        const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
-        const taken = (row.amount || 0) - available;
-        const netValue = (Number(row.net_value) || 0) * taken;
+        const netValue = (Number(row.net_value) || 0) * (row.amount || 0);
         return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
       },
     },
@@ -135,11 +133,10 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
-        const available = articles.find(article => article.id === row.public_procurement_article.id)?.available || 0;
-        const taken = (row.amount || 0) - available;
-        const pdvValue = +(row.net_value || 0 * +row.public_procurement_article.vat_percentage) / 100;
-        const total = (+(row.net_value || 0) + pdvValue) * taken;
-        return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
+        const pdvValue = row.net_value && (+row.net_value * +row.public_procurement_article.vat_percentage) / 100;
+        const total = row.net_value && pdvValue && (+row.net_value + +pdvValue) * (row.amount || 0);
+
+        return <Typography content={`${Number(total)?.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
     {

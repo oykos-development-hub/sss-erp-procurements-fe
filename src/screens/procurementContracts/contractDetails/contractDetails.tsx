@@ -63,6 +63,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {
     fileService: {uploadFile, batchDeleteFiles},
+    contextMain,
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -173,8 +174,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       accessor: 'net_value',
       type: 'custom',
       renderContents: (net_value: string, row) => {
-        const total = Number(net_value) * (row.amount || 0);
-        return <Typography content={`${total.toFixed(2)} €`} variant="bodySmall" />;
+        const netValue = (Number(row.net_value) || 0) * (row.amount || 0);
+        return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
       },
     },
     {
@@ -182,9 +183,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
-        const pdvValue = (Number(row?.net_value || 0) * Number(row?.public_procurement_article.vat_percentage)) / 100;
-        const total = (+(row?.net_value || 0) + +pdvValue) * (row.amount || 0);
-        return <Typography content={`${total?.toFixed(2)} €`} variant="bodySmall" />;
+        const pdvValue = row.net_value && (+row.net_value * +row.public_procurement_article.vat_percentage) / 100;
+        const total = row.net_value && pdvValue && (+row.net_value + +pdvValue) * (row.amount || 0);
+
+        return <Typography content={`${Number(total)?.toFixed(2)} €`} variant="bodySmall" />;
       },
     },
     {
