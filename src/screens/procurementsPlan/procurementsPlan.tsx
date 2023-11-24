@@ -2,7 +2,7 @@ import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {Button} from 'client-library';
 import React, {useEffect, useState} from 'react';
 import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
-import {UserPermission, checkPermission} from '../../constants';
+import {UserPermission, UserRole, checkPermission} from '../../constants';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useSendProcurementOnRevision from '../../services/graphql/plans/hooks/useSendProcurementOnRevision';
@@ -156,7 +156,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       <FormFooter>
         <FormControls>
           <>
-            {planDetails?.status === 'Objavljen' && (
+            {role_id !== UserRole.MANAGER_OJ && planDetails?.status === 'Objavljen' && (
               <Button
                 content="Generiši izvještaj"
                 variant="secondary"
