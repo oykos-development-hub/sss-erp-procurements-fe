@@ -11,6 +11,7 @@ import {ProcurementContractsFilters} from './filters/procurementContractsFilters
 import useGetSuppliers from '../../services/graphql/suppliers/hooks/useGetSuppliers';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import useContractDelete from '../../services/graphql/procurementContractsOverview/hooks/useContractDelete';
+import {UserRole} from '../../constants';
 
 export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [showModal, setShowModal] = useState(false);
@@ -88,6 +89,8 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
     setSelectedItemId(0);
   };
 
+  const role = context?.contextMain?.role_id;
+
   return (
     <ScreenWrapper>
       <Container>
@@ -96,8 +99,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
         <TableHeader>
           <ProcurementContractsFilters
             suppliers={suppliers || []}
-            setFilters={({year, supplier_id}) => {
-              // setSelectedYear(year);
+            setFilters={({supplier_id}) => {
               setSelectedSupplier(supplier_id);
             }}
             searchQuery={searchQuery}
@@ -126,18 +128,23 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
                 to: `/procurements/contracts/${row.id.toString()}/signed`,
               });
             }}
-            tableActions={[
-              {
-                name: 'edit',
-                onClick: (item: any) => context.navigation.navigate(`/procurements/contracts/${item.id.toString()}`),
-                icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              },
-              {
-                name: 'delete',
-                onClick: (item: ProcurementContract) => handleDeleteIconClick(item.id),
-                icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-              },
-            ]}
+            tableActions={
+              role === UserRole.MANAGER_OJ
+                ? undefined
+                : [
+                    {
+                      name: 'edit',
+                      onClick: (item: any) =>
+                        context.navigation.navigate(`/procurements/contracts/${item.id.toString()}`),
+                      icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                    },
+                    {
+                      name: 'delete',
+                      onClick: (item: ProcurementContract) => handleDeleteIconClick(item.id),
+                      icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                    },
+                  ]
+            }
           />
         </div>
         {showModal && (

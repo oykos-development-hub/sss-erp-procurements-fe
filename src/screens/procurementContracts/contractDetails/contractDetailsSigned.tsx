@@ -270,13 +270,16 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         </Plan>
         <Filters style={{marginBlock: '12px', alignItems: 'center', justifyContent: 'space-between'}}>
           <Column>
-            <Dropdown
-              label={<Typography variant="bodySmall" content="ORGANIZACIONA JEDINICA:" />}
-              options={unitsforDropdown}
-              value={selectedOrganizationUnit}
-              onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
-            />
+            {role !== UserRole.MANAGER_OJ && (
+              <Dropdown
+                label={<Typography variant="bodySmall" content="ORGANIZACIONA JEDINICA:" />}
+                options={unitsforDropdown}
+                value={selectedOrganizationUnit}
+                onChange={val => setSelectedOrganizationUnit(val as DropdownDataNumber)}
+              />
+            )}
           </Column>
+
           <Button
             content="Generiši izvještaj"
             onClick={() => downloadPDF(contractPDF.blob)}

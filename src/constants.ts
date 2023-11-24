@@ -17,7 +17,8 @@ export enum UserPermission {
   CREATE_PROCUREMENT = 'CREATE_PROCUREMENT',
   VIEW_PROCUREMENT_REQUESTS = 'VIEW_PROCUREMENT_REQUESTS',
   EDIT_PROCUREMENTS = 'EDIT_PROCUREMENTS',
-  DELETE_CONTRACT = 'DELETE_CONTRACT',
+  EDIT_CONTRACTS = 'EDIT_CONTRACTS',
+  DELETE_CONTRACTS = 'DELETE_CONTRACTS',
 }
 
 export const isEditProcurementAndPlanDisabled = (planStatus: string) =>
@@ -34,6 +35,8 @@ const rolePermissionsMap = {
     UserPermission.VIEW_PROCUREMENT_REQUESTS,
     UserPermission.EDIT_PROCUREMENTS,
     UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT,
+    UserPermission.EDIT_CONTRACTS,
+    UserPermission.DELETE_CONTRACTS,
   ],
   [UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS]: [
     UserPermission.VIEW_PLANS,
@@ -43,6 +46,8 @@ const rolePermissionsMap = {
     UserPermission.CREATE_PROCUREMENT,
     UserPermission.VIEW_PROCUREMENT_REQUESTS,
     UserPermission.EDIT_PROCUREMENTS,
+    UserPermission.EDIT_CONTRACTS,
+    UserPermission.DELETE_CONTRACTS,
   ],
   [UserRole.MANAGER_OJ]: [
     UserPermission.VIEW_PLANS,
