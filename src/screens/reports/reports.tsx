@@ -194,7 +194,7 @@ export const Reports = () => {
                       onChange={onChange}
                       label="Organizaciona jedinica"
                       value={value}
-                      options={[{"id": 0, "title": "Sve"}, ...organizationUnits] as any}
+                      options={[{id: 0, title: 'Sve'}, ...organizationUnits] as any}
                       error={errors.organization_unit_id?.message}
                     />
                   )}
