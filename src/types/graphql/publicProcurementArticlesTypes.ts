@@ -2,6 +2,7 @@ import {DropdownDataNumber} from '../dropdownData';
 import {SingularResponse} from './utils';
 
 export enum VisibilityType {
+  None = 0,
   Accounting = 2,
   Inventory = 3,
 }
@@ -12,8 +13,10 @@ export function getVisibilityTypeName(visibilityType: VisibilityType) {
       return 'Materijalno knjigovodstvo';
     case VisibilityType.Inventory:
       return 'Osnovna sredstva';
+    case VisibilityType.None:
+      return 'Nije dio MK ili OS';
     default:
-      return '';
+      return 'Nije dio MK ili OS';
   }
 }
 

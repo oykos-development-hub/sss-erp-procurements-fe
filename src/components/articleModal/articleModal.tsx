@@ -54,9 +54,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         public_procurement_id: selectedItem?.public_procurement_id || procurementId,
         vat_percentage: {id: Number(selectedItem?.vat_percentage) || 0, title: `${selectedItem?.vat_percentage} %`},
         total_price: '',
-        visibility_type: selectedItem?.visibility_type
-          ? {id: selectedItem?.visibility_type, title: getVisibilityTypeName(selectedItem?.visibility_type)}
-          : undefined,
+        visibility_type: {id: selectedItem?.visibility_type, title: getVisibilityTypeName(selectedItem?.visibility_type)},
       });
     }
   }, [selectedItem]);
