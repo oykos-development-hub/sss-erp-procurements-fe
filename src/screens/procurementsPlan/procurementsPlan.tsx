@@ -160,7 +160,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
               <Button
                 content="Generiši izvještaj"
                 variant="secondary"
-                onClick={() => downloadPDF(contractPDF.blob)}
+                onClick={() => downloadPDF(contractPDF.blob, pdfData)}
                 isLoading={loadingReport}
               />
             )}

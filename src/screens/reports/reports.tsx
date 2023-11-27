@@ -114,15 +114,19 @@ export const Reports = () => {
 
   useEffect(() => {
     if (!contractPDF.loading && contractPDF.blob && shouldDownloadPDF) {
-      downloadPDF(contractPDF.blob); // Function to trigger the download
-      setShouldDownloadPDF(false); // Reset the flag
+      if (typeOfReport?.id === 2) {
+        downloadPDF(contractPDF.blob, pdfData); // Function to trigger the download
+        setShouldDownloadPDF(false); // Reset the flag
+      }
     }
   }, [contractPDF.loading, contractPDF.blob, shouldDownloadPDF]);
 
   useEffect(() => {
     if (!planPDF.loading && planPDF.blob && shouldDownloadPDF) {
-      downloadPDF(planPDF.blob); // Function to trigger the download
-      setShouldDownloadPDF(false);
+      if (typeOfReport?.id === 1) {
+        downloadPDF(planPDF.blob, pdfPlanData); // Function to trigger the download
+        setShouldDownloadPDF(false);
+      }
     }
   }, [planPDF.blob, shouldDownloadPDF]);
 

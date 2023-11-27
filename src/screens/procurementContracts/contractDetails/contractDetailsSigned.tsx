@@ -278,7 +278,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           {role !== UserRole.MANAGER_OJ && (
             <Button
               content="Generiši izvještaj"
-              onClick={() => downloadPDF(contractPDF.blob)}
+              onClick={() => downloadPDF(contractPDF.blob, pdfData)}
               isLoading={loadingReport || contractPDF.loading || !contractPDF.blob}
               disabled={loadingReport || contractPDF.loading || !contractPDF.blob}
             />

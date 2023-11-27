@@ -1,4 +1,6 @@
 import {DropdownDataString} from '../types/dropdownData';
+import {PdfData} from '../types/graphql/contractPDFTypes';
+import {PdfPlanData} from '../types/graphql/getPlansTypes';
 
 export const MICRO_SERVICE_SLUG = 'procurements';
 
@@ -27,13 +29,27 @@ export const yearsForDropdown = (maxOffset = 10, isFilter = true, nextYears = 0)
   return allYears;
 };
 
-export const downloadPDF = (blob: Blob | null) => {
+export const downloadPDF = (blob: Blob | null, pdfData?: PdfData | PdfPlanData) => {
+  let name = 'Izvještaj.pdf';
+  if (pdfData && 'subtitles' in pdfData) {
+    const organization_unit = pdfData?.subtitles?.organization_unit
+      ? pdfData?.subtitles?.organization_unit.replaceAll(' ', '_')
+      : 'Sve';
+    const public_procurement = pdfData?.subtitles?.public_procurement
+      ? pdfData?.subtitles?.public_procurement.replaceAll(' ', '_')
+      : '';
+    name = `Izvještaj_${organization_unit}_${public_procurement}.pdf`;
+  } else if (pdfData && 'plan_id' in pdfData) {
+    const year = pdfData?.year ? pdfData?.year : 'Sve';
+    name = `Plan_za_${year}.pdf`;
+  }
+
   if (blob === null) return;
   const blobUrl = URL.createObjectURL(blob);
 
   const link = document.createElement('a');
   link.href = blobUrl;
-  link.download = 'izvještaj.pdf';
+  link.download = name;
   link.style.display = 'none';
   document.body.appendChild(link);
 
