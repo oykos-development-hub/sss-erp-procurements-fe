@@ -47,7 +47,15 @@ export const tableHeads: TableHead[] = [
     accessor: 'gross_value',
     type: 'custom',
     renderContents: gross_value => {
-      return <Typography variant="bodySmall" content={gross_value} />;
+      return (
+        <Typography
+          variant="bodySmall"
+          content={Number(gross_value).toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        />
+      );
     },
   },
   {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},

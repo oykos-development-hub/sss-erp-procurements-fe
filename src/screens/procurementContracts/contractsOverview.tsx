@@ -19,7 +19,6 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
   const role = context?.contextMain?.role_id;
 
   const [selectedSupplier, setSelectedSupplier] = useState(0);
-  // const [selectedYear, setSelectedYear] = useState();
   const [searchQuery, setSearchQuery] = useState('');
 
   const {

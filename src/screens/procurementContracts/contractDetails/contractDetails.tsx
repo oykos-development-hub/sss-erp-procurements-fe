@@ -27,7 +27,6 @@ import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes'
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
 import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
 import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
-import {UserRole} from '../../../constants';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -53,7 +52,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {
     fileService: {uploadFile, batchDeleteFiles},
-    contextMain,
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -163,9 +161,17 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       title: 'Ukupno neto',
       accessor: 'net_value',
       type: 'custom',
-      renderContents: (net_value: string, row) => {
+      renderContents: (_, row) => {
         const netValue = (Number(row.net_value) || 0) * (row.amount || 0);
-        return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(netValue)?.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -176,7 +182,15 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         const pdvValue = row.net_value && (+row.net_value * +row.public_procurement_article.vat_percentage) / 100;
         const total = row.net_value && pdvValue && (+row.net_value + +pdvValue) * (row.amount || 0);
 
-        return <Typography content={`${Number(total)?.toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(total)?.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -205,34 +219,19 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {mutate: insertContract, loading: isLoadingContractMutate} = useInsertProcurementContract();
   const {mutate: insertContractArticle, loading: isLoadingContractArticleMutate} = useInsertContractArticle();
 
-  const net_value = watch('net_value');
-  const gross_value = watch('gross_value');
-  const vat_value = watch('vat_value');
+  const totalPrice = filteredArticles?.reduce((sum: any, article: any) => {
+    const pdvValue =
+      article?.net_value && (+article.net_value * +article.public_procurement_article.vat_percentage) / 100;
+    const total = article?.net_value && pdvValue && (+article.net_value + +pdvValue) * (article.amount || 0);
 
-  const calculateGrossPrice = (netPrice: number, vatPercentage: number): number => {
-    return netPrice + (netPrice * vatPercentage) / 100;
-  };
+    return sum + total;
+  }, 0);
 
-  const totals = useMemo(() => {
-    return filteredArticles.reduce(
-      (accumulator, article) => {
-        const totalNetPriceForArticle = (article.amount || 0) * Number(article.net_value);
-        const grossPricePerUnit = calculateGrossPrice(
-          Number(article.net_value),
-          Number(article.public_procurement_article.vat_percentage),
-        );
-        const totalGrossPriceForArticle = (article.amount || 0) * grossPricePerUnit;
+  const totalNeto = filteredArticles?.reduce((sum: any, article: any) => {
+    const price = parseFloat(article?.net_value) * article?.amount;
 
-        accumulator.totalNetValue += totalNetPriceForArticle;
-        accumulator.totalGrossValue += totalGrossPriceForArticle;
-        return accumulator;
-      },
-      {
-        totalNetValue: 0,
-        totalGrossValue: 0,
-      },
-    );
-  }, [filteredArticles]);
+    return sum + price;
+  }, 0);
 
   const handleSave = async () => {
     // Files are mandatory
@@ -280,9 +279,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
       date_of_signing: parseDateForBackend(watch('date_of_signing')) ?? '',
       date_of_expiry: parseDateForBackend(watch('date_of_expiry')) ?? '',
-      net_value: net_value,
-      gross_value: gross_value,
-      vat_value: vat_value,
+      net_value: totalNeto,
+      gross_value: totalPrice,
+      vat_value: undefined,
       file: files,
     };
 
@@ -325,9 +324,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     setFilesToDelete(filesToDelete => [...filesToDelete, id]);
   };
 
-  const netValue = watch('net_value');
-  const grossValue = watch('gross_value');
-  const vatValue = grossValue - netValue;
+  const vatValue = totalPrice - totalNeto;
 
   return (
     <ScreenWrapper>
@@ -414,13 +411,34 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
-            <Input value={netValue} label="UKUPNA NETO VRIJEDNOST" disabled />
+            <Input
+              value={totalNeto.toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              label="UKUPNA NETO VRIJEDNOST"
+              disabled
+            />
           </Column>
           <Column>
-            <Input value={vatValue ? vatValue.toString() : ''} label="UKUPNA VRIJEDNOST PDV-A" disabled />
+            <Input
+              value={vatValue.toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              label="UKUPNA VRIJEDNOST PDV-A"
+              disabled
+            />
           </Column>
           <Column>
-            <Input value={grossValue} label="UKUPNA VRIJEDNOST UGOVORA" disabled />
+            <Input
+              value={totalPrice.toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              label="UKUPNA VRIJEDNOST UGOVORA"
+              disabled
+            />
           </Column>
         </Filters>
 

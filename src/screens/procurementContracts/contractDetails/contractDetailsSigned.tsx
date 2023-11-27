@@ -118,7 +118,13 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       accessor: 'public_procurement_article',
       type: 'custom',
       renderContents: (net_value, row: ContractArticleGet) => (
-        <Typography content={`${Number(row.net_value).toFixed(2)} €`} variant="bodySmall" />
+        <Typography
+          content={`${Number(row.net_value).toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`}
+          variant="bodySmall"
+        />
       ),
     },
     {
@@ -127,7 +133,15 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
         const netValue = (Number(row.net_value) || 0) * (row.amount || 0);
-        return <Typography content={`${Number(netValue).toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(netValue).toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -138,7 +152,15 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         const pdvValue = row.net_value && (+row.net_value * +row.public_procurement_article.vat_percentage) / 100;
         const total = row.net_value && pdvValue && (+row.net_value + +pdvValue) * (row.amount || 0);
 
-        return <Typography content={`${Number(total)?.toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(total)?.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -237,16 +259,39 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
         <Filters style={{marginTop: '44px'}}>
           <Column>
-            <Input label="UKUPNA NETO VRIJEDNOST" value={contractData && contractData[0]?.net_value} disabled={true} />
+            <Input
+              label="UKUPNA NETO VRIJEDNOST"
+              value={
+                contractData &&
+                Number(contractData[0]?.net_value).toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              }
+              disabled={true}
+            />
           </Column>
           <Column>
-            <Input label="UKUPNA VRIJEDNOST PDV-A" disabled={true} value={VatValue ? VatValue.toString() : ''} />
+            <Input
+              label="UKUPNA VRIJEDNOST PDV-A"
+              disabled={true}
+              value={Number(VatValue).toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            />
           </Column>
           <Column>
             <Input
               label="UKUPNA VRIJEDNOST UGOVORA"
               disabled={true}
-              value={contractData && contractData[0]?.gross_value}
+              value={
+                contractData &&
+                Number(contractData[0]?.gross_value).toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              }
             />
           </Column>
         </Filters>
