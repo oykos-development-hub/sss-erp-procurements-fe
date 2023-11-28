@@ -147,10 +147,14 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         id: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.id || undefined,
         public_procurement_article_id: item.id,
         organization_unit_id: organizationUnitId,
-        status: item.status,
-        is_rejected: item.is_rejected || false,
-        rejected_description: item.rejected_description,
-        amount: item.amount || 0,
+        status:
+          filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.status || 'in_progress',
+        is_rejected:
+          filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.is_rejected || false,
+        rejected_description:
+          filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.rejected_description ||
+          '',
+        amount: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.amount || 0,
       };
 
       await insertOrganizationUnitArticle(
