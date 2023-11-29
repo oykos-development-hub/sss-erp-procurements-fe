@@ -1,7 +1,7 @@
-import { Theme } from 'client-library';
+import {Theme} from 'client-library';
 import styled from 'styled-components';
 
-export const PopupContainer = styled.div<{ isOpen: boolean }>`
+export const PopupContainer = styled.div<{isOpen: boolean}>`
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@ export const PopupContainer = styled.div<{ isOpen: boolean }>`
   align-items: center;
 `;
 
-export const PopupContent = styled.div<{ top: number; left: number, ref: any }>`
+export const PopupContent = styled.div<{top: number; left: number; ref: any}>`
   background-color: white;
   border-radius: 4px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
