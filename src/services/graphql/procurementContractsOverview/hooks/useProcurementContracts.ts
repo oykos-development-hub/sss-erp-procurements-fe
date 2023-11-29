@@ -8,7 +8,15 @@ import query from '../queries/getProcurementContracts';
 import useAppContext from '../../../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../../constants';
 
-const useProcurementContracts = ({id, procurement_id, supplier_id}: GetProcurementContractParams) => {
+const useProcurementContracts = ({
+  id,
+  procurement_id,
+  supplier_id,
+  sort_by_date_of_expiry,
+  sort_by_date_of_signing,
+  sort_by_gross_value,
+  sort_by_serial_number,
+}: GetProcurementContractParams) => {
   const [procurementContracts, setProcurementContracts] = useState<ProcurementContract[]>();
   const [loading, setLoading] = useState(true);
   const {fetch} = useAppContext();
@@ -22,6 +30,10 @@ const useProcurementContracts = ({id, procurement_id, supplier_id}: GetProcureme
         id,
         procurement_id,
         supplier_id,
+        sort_by_date_of_expiry,
+        sort_by_date_of_signing,
+        sort_by_gross_value,
+        sort_by_serial_number,
       });
 
       if (response.publicProcurementContracts_Overview.status === REQUEST_STATUSES.success) {
@@ -33,7 +45,15 @@ const useProcurementContracts = ({id, procurement_id, supplier_id}: GetProcureme
 
   useEffect(() => {
     fetchProcurementContracts();
-  }, [id, procurement_id, supplier_id]);
+  }, [
+    id,
+    procurement_id,
+    supplier_id,
+    sort_by_date_of_expiry,
+    sort_by_date_of_signing,
+    sort_by_gross_value,
+    sort_by_serial_number,
+  ]);
 
   return {data: procurementContracts, loading, refetchData: fetchProcurementContracts};
 };

@@ -17,6 +17,7 @@ import MyPdfDocument from '../procurementContracts/contractDetails/contractPDF';
 import {usePDF} from '@react-pdf/renderer';
 import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
 import PlanPDFDocument from '../procurementsPlan/planPDF';
+import useAppContext from '../../context/useAppContext';
 
 interface FormData {
   type_of_report: DropdownDataNumber;
@@ -47,9 +48,16 @@ export const Reports = () => {
     formState: {errors},
     watch,
     resetField,
+    setValue,
   } = useForm<FormData>({
     resolver: yupResolver(reportsFormValidation),
   });
+
+  const {
+    navigation: {
+      location: {state: navigationState},
+    },
+  } = useAppContext();
 
   const typeOfReport = watch('type_of_report');
   const year = watch('year');
@@ -139,6 +147,12 @@ export const Reports = () => {
     }
     prevYearRef.current = year;
   }, [typeOfReport, year]);
+
+  useEffect(() => {
+    if (navigationState?.reportType) {
+      setValue('type_of_report', navigationState?.reportType);
+    }
+  }, [navigationState]);
 
   return (
     <ScreenWrapper>

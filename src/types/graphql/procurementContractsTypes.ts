@@ -14,6 +14,7 @@ export interface ProcurementContract {
   gross_value: string;
   created_at: string;
   updated_at: string;
+  days_until_expiry: number;
   file: FileItem[];
   vat_value: string;
 }
@@ -35,6 +36,10 @@ export interface GetProcurementContractParams {
   id?: number;
   supplier_id?: number;
   procurement_id?: number;
+  sort_by_date_of_expiry?: string;
+  sort_by_date_of_signing?: string;
+  sort_by_gross_value?: string;
+  sort_by_serial_number?: string;
 }
 
 export interface ProcurementContractsGetResponse {

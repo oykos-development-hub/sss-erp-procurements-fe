@@ -10,6 +10,7 @@ export interface PlanOverviewResponse {
 export interface PlanItem {
   id: number;
   requests: number;
+  approved_requests: number;
   pre_budget_plan: DropdownDataNumber;
   is_pre_budget: boolean;
   year: string;
@@ -21,6 +22,8 @@ export interface PlanItem {
   updated_at: string;
   file_id: number;
   status: string;
+  total_net: number;
+  total_gross: number;
   items: {
     id: number;
     budget_indent: DropdownDataNumber;
@@ -59,6 +62,9 @@ export interface GetPlansOverviewParams {
   size: number;
   is_pre_budget: boolean;
   contract?: boolean;
+  sort_by_year?: string;
+  sort_by_title?: string;
+  sort_by_date_of_publishing?: string;
 }
 
 export enum PlanSubtitleKey {

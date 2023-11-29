@@ -1,11 +1,12 @@
-const plansOverviewQuery = `query PlansOverview($status: String, $year: String, $page: Int!, $size: Int!, $is_pre_budget: Boolean, $contract: Boolean) {
-    publicProcurementPlans_Overview(status: $status, year: $year, page: $page, size: $size, is_pre_budget: $is_pre_budget, contract: $contract) {
+const plansOverviewQuery = `query PlansOverview($status: String, $year: String, $page: Int!, $size: Int!, $is_pre_budget: Boolean, $contract: Boolean, $sort_by_year: String, $sort_by_title: String, $sort_by_date_of_publishing: String) {
+    publicProcurementPlans_Overview(status: $status, year: $year, page: $page, size: $size, is_pre_budget: $is_pre_budget, contract: $contract, sort_by_year: $sort_by_year, sort_by_title: $sort_by_title, sort_by_date_of_publishing: $sort_by_date_of_publishing) {
         status 
         message
         total
         items {
             id
             requests
+            approved_requests
             pre_budget_plan {
                 id
                 title
@@ -21,6 +22,8 @@ const plansOverviewQuery = `query PlansOverview($status: String, $year: String, 
             created_at
             updated_at
             file_id
+            total_net
+            total_gross
             items {
                 id
                 budget_indent {
