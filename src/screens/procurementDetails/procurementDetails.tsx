@@ -213,7 +213,9 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           </Filters>
 
           <Controls>
-            <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
+            {publicProcurement?.is_open_procurement && (
+              <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
+            )}
             <Button content="Novi artikal" onClick={handleAddArticle} disabled={isEditProcurementDisabled} />
             <Button content="Uvezi artikle" onClick={() => setImportModal(true)} disabled={isEditProcurementDisabled} />
           </Controls>

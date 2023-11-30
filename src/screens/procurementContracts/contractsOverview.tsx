@@ -106,13 +106,15 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
             context={context}
           />
 
-          <ButtonWrapper>
-            <Button
-              variant="secondary"
-              content={<Typography variant="bodyMedium" content="Novi ugovor" />}
-              onClick={handleAdd}
-            />
-          </ButtonWrapper>
+          {role !== UserRole.MANAGER_OJ && (
+            <ButtonWrapper>
+              <Button
+                variant="secondary"
+                content={<Typography variant="bodyMedium" content="Novi ugovor" />}
+                onClick={handleAdd}
+              />
+            </ButtonWrapper>
+          )}
         </TableHeader>
 
         <div>
