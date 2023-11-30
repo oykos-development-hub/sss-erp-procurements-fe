@@ -1,4 +1,4 @@
-import {Typography} from 'client-library';
+import {Typography, PlanIcon, ContractIcon, ReportIcon} from 'client-library';
 import React from 'react';
 import useAppContext from '../../context/useAppContext';
 import ScreenWrapper from '../../shared/screenWrapper';
@@ -25,7 +25,9 @@ export const LandingPage: React.FC = () => {
             <TitleWrapper>
               <Title variant="bodyLarge" content="Planovi" />
             </TitleWrapper>
-            <IconWrapper></IconWrapper>
+            <IconWrapper>
+              <PlanIcon />
+            </IconWrapper>
           </ContentBox>
           <ContentBox
             onClick={() => {
@@ -35,7 +37,9 @@ export const LandingPage: React.FC = () => {
             <TitleWrapper>
               <Title variant="bodyLarge" content="Ugovori" />
             </TitleWrapper>
-            <IconWrapper></IconWrapper>
+            <IconWrapper>
+              <ContractIcon />
+            </IconWrapper>
           </ContentBox>
           <ContentBox
             onClick={() => {
@@ -45,7 +49,9 @@ export const LandingPage: React.FC = () => {
             <TitleWrapper>
               <Title variant="bodyLarge" content="Izvještaji" />
             </TitleWrapper>
-            <IconWrapper></IconWrapper>
+            <IconWrapper>
+              <ReportIcon />
+            </IconWrapper>
           </ContentBox>
         </Container>
       </div>
