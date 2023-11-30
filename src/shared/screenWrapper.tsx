@@ -22,7 +22,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
   margin: 0;
 `;
 
-const ScreenWrapper: FC<{children: ReactNode}> = ({children}) => {
+const ScreenWrapper: FC<{children: ReactNode; showBreadcrumbs?: boolean}> = ({children, showBreadcrumbs = true}) => {
   const context = useAppContext();
 
   const breadcrumbs = context?.breadcrumbs;
@@ -49,7 +49,7 @@ const ScreenWrapper: FC<{children: ReactNode}> = ({children}) => {
 
   return (
     <Container>
-      <StyledBreadcrumbs items={breadcrumbItems} onClick={handleNavigation} />
+      {showBreadcrumbs ? <StyledBreadcrumbs items={breadcrumbItems} onClick={handleNavigation} /> : null}
       {children}
     </Container>
   );

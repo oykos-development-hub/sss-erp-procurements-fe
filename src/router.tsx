@@ -1,18 +1,17 @@
 import React from 'react';
 import {NotFound404} from './screens/404';
-import {ProcurementDetails} from './screens/procurementDetails/procurementDetails';
-import {ProcurementsPlan} from './screens/procurementsPlan/procurementsPlan';
-import {PublicProcurementsMainPage} from './screens/publicProcurement/plansOverview';
-import {MicroserviceProps} from './types/micro-service-props';
-import {OrganizationUnitPublicProcurements} from './screens/procurementsPlan/organizationUnitPublicProcurements';
-import {ProcurementDetailsManager} from './screens/procurementDetails/procurementDetailsManager';
-import {ProcurementDetailsRequests} from './screens/procurementDetails/procurementDetailsRequests';
-import {ProcurementContractsMainPage} from './screens/procurementContracts/contractsOverview';
+import {LandingPage} from './screens/landingPage/landingPage';
 import {ContractDetails} from './screens/procurementContracts/contractDetails/contractDetails';
 import {ContractDetailsSigned} from './screens/procurementContracts/contractDetails/contractDetailsSigned';
-import PROCUREMENTS from './screens/landing';
+import {ProcurementContractsMainPage} from './screens/procurementContracts/contractsOverview';
+import {ProcurementDetails} from './screens/procurementDetails/procurementDetails';
+import {ProcurementDetailsManager} from './screens/procurementDetails/procurementDetailsManager';
+import {ProcurementDetailsRequests} from './screens/procurementDetails/procurementDetailsRequests';
+import {OrganizationUnitPublicProcurements} from './screens/procurementsPlan/organizationUnitPublicProcurements';
+import {ProcurementsPlan} from './screens/procurementsPlan/procurementsPlan';
+import {PublicProcurementsMainPage} from './screens/publicProcurement/plansOverview';
 import {Reports} from './screens/reports/reports';
-import {Dashboard} from './screens/dashboard/Dashboard';
+import {MicroserviceProps} from './types/micro-service-props';
 
 const ProcurementPlanDetailsRegex = /^\/procurements\/plans\/\d+/;
 const OrganizationUnitPublicProcurementsRegex = /^\/procurements\/plans\/\d+\/requests\/\d+$/;
@@ -29,7 +28,7 @@ export const Router: React.FC<MicroserviceProps> = props => {
   });
 
   const renderScreen = () => {
-    if (pathname === '/procurements') return <Dashboard />;
+    if (pathname === '/procurements') return <LandingPage />;
     if (pathname === '/procurements/plans') return <PublicProcurementsMainPage context={context} />;
     if (OrganizationUnitPublicProcurementsRegex.test(pathname)) {
       return <OrganizationUnitPublicProcurements context={context} />;
