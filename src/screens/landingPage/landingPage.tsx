@@ -19,7 +19,7 @@ export const LandingPage: React.FC = () => {
         <Container>
           <ContentBox
             onClick={() => {
-              breadcrumbs.add({name: 'Planovi', path: '/procurements/contracts'});
+              breadcrumbs.add({name: 'Planovi', path: '/procurements/plans'});
               navigate('/procurements/plans');
             }}>
             <TitleWrapper>
@@ -43,7 +43,7 @@ export const LandingPage: React.FC = () => {
           </ContentBox>
           <ContentBox
             onClick={() => {
-              breadcrumbs.add({name: 'Izvještaji', path: '/procurements/contracts'});
+              breadcrumbs.add({name: 'Izvještaji', path: '/procurements/reports'});
               navigate('/procurements/reports');
             }}>
             <TitleWrapper>

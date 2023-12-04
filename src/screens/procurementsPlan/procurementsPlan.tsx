@@ -31,6 +31,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   } = useAppContext();
   const url = navigation.location.pathname;
   const location = navigation?.location;
+  const searchParams = location?.search;
 
   const planID = +url.split('/').pop();
   const pathname = url.substring(0, url.lastIndexOf('/'));
@@ -45,7 +46,9 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     SimpleProcurement = 3,
   }
 
-  const [activeTab, setActiveTab] = useState<TabsEnum>(location?.state?.activeTab || TabsEnum.Overview);
+  const [activeTab, setActiveTab] = useState<TabsEnum>(
+    searchParams ? TabsEnum.Requests : location?.state?.activeTab ? location?.state?.activeTab : TabsEnum.Overview,
+  );
   const [isNotificationModalActive, setIsNotificationModalActive] = useState<boolean>(false);
   const [isRejectedModalActive, setIsRejectedModalActive] = useState<boolean>(false);
   const [showPlanCloseModal, setShowPlanCloseModal] = useState<boolean>(false);
