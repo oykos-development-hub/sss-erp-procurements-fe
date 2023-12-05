@@ -142,11 +142,23 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
         <Filters>
           <Column>
             <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PLANA BEZ PDV-A:" />
-            <Price variant="bodySmall" content={`€ ${totalNet?.toFixed(2)}`} />
+            <Price
+              variant="bodySmall"
+              content={`€ ${totalNet?.toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`}
+            />
           </Column>
           <Column>
             <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST PLANA SA PDV-OM:" />
-            <Price variant="bodySmall" content={`€ ${totalPrice?.toFixed(2)}`} />
+            <Price
+              variant="bodySmall"
+              content={`€ ${totalPrice?.toLocaleString('sr-RS', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`}
+            />
           </Column>
         </Filters>
         {checkPermission(role_id, UserPermission.CREATE_PROCUREMENT) && (
@@ -217,6 +229,7 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
           onClose={closeModal}
           navigate={navigation.navigate}
           planID={planDetails?.id}
+          selectedItem={selectedItem}
         />
       )}
 

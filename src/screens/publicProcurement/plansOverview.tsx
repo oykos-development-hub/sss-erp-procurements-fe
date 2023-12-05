@@ -89,7 +89,10 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             }
           });
 
-          return totalValue.toFixed(2);
+          return totalValue.toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
         };
 
         const totalValue = calculateTotalValue(item);
@@ -314,7 +317,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   };
 
   const availableYearsForPlan = useMemo(() => {
-    const years = yearsForDropdown(10, false, 1);
+    const years = yearsForDropdown(8, false, 2);
 
     const existingPlanYears = tableData?.map(plan => plan.year) || [];
     const filteredYears = years.filter(year => !existingPlanYears.includes(year.id));
@@ -354,7 +357,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             <Filters>
               <Dropdown
                 label={<Typography variant="bodySmall" content="GODINA:" />}
-                options={yearsForDropdown(10, true, 1)}
+                options={yearsForDropdown(8, true, 2)}
                 name="year"
                 value={form?.year || null}
                 onChange={handleChange}

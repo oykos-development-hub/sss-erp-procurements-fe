@@ -45,7 +45,13 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
       type: 'custom',
       renderContents: (public_procurement_article: any) => {
         return (
-          <Typography content={`${Number(public_procurement_article.net_price).toFixed(2)} €`} variant="bodySmall" />
+          <Typography
+            content={`${Number(public_procurement_article.net_price).toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
         );
       },
     },
@@ -57,7 +63,15 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
         const pdvValue =
           (Number(row?.public_procurement_article?.net_price) * Number(public_procurement_article?.vat_percentage)) /
           100;
-        return <Typography content={`${Number(pdvValue).toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(pdvValue).toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -72,7 +86,15 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
 
         const calculateTotal = total * (row.amount || 1);
 
-        return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${calculateTotal.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -123,11 +145,23 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
           <Filters>
             <Column>
               <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST NABAVKE:" />
-              <Price variant="bodySmall" content={`€ ${totalNet.toFixed(2)}`} />
+              <Price
+                variant="bodySmall"
+                content={`€ ${totalNet.toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+              />
             </Column>
             <Column>
               <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST NABAVKE:" />
-              <Price variant="bodySmall" content={`€ ${totalPrice.toFixed(2)}`} />
+              <Price
+                variant="bodySmall"
+                content={`€ ${totalPrice.toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+              />
             </Column>
           </Filters>
         </Header>

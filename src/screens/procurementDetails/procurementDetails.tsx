@@ -53,11 +53,19 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       type: 'text',
     },
     {
-      title: 'Vrijednost neto',
+      title: 'Vrijednost bez pdv-a',
       accessor: 'net_price',
       type: 'custom',
       renderContents: (net_price: any) => {
-        return <Typography content={`${Number(net_price).toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(net_price).toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -66,7 +74,15 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       type: 'custom',
       renderContents: (vat_percentage: any, row: any) => {
         const pdvValue = (Number(row?.net_price) * Number(vat_percentage)) / 100;
-        return <Typography content={`${Number(pdvValue).toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${Number(pdvValue).toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -78,16 +94,24 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       },
     },
     {
-      title: 'Ukupno',
+      title: 'Vrijednost sa pdv-om',
       accessor: 'total',
       type: 'custom',
       renderContents: (_, row: any) => {
         const pdvValue = (Number(row?.net_price) * Number(row?.vat_percentage)) / 100;
         const total = Number(row.net_price) + Number(pdvValue);
 
-        const calculateTotal = total * row.total_amount;
+        const calculateTotal = total * (row.total_amount || 1);
 
-        return <Typography content={`${calculateTotal.toFixed(2)} €`} variant="bodySmall" />;
+        return (
+          <Typography
+            content={`${calculateTotal.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+            variant="bodySmall"
+          />
+        );
       },
     },
     {
@@ -203,12 +227,24 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         <Header>
           <Filters>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST NABAVKE:" />
-              <Price variant="bodySmall" content={`€ ${totalNet.toFixed(2)}`} />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE BEZ PDV-A:" />
+              <Price
+                variant="bodySmall"
+                content={`€ ${totalNet.toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+              />
             </Column>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST NABAVKE:" />
-              <Price variant="bodySmall" content={`€ ${totalPrice.toFixed(2)}`} />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE SA PDV-OM:" />
+              <Price
+                variant="bodySmall"
+                content={`€ ${totalPrice.toLocaleString('sr-RS', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+              />
             </Column>
           </Filters>
 

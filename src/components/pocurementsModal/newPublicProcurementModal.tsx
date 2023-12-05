@@ -7,7 +7,23 @@ import {FormGroup, ModalContentWrapper} from './styles';
 import useAppContext from '../../context/useAppContext';
 import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts';
 
-const initialValues = {
+type InitialValuesType = {
+  id: number;
+  budget_indent_id?: {
+    id: number;
+    title: string;
+  };
+  plan_id: number;
+  is_open_procurement: undefined;
+  title: string;
+  article_type: string;
+  status: string;
+  serial_number: string;
+  date_of_publishing?: string;
+  date_of_awarding?: string;
+  file_id: number;
+};
+const initialValues: InitialValuesType = {
   id: 0,
   budget_indent_id: undefined,
   plan_id: 1,
@@ -49,6 +65,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     formState: {errors},
     reset,
     register,
+    watch,
   } = useForm({defaultValues: initialValues});
 
   const {mutate} = useInsertPublicProcurementPlanItem();
@@ -58,20 +75,28 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     return generateDropdownOptions(counts);
   }, [counts]);
 
-  const handleDropdownOrginalName = (id: number) => {
-    const selectedItem = dropdowncountsOptions?.find(item => item.id === id);
+  const budgetIndentId = watch('budget_indent_id')?.id;
+
+  useEffect(() => {
+    if (budgetIndentId === undefined) return;
+    const selectedItem = dropdowncountsOptions?.find(item => item.id === budgetIndentId);
     setOrginalTitle(selectedItem?.orginal_title);
-  };
+  }, [budgetIndentId, dropdowncountsOptions]);
+
   const onSubmit = async (values: any) => {
     try {
       const payload = {
-        ...values,
         budget_indent_id: values?.budget_indent_id?.id,
-        is_open_procurement: values?.is_open_procurement?.id === 1 ? true : false,
+        is_open_procurement: values?.is_open_procurement?.id,
         title: values?.title,
         article_type: values?.article_type?.title,
-        plan_id: planID,
+        plan_id: planID || 0,
         status: values?.status,
+        id: values.id,
+        serial_number: values?.serial_number,
+        date_of_publishing: values?.date_of_publishing,
+        date_of_awarding: values?.date_of_awarding,
+        file_id: values?.file_id,
       };
 
       mutate(payload, item => {
@@ -93,9 +118,9 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     if (selectedItem) {
       reset({
         ...selectedItem,
-        budget_indent_id: {id: selectedItem?.budget_indent?.id, title: selectedItem?.budget_indent?.title},
+        budget_indent_id: {id: selectedItem?.budget_indent?.id, title: selectedItem?.budget_indent?.serial_number},
         is_open_procurement: {
-          id: selectedItem?.is_open_procurement === true ? 'Otvoreni postupak' : 'Jednostavna nabavka',
+          id: selectedItem?.is_open_procurement === true,
           title: selectedItem?.is_open_procurement === true ? 'Otvoreni postupak' : 'Jednostavna nabavka',
         },
         article_type: {id: selectedItem?.article_type, title: selectedItem?.article_type},
@@ -120,11 +145,8 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
               control={control}
               render={({field: {onChange, name, value}}) => (
                 <Dropdown
-                  onChange={selectedOption => {
-                    handleDropdownOrginalName(selectedOption.id as number);
-                    onChange(selectedOption);
-                  }}
-                  value={value as any}
+                  onChange={onChange}
+                  value={value}
                   name={name}
                   label="KONTO:"
                   options={dropdowncountsOptions}

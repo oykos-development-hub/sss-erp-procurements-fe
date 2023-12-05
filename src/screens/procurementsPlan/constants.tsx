@@ -51,7 +51,15 @@ export const tableHeadsRequests: TableHead[] = [
     accessor: 'amount',
     type: 'custom',
     renderContents: (amount: RequestAmountType) => {
-      return <Typography variant="bodyMedium" content={`${amount?.totalPrice.toFixed(2)} €`} />;
+      return (
+        <Typography
+          variant="bodyMedium"
+          content={`${amount?.totalPrice.toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`}
+        />
+      );
     },
   },
   {
@@ -102,7 +110,15 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
           const price = (article.public_procurement_article.net_price || 0) * article.amount;
           return sum + price;
         }, 0) || 0;
-      return <Typography variant="bodyMedium" content={`${totalPrice.toFixed(2)} €`} />;
+      return (
+        <Typography
+          variant="bodyMedium"
+          content={`${totalPrice.toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`}
+        />
+      );
     },
   },
   {
@@ -118,7 +134,15 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
           const total = pdv * article.amount;
           return sum + total;
         }, 0) || 0;
-      return <Typography variant="bodyMedium" content={`${totalPdv.toFixed(2)} €`} />;
+      return (
+        <Typography
+          variant="bodyMedium"
+          content={`${totalPdv.toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`}
+        />
+      );
     },
   },
   {
@@ -143,7 +167,15 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
 
       const total = totalNet + totalPdv;
 
-      return <Typography variant="bodyMedium" content={`${total.toFixed(2)} €`} />;
+      return (
+        <Typography
+          variant="bodyMedium"
+          content={`${total.toLocaleString('sr-RS', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €`}
+        />
+      );
     },
   },
   {
@@ -201,7 +233,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     },
   },
   {
-    title: 'Vrijednost neto',
+    title: 'Vrijednost bez pdv-a',
     accessor: 'articles',
     type: 'custom',
     shouldRender: role !== UserRole.MANAGER_OJ,
@@ -214,7 +246,13 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
         }, 0) || 0;
       return (
         <InlineText>
-          <Typography variant="bodyMedium" content={`${totalPrice.toFixed(2)} €`} />
+          <Typography
+            variant="bodyMedium"
+            content={`${totalPrice.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+          />
         </InlineText>
       );
     },
@@ -236,13 +274,19 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
         }, 0) || 0;
       return (
         <InlineText>
-          <Typography variant="bodyMedium" content={`${totalPdv.toFixed(2)} €`} />
+          <Typography
+            variant="bodyMedium"
+            content={`${totalPdv.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+          />
         </InlineText>
       );
     },
   },
   {
-    title: 'Ukupno',
+    title: 'Vrijednost sa pdv-om',
     accessor: '',
     type: 'custom',
     shouldRender: role !== UserRole.MANAGER_OJ,
@@ -258,7 +302,13 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
       const total = totalNet + totalPdv;
       return (
         <InlineText>
-          <Typography variant="bodyMedium" content={`${total.toFixed(2)} €`} />
+          <Typography
+            variant="bodyMedium"
+            content={`${total.toLocaleString('sr-RS', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} €`}
+          />
         </InlineText>
       );
     },

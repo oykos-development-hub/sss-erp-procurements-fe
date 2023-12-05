@@ -1,18 +1,19 @@
+import {yupResolver} from '@hookform/resolvers/yup';
 import {CheckIcon, Dropdown, Input, Modal, Theme} from 'client-library';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {dropdownArticleTypeOptions, dropdownProcurementTypeOptions, generateDropdownOptions} from '../../constants';
-import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
-import {FormGroup, ModalContentWrapper} from './styles';
-import useAppContext from '../../context/useAppContext';
-import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts';
-import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
-import {ProcurementItemInsert, ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
-import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {PublicProcurementArticleParams} from '../../types/graphql/publicProcurementArticlesTypes';
-import {dropdownDataNumberSchema} from '../../screens/validationSchema';
 import * as yup from 'yup';
-import {yupResolver} from '@hookform/resolvers/yup';
+import {dropdownArticleTypeOptions, dropdownProcurementTypeOptions, generateDropdownOptions} from '../../constants';
+import useAppContext from '../../context/useAppContext';
+import {
+  dropdownDataBooleanSchema,
+  dropdownDataNumberSchema,
+  dropdownDataStringSchema,
+} from '../../screens/validationSchema';
+import useGetCounts from '../../services/graphql/counts/hooks/useGetCounts';
+import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
+import {ProcurementItemInsert, ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {FormGroup, ModalContentWrapper} from './styles';
 
 export interface PublicProcurementModalProps {
   open: boolean;
@@ -22,21 +23,15 @@ export interface PublicProcurementModalProps {
   alert: any;
   navigate: (path: string) => void;
   planID?: number;
+  selectedItem?: any;
 }
 
 export const planModalConfirmationSchema = yup.object().shape({
   budget_indent: dropdownDataNumberSchema,
-  is_open_procurement: dropdownDataNumberSchema.notRequired(),
-  article_type: dropdownDataNumberSchema.required('Ovo polje je obavezno'),
+  is_open_procurement: dropdownDataBooleanSchema.notRequired(),
+  article_type: dropdownDataStringSchema.required('Ovo polje je obavezno'),
   title: yup.string().default(undefined).required('Ovo polje je obavezno'),
 });
-
-const defaultValues = {
-  budget_indent: undefined,
-  is_open_procurement: dropdownProcurementTypeOptions[1],
-  article_type: undefined,
-  title: '',
-};
 
 export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps> = ({
   open,
@@ -45,12 +40,11 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
   alert,
   navigate,
   planID,
+  selectedItem,
 }) => {
   const {breadcrumbs} = useAppContext();
 
-  const {planDetails} = usePublicProcurementPlanDetails(planID);
   const {mutate: addProcurement} = useInsertPublicProcurementPlanItem();
-  const {mutate: addArticle} = useProcurementArticleInsert();
   const {counts} = useGetCounts({level: 3});
 
   const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
@@ -60,20 +54,25 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
     control,
     formState: {errors},
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(planModalConfirmationSchema),
   });
 
   const dropdowncountsOptions = generateDropdownOptions(counts);
 
-  const handleDropdownOrginalName = (id: number) => {
-    const selectedItem = dropdowncountsOptions?.find(item => item.id === id);
+  const budgetIndentId = watch('budget_indent')?.id;
+
+  useEffect(() => {
+    if (budgetIndentId === undefined) return;
+    const selectedItem = dropdowncountsOptions?.find(item => item.id === budgetIndentId);
     setOrginalTitle(selectedItem?.orginal_title);
-  };
+  }, [budgetIndentId, dropdowncountsOptions]);
+
   const onSubmit = async (values: any) => {
     try {
       const payload: ProcurementItemInsert = {
-        id: undefined,
+        id: values.id,
         budget_indent_id: values.budget_indent?.id,
         plan_id: planID as number,
         is_open_procurement: values.is_open_procurement?.id === 1 ? true : false,
@@ -81,8 +80,8 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
         article_type: values.article_type.title,
         status: ProcurementStatus.ProcurementStatusInProgress,
         serial_number: values.serial_number,
-        date_of_publishing: undefined,
-        date_of_awarding: undefined,
+        date_of_publishing: values.date_of_publishing,
+        date_of_awarding: values.date_of_awarding,
         file_id: values.file_id,
       };
 
@@ -107,6 +106,22 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
     }
   };
 
+  useEffect(() => {
+    if (selectedItem) {
+      reset({
+        ...selectedItem,
+        budget_indent: {id: selectedItem?.budget_indent?.id, title: selectedItem?.budget_indent?.serial_number},
+        is_open_procurement: {
+          id: selectedItem?.is_open_procurement === true,
+          title: selectedItem?.is_open_procurement === true ? 'Otvoreni postupak' : 'Jednostavna nabavka',
+        },
+        article_type: {id: selectedItem?.article_type, title: selectedItem?.article_type},
+        plan_id: selectedItem?.plan?.id,
+        title: selectedItem?.title,
+      });
+    }
+  }, [selectedItem]);
+
   return (
     <Modal
       open={open}
@@ -123,11 +138,8 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
               render={({field: {onChange, name, value}}) => {
                 return (
                   <Dropdown
-                    onChange={selectedOption => {
-                      handleDropdownOrginalName(selectedOption.id as number);
-                      onChange(selectedOption);
-                    }}
-                    value={value as any}
+                    onChange={onChange}
+                    value={value}
                     name={name}
                     label="KONTO:"
                     options={dropdowncountsOptions}

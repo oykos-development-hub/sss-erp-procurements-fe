@@ -74,7 +74,7 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
 
     try {
       await Promise.all(requests);
-      alert.success('Uspješno ste dodali limit!');
+      alert.success('Uspješno ste dodali limite!');
       fetchProcurementLimits();
       onClose(false);
     } catch (error) {

@@ -239,7 +239,7 @@ const ImportArticlesModal = ({
         <CustomFooter>
           <FooterText>
             <TemplateDownloadButton onClick={downloadTemplate}>Ovdje</TemplateDownloadButton>{' '}
-            <span>možete da preuzmete tabelu za popunjavanje artikala.</span>
+            <span>možete da preuzmete tabelu za unos artikala.</span>
           </FooterText>
 
           <ModalButtons>

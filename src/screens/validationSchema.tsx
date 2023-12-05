@@ -11,6 +11,14 @@ export const dropdownDataNumberSchema = yup
   .required(requiredError)
   .default(undefined);
 
+export const dropdownDataStringSchema = yup
+  .object({
+    id: yup.string().required(),
+    title: yup.string().required(),
+  })
+  .required(requiredError)
+  .default(undefined);
+
 export const dropdownDataBooleanSchema = yup
   .object({
     id: yup.bool().required(),

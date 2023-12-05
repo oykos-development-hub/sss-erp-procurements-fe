@@ -41,22 +41,18 @@ export interface ProcurementItem {
 export interface ProcurementItemForOrganizationUnit extends Omit<ProcurementItem, 'articles'> {
   articles: PublicProcurementArticleWithAmount[];
 }
-export interface ProcurementItemInsert
-  extends Omit<
-    ProcurementItem,
-    | 'budget_indent'
-    | 'plan'
-    | 'articles'
-    | 'created_at'
-    | 'updated_at'
-    | 'id'
-    | 'total_amount'
-    | 'amount'
-    | 'contract_id'
-  > {
+export interface ProcurementItemInsert {
   budget_indent_id: number | null;
   plan_id: number;
   id?: number;
+  is_open_procurement: boolean;
+  title: string;
+  article_type: string;
+  status: string;
+  serial_number?: string;
+  date_of_publishing?: string;
+  date_of_awarding?: string;
+  file_id?: number;
 }
 
 export interface ProcurementPlanItemDetailsGetResponse {

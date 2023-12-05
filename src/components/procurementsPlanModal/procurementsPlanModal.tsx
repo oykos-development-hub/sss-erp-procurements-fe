@@ -66,6 +66,10 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
               article_type: item.article_type,
               status: item.status,
               file_id: item.file_id,
+              id: undefined,
+              serial_number: item.serial_number,
+              date_of_publishing: item.date_of_publishing,
+              date_of_awarding: item.date_of_awarding,
             };
             await insertProcurement(insertItem, async procurement => {
               for (const article of item.articles) {

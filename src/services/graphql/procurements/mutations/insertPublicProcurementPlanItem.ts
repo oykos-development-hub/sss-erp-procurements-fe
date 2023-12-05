@@ -1,7 +1,7 @@
 const procurementPlanItemInsertMutation = `mutation($data: PublicProcurementPlanItemInsertMutation!) {
     publicProcurementPlanItem_Insert(data: $data) {
-        status 
-        message 
+        status
+        message
         item {
             id
             budget_indent {
@@ -32,7 +32,6 @@ const procurementPlanItemInsertMutation = `mutation($data: PublicProcurementPlan
                 description
                 net_price
                 vat_percentage
-                manufacturer
             }
         }
     }

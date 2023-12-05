@@ -119,7 +119,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             />
             <Input
               {...register('net_price')}
-              label="JEDINIČNA CIJENA BEZ PDV-A (Vrijednost neto):"
+              label="JEDINIČNA CIJENA BEZ PDV-A:"
               error={errors.net_price?.message}
               leftContent={<div>€</div>}
             />
@@ -162,7 +162,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     onChange={onChange}
                     value={value}
                     name={name}
-                    label="Modul:"
+                    label="MODUL:"
                     options={getVisibilityOptions()}
                     error={errors.vat_percentage?.message}
                   />
