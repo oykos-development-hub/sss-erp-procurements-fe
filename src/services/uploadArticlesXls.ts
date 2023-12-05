@@ -4,12 +4,15 @@ import {UploadBatchArticlesResponse} from '../types/files';
 export const uploadArticlesXls = async (
   file: File,
   procurementId: number,
+  simple?: boolean,
 ): Promise<UploadBatchArticlesResponse['data']> => {
+  const url = simple ? `${backendFileUrl}/read-articles-simple-procurement` : `${backendFileUrl}/read-articles`;
+
   const formData = new FormData();
   formData.append('file', file);
   formData.append('public_procurement_id', procurementId.toString());
 
-  const response = await fetch(`${backendFileUrl}/read-articles`, {
+  const response = await fetch(url, {
     method: 'POST',
     body: formData,
   });

@@ -1,25 +1,26 @@
 import {Button, FileUpload, Typography} from 'client-library';
+import ExcelJS from 'exceljs';
 import {useState} from 'react';
 import useAppContext from '../../context/useAppContext';
 import {REQUEST_STATUSES} from '../../services/constants';
+import useInsertContractArticle from '../../services/graphql/contractArticles/hooks/useInsertContractArticle';
 import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {uploadArticlesXls, uploadContractArticlesXls} from '../../services/uploadArticlesXls';
+import {ContractArticleInsert} from '../../types/graphql/contractsArticlesTypes';
 import {
   PublicProcurementArticle,
   PublicProcurementArticleParams,
 } from '../../types/graphql/publicProcurementArticlesTypes';
 import {CustomFooter, CustomModal, FooterText, ModalButtons, TemplateDownloadButton} from './styles';
-import ExcelJS from 'exceljs';
-import useInsertContractArticle from '../../services/graphql/contractArticles/hooks/useInsertContractArticle';
-import {ContractArticleInsert} from '../../types/graphql/contractsArticlesTypes';
 
 // This component is used for generating articles in procurement plans and contracts.
 // 1. In case of plans, excel file is to be downloaded from the server, filled in and uploaded back.
 // 2. In case of contracts, excel file is to be downloaded from the server, updated from the contractArticles props, filled in (only price), and uploaded back.
 
-const staticFileNameMap = {
+export const staticFileNameMap = {
   article_table: 'tabela_za_dodavanje_artikala.xlsx',
   contract_articles_table: 'tabela_za_artikl_ugovora.xlsx',
+  simple_procurement_table: 'tabela_za_dodavanje_artikala_jednostavna_nabavka.xlsx',
 };
 
 const missingFileError = 'Morate učitati fajl!';
@@ -57,7 +58,6 @@ const ImportArticlesModal = ({
       downloadStaticFile,
       helpers: {download},
     },
-    constants: {staticFileNameMap},
   } = useAppContext();
   const {mutate: addArticles, loading} = useProcurementArticleInsert();
   const {mutate: addContractArticles} = useInsertContractArticle();
@@ -86,7 +86,7 @@ const ImportArticlesModal = ({
       }
     } else {
       if (files.length && procurementId) {
-        response = await uploadArticlesXls(files[0], procurementId);
+        response = await uploadArticlesXls(files[0], procurementId, type === 'simple_procurement_table');
         if (response?.status === REQUEST_STATUSES.success) {
           if (response?.data?.length) {
             setArticles(response?.data);
@@ -268,7 +268,6 @@ const ImportArticlesModal = ({
             onUpload={handleUpload}
             note={<Typography variant="bodySmall" content="Ugovor" />}
             buttonText="Učitaj"
-            multiple={true}
             error={error}
             accept=".xlsx, .xls"
           />

@@ -21,7 +21,7 @@ import {
 } from '../../shared/styles';
 import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
-import ImportArticlesModal from '../../components/importArticles/importArticlesModal';
+import ImportArticlesModal, {staticFileNameMap} from '../../components/importArticles/importArticlesModal';
 import {VisibilityType, getVisibilityTypeName} from '../../types/graphql/publicProcurementArticlesTypes';
 
 interface ProcurementDetailsPageProps {
@@ -336,7 +336,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         open={importModal}
         procurementId={procurementID}
         refetch={refetchData}
-        type="article_table"
+        type={publicProcurement?.is_open_procurement === false ? 'simple_procurement_table' : 'article_table'}
       />
     </ScreenWrapper>
   );
