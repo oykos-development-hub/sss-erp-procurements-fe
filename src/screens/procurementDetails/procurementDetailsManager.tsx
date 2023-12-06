@@ -22,7 +22,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   let limit = 0;
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
   const {data: procurementPlanLimits} = useGetProcurementPlanItemLimits(procurementID);
-  const {planDetails} = usePublicProcurementPlanDetails(planID);
+  const {planDetails, fetch} = usePublicProcurementPlanDetails(planID);
   const [requestSuccessCount, setRequestSuccessCount] = useState<number>(0);
   const [requestErrorCount, setRequestErrorCount] = useState<number>(0);
 
@@ -178,12 +178,13 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         rejected_description:
           filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.rejected_description ||
           '',
-        amount: filledArticles?.find(article => article?.public_procurement_article.id === item?.id)?.amount || 0,
+        amount: item?.amount || 0,
       };
 
       await insertOrganizationUnitArticle(
         insertItem,
         () => {
+          fetch();
           setRequestSuccessCount(prevCount => prevCount + 1);
           totalPrice > limit || requestErrorCount > 0 ? '' : context.navigation.navigate(pathname);
           setRequestErrorCount(0);
