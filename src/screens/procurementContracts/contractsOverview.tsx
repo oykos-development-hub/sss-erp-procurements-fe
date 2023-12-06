@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Button, Table, Theme, TrashIcon, Typography, EditIconTwo} from 'client-library';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import ScreenWrapper from '../../shared/screenWrapper';
@@ -15,21 +15,15 @@ import {UserRole} from '../../constants';
 
 export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [showModal, setShowModal] = useState(false);
-
   const role = context?.contextMain?.role_id;
-
-  const [selectedSupplier, setSelectedSupplier] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const {
-    data: tableData,
-    refetchData,
-    loading,
-  } = useProcurementContracts({
+  const [filters, setFilters] = useState<any>({
+    supplier_id: 0,
     id: undefined,
     procurement_id: undefined,
-    supplier_id: selectedSupplier,
   });
+
+  const {data: tableData, refetchData, loading} = useProcurementContracts(filters);
 
   const filteredTableData = tableData?.filter(item => {
     const searchString = searchQuery.toLowerCase();
@@ -90,6 +84,20 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
     setSelectedItemId(0);
   };
 
+  const handleSort = (column: string, direction: string) => {
+    const sorter = `sort_by_${column}`;
+    setFilters((prevState: any) => ({
+      id: prevState.id,
+      procurement_id: prevState.procurement_id,
+      supplier_id: prevState.supplier_id,
+      [sorter]: direction,
+    }));
+  };
+
+  useEffect(() => {
+    refetchData();
+  }, [filters]);
+
   return (
     <ScreenWrapper>
       <Container>
@@ -99,7 +107,10 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
           <ProcurementContractsFilters
             suppliers={suppliers || []}
             setFilters={({supplier_id}) => {
-              setSelectedSupplier(supplier_id);
+              setFilters({
+                ...filters,
+                supplier_id,
+              });
             }}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -121,6 +132,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
           <Table
             tableHeads={tableHeads}
             data={filteredTableData || []}
+            onSort={handleSort}
             isLoading={loading}
             onRowClick={row => {
               context.navigation.navigate(`/procurements/contracts/${row.id.toString()}/signed`);

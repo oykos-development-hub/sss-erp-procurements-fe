@@ -59,11 +59,12 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const canCreatePlan = checkPermission(role, UserPermission.CREATE_PLANS);
 
   const tableHeads: TableHead[] = [
-    {title: 'Godina', accessor: 'year', type: 'text'},
-    {title: 'Naslov', accessor: 'title', type: 'text'},
+    {title: 'Godina', accessor: 'year', type: 'text', sortable: true},
+    {title: 'Naslov', accessor: 'title', type: 'text', sortable: true},
     {
       title: 'Datum kreiranja',
       accessor: 'date_of_publishing',
+      sortable: true,
       type: 'custom',
       renderContents: (date_of_publishing: any) => {
         return <Typography variant="bodyMedium" content={date_of_publishing ? parseDate(date_of_publishing) : ''} />;
@@ -343,6 +344,18 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
     setSelectedItemId(0);
   };
 
+  const handleSort = (column: string, direction: string) => {
+    const sorter = `sort_by_${column}`;
+    setForm((prevState: any) => ({
+      status: prevState.status,
+      year: prevState.year,
+      page: prevState.page,
+      size: prevState.size,
+      is_pre_budget: prevState.is_pre_budget,
+      [sorter]: direction,
+    }));
+  };
+
   useEffect(() => {
     refetchData();
   }, [form]);
@@ -395,6 +408,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             }
             isLoading={loading}
             data={tableData || []}
+            onSort={handleSort}
             onRowClick={row => {
               context.navigation.navigate(`/procurements/plans/${row.id.toString()}`);
               context.breadcrumbs.add({

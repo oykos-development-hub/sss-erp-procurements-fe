@@ -8,12 +8,14 @@ export const tableHeads: TableHead[] = [
     title: 'Šifra ugovora',
     accessor: 'serial_number',
     type: 'custom',
+    sortable: true,
     renderContents: serial_number => <Typography variant="bodySmall" content={serial_number} />,
   },
   {
     title: 'Datum zaključenja',
     accessor: 'date_of_signing',
     type: 'custom',
+    sortable: true,
     renderContents: (date_of_signing: string) => {
       return <Typography variant="bodySmall" content={date_of_signing ? parseDate(date_of_signing) : ''} />;
     },
@@ -22,6 +24,7 @@ export const tableHeads: TableHead[] = [
     title: 'Datum završetka',
     accessor: 'date_of_expiry',
     type: 'custom',
+    sortable: true,
     renderContents: (date_of_expiry: string) => {
       return <Typography variant="bodySmall" content={date_of_expiry ? parseDate(date_of_expiry) : ''} />;
     },
@@ -45,6 +48,7 @@ export const tableHeads: TableHead[] = [
   {
     title: 'Ukupno',
     accessor: 'gross_value',
+    sortable: true,
     type: 'custom',
     renderContents: gross_value => {
       return (
