@@ -52,6 +52,7 @@ export const ConvertModal: React.FC<ConvertModalProps> = ({open, onClose, availa
                 label="GODINA:"
                 options={availableYearsForPlan}
                 error={errors?.year?.message as string}
+                isRequired
               />
             )}
           />

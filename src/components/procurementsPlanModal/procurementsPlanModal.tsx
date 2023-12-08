@@ -134,6 +134,7 @@ export const ProcurementsPlanModal: React.FC<ProcurementsPlanModalProps> = ({
                 label="GODINA:"
                 options={availableYearsForPlan}
                 error={errors.year?.message as string}
+                isRequired
               />
             )}
           />

@@ -144,6 +144,7 @@ export const Reports = () => {
                       label="Tip izvještaja"
                       options={reportTypes}
                       error={errors.type_of_report?.message}
+                      isRequired
                     />
                   );
                 }}
@@ -161,6 +162,7 @@ export const Reports = () => {
                     value={value}
                     options={years}
                     error={errors.year?.message}
+                    isRequired
                   />
                 )}
               />
@@ -180,6 +182,7 @@ export const Reports = () => {
                       value={value}
                       options={[{id: 0, title: 'Sve'}, ...organizationUnits] as any}
                       error={errors.organization_unit_id?.message}
+                      isRequired
                     />
                   )}
                 />
@@ -197,13 +200,14 @@ export const Reports = () => {
                         label="Nabavka:"
                         error={errors.procurement?.message}
                         options={procurementOptions}
+                        isRequired
                       />
                     );
                   }}
                 />
               </Column>
               <Column>
-                <Input label="DOBAVLJAČ:" value={supplierTitle} disabled={true} />
+                <Input label="Dobavljač:" value={supplierTitle} disabled={true} />
               </Column>
             </Filters>
           )}

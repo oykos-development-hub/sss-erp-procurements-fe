@@ -109,19 +109,26 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
       content={
         <FormWrapper>
           <FormGroup>
-            <Input {...register('title')} label="NAZIV PREDMETA NABAVKE:" error={errors.title?.message as string} />
+            <Input
+              {...register('title')}
+              label="NAZIV PREDMETA NABAVKE:"
+              error={errors.title?.message as string}
+              isRequired
+            />
           </FormGroup>
           <Row>
             <Input
               {...register('description')}
               label="BITNE KARAKTERISTIKE PREDMETA NABAVKE:"
               error={errors.description?.message}
+              isRequired
             />
             <Input
               {...register('net_price')}
               label="JEDINIČNA CIJENA BEZ PDV-A:"
               error={errors.net_price?.message}
               leftContent={<div>€</div>}
+              isRequired
             />
           </Row>
           <Row>
@@ -141,6 +148,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     label="PDV:"
                     options={pdvOptions}
                     error={errors.vat_percentage?.message}
+                    isRequired
                   />
                 );
               }}
@@ -165,6 +173,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                     label="MODUL:"
                     options={getVisibilityOptions()}
                     error={errors.vat_percentage?.message}
+                    isRequired
                   />
                 );
               }}
@@ -176,6 +185,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 {...register('amount')}
                 label="KOLIČINA:"
                 error={errors.amount?.message}
+                isRequired
               />
             )}
           </Row>

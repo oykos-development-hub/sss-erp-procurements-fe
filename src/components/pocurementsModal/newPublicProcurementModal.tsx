@@ -152,6 +152,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
                   options={dropdowncountsOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.budget_indent_id?.message as string}
+                  isRequired
                 />
               )}
             />
@@ -160,7 +161,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
             <Input label="NAZIV KONTA:" name="serial_number" value={orginalTitle} disabled={true} />
           </FormGroup>
           <FormGroup>
-            <Input {...register('title')} label="OPIS JAVNE NABAVKE:" />
+            <Input {...register('title')} label="OPIS JAVNE NABAVKE:" isRequired error={errors.title?.message} />
           </FormGroup>
           <FormGroup>
             <Controller
@@ -175,6 +176,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
                   options={dropdownProcurementTypeOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.is_open_procurement?.message as string}
+                  isRequired
                 />
               )}
             />
@@ -192,6 +194,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
                   options={dropdownArticleTypeOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.article_type?.message as string}
+                  isRequired
                 />
               )}
             />

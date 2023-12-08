@@ -145,6 +145,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                     options={dropdowncountsOptions}
                     rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                     error={errors.budget_indent?.message}
+                    isRequired
                   />
                 );
               }}
@@ -164,6 +165,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                   name={name}
                   label="OPIS JAVNE NABAVKE:"
                   error={errors.title?.message}
+                  isRequired
                 />
               )}
             />
@@ -182,6 +184,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                   options={dropdownProcurementTypeOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.is_open_procurement?.message}
+                  isRequired
                 />
               )}
             />
@@ -199,6 +202,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                   options={dropdownArticleTypeOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.article_type?.message}
+                  isRequired
                 />
               )}
             />

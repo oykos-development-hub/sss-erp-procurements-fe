@@ -342,6 +342,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               {...register('serial_number', {required: 'Ovo polje je obavezno'})}
               label={'ŠIFRA UGOVORA:'}
               error={errors?.serial_number?.message as string}
+              isRequired
             />
           </Column>
           <Column>
@@ -362,6 +363,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                   name={name}
                   selected={value ? new Date(value) : ''}
                   error={errors.date_of_signing?.message}
+                  isRequired
                 />
               )}
             />
@@ -384,6 +386,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                   name={name}
                   selected={value ? new Date(value) : ''}
                   error={errors.date_of_expiry?.message}
+                  isRequired
                 />
               )}
             />
@@ -402,6 +405,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                     label="DOBAVLJAČ:"
                     options={supplierOptions || []}
                     error={errors?.supplier?.message as string}
+                    isRequired
                   />
                 );
               }}

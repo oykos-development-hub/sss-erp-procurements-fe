@@ -143,6 +143,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                       label="PLAN:"
                       options={plansOptions || []}
                       error={selectedPlanId === 0 ? (errors?.plan?.message as string) : ''}
+                      isRequired
                     />
                   );
                 }}
@@ -170,6 +171,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                           ? (errors?.procurement?.message as string)
                           : ''
                       }
+                      isRequired
                     />
                   );
                 }}
@@ -183,6 +185,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                 {...register('serial_number', {required: 'Ovo polje je obavezno'})}
                 error={errors?.serial_number?.message as string}
                 label={'ŠIFRA UGOVORA:'}
+                isRequired
               />
             </Column>
             <Column>
@@ -199,6 +202,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                       label="DOBAVLJAČ:"
                       options={supplierOptions || []}
                       error={errors?.supplier?.message as string}
+                      isRequired
                     />
                   );
                 }}
@@ -225,6 +229,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                     name={name}
                     selected={value ? new Date(value) : null}
                     error={errors.date_of_signing?.message}
+                    isRequired
                   />
                 )}
               />
@@ -247,6 +252,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
                     name={name}
                     selected={value ? new Date(value) : null}
                     error={errors.date_of_expiry?.message}
+                    isRequired
                   />
                 )}
               />
