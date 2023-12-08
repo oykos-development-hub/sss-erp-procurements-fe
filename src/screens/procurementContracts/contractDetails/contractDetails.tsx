@@ -151,9 +151,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
         <Input
-          value={row.net_value !== undefined ? row.net_value.toString().replace(',', '.') : ''}
+          value={row.net_value}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
+          type="price"
         />
       ),
     },

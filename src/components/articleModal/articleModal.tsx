@@ -92,7 +92,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
   useEffect(() => {
     if (netPrice && pdv) {
-      const price = Number(netPrice) + (Number(netPrice) * Number(pdv?.id)) / 100;
+      const NetPrice = netPrice.toString().replace(',', '.');
+      const price = Number(NetPrice) + (Number(NetPrice) * Number(pdv?.id)) / 100;
       setValue('total_price', price.toFixed(2));
     }
   }, [netPrice, pdv]);
@@ -125,6 +126,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             />
             <Input
               {...register('net_price')}
+              type="price"
               label="JEDINIČNA CIJENA BEZ PDV-A:"
               error={errors.net_price?.message}
               leftContent={<div>€</div>}
@@ -136,7 +138,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               name="vat_percentage"
               control={control}
               render={({field: {onChange, name, value}}) => {
-                const pdvValue = (Number(netPrice) * Number(pdv?.id)) / 100;
+                const NetPrice = netPrice?.toString().replace(',', '.');
+                const pdvValue = (Number(NetPrice) * Number(pdv?.id)) / 100;
                 const valueToShow = value
                   ? {id: value?.id, title: `${value.title}   (${pdvValue.toFixed(2) || 0} €)`}
                   : undefined;
