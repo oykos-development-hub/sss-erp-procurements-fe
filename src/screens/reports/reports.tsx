@@ -1,23 +1,19 @@
-import {Controller, useForm} from 'react-hook-form';
-import {downloadPDF, yearsForDropdown} from '../../services/constants';
-import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
-import ScreenWrapper from '../../shared/screenWrapper';
-import {Column, Container, CustomDivider, Filters, Header, MainTitle} from './styles';
-import {Dropdown, Button, Input} from 'client-library';
-import {reportTypes} from './constants';
-import {useEffect, useMemo, useRef, useState} from 'react';
-import {DropdownDataNumber} from '../../types/dropdownData';
-import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
+import {Button, Dropdown, Input} from 'client-library';
+import {useEffect, useMemo, useRef} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import * as yup from 'yup';
+import useAppContext from '../../context/useAppContext';
 import {dropdownDataNumberSchema, dropdownNumberSchema, requiredError} from '../../screens/validationSchema';
+import useGetContractPDFUrl from '../../services/graphql/contractPDF/useGetContractPDFUrl';
+import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
+import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
 import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
 import useProcurementContracts from '../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
-import useGetContractPDFUrl from '../../services/graphql/contractPDF/useGetContractPDFUrl';
-import MyPdfDocument from '../procurementContracts/contractDetails/contractPDF';
-import {usePDF} from '@react-pdf/renderer';
-import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
-import PlanPDFDocument from '../procurementsPlan/planPDF';
-import useAppContext from '../../context/useAppContext';
+import ScreenWrapper from '../../shared/screenWrapper';
+import {DropdownDataNumber} from '../../types/dropdownData';
+import {reportTypes} from './constants';
+import {Column, Container, CustomDivider, Filters, Header, MainTitle} from './styles';
 
 interface FormData {
   type_of_report: DropdownDataNumber;
@@ -57,6 +53,7 @@ export const Reports = () => {
     navigation: {
       location: {state: navigationState},
     },
+    reportService: {generatePdf},
   } = useAppContext();
 
   const typeOfReport = watch('type_of_report');
@@ -64,7 +61,6 @@ export const Reports = () => {
   const prevYearRef = useRef<DropdownDataNumber | undefined>();
   const procurement = watch('procurement');
   const organizationUnitID = watch('organization_unit_id');
-  const [shouldDownloadPDF, setShouldDownloadPDF] = useState(false);
 
   const {data} = useGetPlansOverview({page: 1, size: 100000, is_pre_budget: false});
 
@@ -94,10 +90,6 @@ export const Reports = () => {
     organization_unit_id: organizationUnitID?.id || 0,
   });
 
-  const [contractPDF, updateInstance] = usePDF({});
-
-  const [planPDF, updatePlanInstance] = usePDF({});
-
   const {pdfData: pdfPlanData} = useGetPlanPDFUrl({
     plan_id: selectedPlan?.id || undefined,
   });
@@ -105,38 +97,16 @@ export const Reports = () => {
   const onSubmit = (data: FormData) => {
     switch (data.type_of_report.id) {
       case 1:
-        if (pdfPlanData) {
-          updatePlanInstance(<PlanPDFDocument data={pdfPlanData} />);
-          setShouldDownloadPDF(true); // Set the flag for downloading the PDF
-        }
+        generatePdf('PROCUREMENT_PLAN', pdfPlanData);
         break;
 
       case 2:
         if (pdfData) {
-          updateInstance(<MyPdfDocument data={pdfData} />);
-          setShouldDownloadPDF(true); // Set the flag for downloading the PDF
+          generatePdf('PROCUREMENT_CONTRACT', pdfData);
+          break;
         }
-        break;
     }
   };
-
-  useEffect(() => {
-    if (!contractPDF.loading && contractPDF.blob && shouldDownloadPDF) {
-      if (typeOfReport?.id === 2) {
-        downloadPDF(contractPDF.blob, pdfData); // Function to trigger the download
-        setShouldDownloadPDF(false); // Reset the flag
-      }
-    }
-  }, [contractPDF.loading, contractPDF.blob, shouldDownloadPDF]);
-
-  useEffect(() => {
-    if (!planPDF.loading && planPDF.blob && shouldDownloadPDF) {
-      if (typeOfReport?.id === 1) {
-        downloadPDF(planPDF.blob, pdfPlanData); // Function to trigger the download
-        setShouldDownloadPDF(false);
-      }
-    }
-  }, [planPDF.blob, shouldDownloadPDF]);
 
   useEffect(() => {
     if (typeOfReport?.id === 1) {

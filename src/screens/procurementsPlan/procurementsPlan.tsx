@@ -18,8 +18,6 @@ import {PlanDetailsTab} from './planDetailsTab';
 import {ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import useAppContext from '../../context/useAppContext';
 import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
-import PlanPDFDocument from './planPDF';
-import {usePDF} from '@react-pdf/renderer';
 import {downloadPDF} from '../../services/constants';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
@@ -28,6 +26,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     navigation,
     alert,
     breadcrumbs,
+    reportService: {generatePdf},
   } = useAppContext();
   const url = navigation.location.pathname;
   const location = navigation?.location;
@@ -116,17 +115,9 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
     }
   };
 
-  const [contractPDF, updateInstance] = usePDF({});
-
   const {pdfData, loading: loadingReport} = useGetPlanPDFUrl({
     plan_id: planID,
   });
-
-  useEffect(() => {
-    if (pdfData) {
-      updateInstance(<PlanPDFDocument data={pdfData} />);
-    }
-  }, [pdfData]);
 
   return (
     <ScreenWrapper>
@@ -163,7 +154,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
               <Button
                 content="Generiši izvještaj"
                 variant="secondary"
-                onClick={() => downloadPDF(contractPDF.blob, pdfData)}
+                onClick={() => generatePdf('PROCUREMENT_PLAN', pdfData)}
                 isLoading={loadingReport}
               />
             )}

@@ -1,7 +1,10 @@
-import {TableRow} from '../../services/pdf/pdfTable';
 import {DropdownDataNumber} from '../dropdownData';
 import {ProcurementStatus} from './publicProcurementPlanItemDetailsTypes';
 import {Response, SingularResponse} from './utils';
+
+export interface TableRow {
+  [key: string]: string | number;
+}
 
 export interface PlanOverviewResponse {
   publicProcurementPlans_Overview: Response<PlanItem>;

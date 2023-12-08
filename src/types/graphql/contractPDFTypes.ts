@@ -1,5 +1,8 @@
-import {TableRow} from '../../services/pdf/pdfTable';
 import {SingularResponse} from './utils';
+
+export interface TableRow {
+  [key: string]: string | number;
+}
 
 export enum SubtitleKey {
   PublicProcurement = 'public_procurement',

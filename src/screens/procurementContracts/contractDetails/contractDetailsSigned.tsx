@@ -26,9 +26,7 @@ import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import FileList from '../../../components/fileList/fileList';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
-import {usePDF} from '@react-pdf/renderer';
 import {downloadPDF} from '../../../services/constants';
-import MyPdfDocument from './contractPDF';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -39,6 +37,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
 
   const {
     contextMain: {organization_unit, role_id},
+    reportService: {generatePdf},
   } = useAppContext();
 
   const {data: contractData} = useProcurementContracts({
@@ -65,15 +64,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     organization_unit_id: selectedOrganizationUnit.id,
   });
 
-  const [contractPDF, updateInstance] = usePDF({});
-
   const [uploadedFiles, setUploadedFiles] = useState<File>();
-
-  useEffect(() => {
-    if (pdfData) {
-      updateInstance(<MyPdfDocument data={pdfData} />);
-    }
-  }, [pdfData]);
 
   const [selectedItemId, setSelectedItemId] = useState(0);
 
@@ -323,9 +314,9 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           {role !== UserRole.MANAGER_OJ && (
             <Button
               content="Generiši izvještaj"
-              onClick={() => downloadPDF(contractPDF.blob, pdfData)}
-              isLoading={loadingReport || contractPDF.loading || !contractPDF.blob}
-              disabled={loadingReport || contractPDF.loading || !contractPDF.blob}
+              onClick={() => generatePdf('PROCUREMENT_CONTRACT', pdfData)}
+              isLoading={loadingReport}
+              disabled={loadingReport}
             />
           )}
         </Filters>

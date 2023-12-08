@@ -45,7 +45,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
-    "@react-pdf/renderer": "^3.1.14",
     "@types/yup": "^0.32.0",
     "exceljs": "^4.4.0",
     "lottie-react": "^2.4.0",
