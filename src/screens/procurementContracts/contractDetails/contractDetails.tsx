@@ -11,8 +11,8 @@ import {
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import FileList from '../../../components/fileList/fileList';
-import ImportArticlesModal from '../../../components/importArticles/importArticlesModal';
 import useAppContext from '../../../context/useAppContext';
+import {REQUEST_STATUSES} from '../../../services/constants';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useInsertContractArticle from '../../../services/graphql/contractArticles/hooks/useInsertContractArticle';
 import useGetOrderProcurementAvailableArticles from '../../../services/graphql/orderProcurementAvailableArticles/hooks/useGetOrderProcurementAvailableArticles';
@@ -20,10 +20,11 @@ import useInsertProcurementContract from '../../../services/graphql/procurementC
 import useProcurementContracts from '../../../services/graphql/procurementContractsOverview/hooks/useProcurementContracts';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetSuppliers from '../../../services/graphql/suppliers/hooks/useGetSuppliers';
+import {uploadContractArticlesXls} from '../../../services/uploadArticlesXls';
 import ScreenWrapper from '../../../shared/screenWrapper';
 import {CustomDivider, Filters, MainTitle, SectionBox, TableContainer} from '../../../shared/styles';
 import {FileResponseItem} from '../../../types/files';
-import {ContractArticleGet} from '../../../types/graphql/contractsArticlesTypes';
+import {ContractArticleGet, ContractArticleInsert} from '../../../types/graphql/contractsArticlesTypes';
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
 import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
 import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
@@ -48,10 +49,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
   const [files, setFiles] = useState<FileList | null>(null);
   const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
-  const [importModal, setImportModal] = useState(false);
+  // const [importModal, setImportModal] = useState(false);
 
   const {
     fileService: {uploadFile, batchDeleteFiles},
+    spreadsheetService: {openImportModal},
+    alert,
   } = useAppContext();
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
@@ -106,6 +109,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const {data: suppliers} = useGetSuppliers({id: 0, search: ''});
   const supplierOptions = useMemo(() => suppliers?.map(item => ({id: item?.id, title: item?.title})), [suppliers]);
+  const {mutate: addContractArticles} = useInsertContractArticle();
 
   useEffect(() => {
     if (contractArticles) {
@@ -327,6 +331,62 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const vatValue = totalPrice - totalNeto;
 
+  // Below is the code for importing articles from excel files. The logic behind resides in the client container
+  const onSubmitUploadedTable = async (
+    articles: ContractArticleInsert[],
+    options: {onSuccess: () => void; onError: () => void},
+  ) => {
+    const payload = articles.map(item => ({
+      id: item.id,
+      public_procurement_article_id: item.public_procurement_article_id,
+      public_procurement_contract_id: item.public_procurement_contract_id,
+      net_value: item?.net_value,
+      gross_value: item.gross_value,
+    }));
+
+    await addContractArticles(
+      payload,
+      () => {
+        alert.success('Artikli uspješno uvezeni');
+        refetch();
+        refetchData();
+        options.onSuccess();
+      },
+      () => {
+        alert.success('Došlo je do greške pri uvozu artikala');
+        options.onError();
+      },
+    );
+  };
+
+  const handleUploadTable = async (files: FileList) => {
+    if (procurementID && contractID) {
+      const response = await uploadContractArticlesXls(files[0], procurementID, contractID);
+      if (response?.status === REQUEST_STATUSES.success) {
+        if (response?.data?.length) {
+          return response?.data;
+        }
+
+        return null;
+      } else {
+        alert.error('Došlo je do greške prilikom učitavanja fajla!');
+      }
+    } else {
+      console.error('Procurement ID or contract ID is missing!');
+    }
+  };
+
+  const onAddPricesClick = () => {
+    const props = {
+      type: 'CONTRACT_ARTICLES',
+      data: procurement?.articles,
+      onSubmit: onSubmitUploadedTable,
+      handleUpload: handleUploadTable,
+    };
+
+    openImportModal(props);
+  };
+
   return (
     <ScreenWrapper>
       <SectionBox>
@@ -463,7 +523,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <FileList files={watch('file')} onDelete={onDeleteFile} />
 
         <Controls>
-          <Button content="Dodaj jedinične cijene" onClick={() => setImportModal(true)} />
+          <Button content="Dodaj jedinične cijene" onClick={onAddPricesClick} />
         </Controls>
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
@@ -493,19 +553,6 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           />
         </FormControls>
       </FormFooter>
-
-      <ImportArticlesModal
-        onClose={() => setImportModal(false)}
-        refetch={() => {
-          refetch();
-          refetchData();
-        }}
-        open={importModal}
-        procurementId={procurementID}
-        contractId={contractID}
-        type="contract_articles_table"
-        contractArticles={procurement?.articles}
-      />
     </ScreenWrapper>
   );
 };
