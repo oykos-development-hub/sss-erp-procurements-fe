@@ -1,17 +1,17 @@
-import {Dropdown, Input, Modal, Theme} from 'client-library';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Dropdown, Input, Modal} from 'client-library';
 import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
-import {FormGroup, FormWrapper, Row} from './styles';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {articleModalConfirmationSchema} from './validationSchema.ts';
 import {pdvOptions} from '../../constants.ts';
-import {PublicProcurement} from '../../types/graphql/publicProcurementTypes.ts';
+import useProcurementArticleInsert from '../../services/graphql/procurementArticles/hooks/useProcurementArticleInsert';
 import {
   PublicProcurementArticleParams,
   getVisibilityOptions,
   getVisibilityTypeName,
 } from '../../types/graphql/publicProcurementArticlesTypes.ts';
+import {PublicProcurement} from '../../types/graphql/publicProcurementTypes.ts';
+import {FormGroup, FormWrapper, Row} from './styles';
+import {articleModalConfirmationSchema} from './validationSchema.ts';
 
 interface ArticleModalProps {
   selectedItem?: any;
@@ -46,6 +46,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
   const netPrice = watch('net_price');
   const pdv = watch('vat_percentage');
+  const totalPrice = watch('total_price');
 
   useEffect(() => {
     if (selectedItem) {
@@ -68,7 +69,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
       public_procurement_id: data.public_procurement_id || procurementId,
       title: data.title,
       description: data.description,
-      net_price: parseFloat(data.net_price),
+      net_price: parseFloat(netPrice.toString().replace(',', '.')),
       vat_percentage: data.vat_percentage?.id.toString(),
       visibility_type: data?.visibility_type?.id,
     };
@@ -126,11 +127,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             />
             <Input
               {...register('net_price')}
-              type="price"
               label="JEDINIČNA CIJENA BEZ PDV-A:"
               error={errors.net_price?.message}
               leftContent={<div>€</div>}
               isRequired
+              value={netPrice?.toString().replace('.', ',')}
             />
           </Row>
           <Row>
@@ -141,7 +142,15 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 const NetPrice = netPrice?.toString().replace(',', '.');
                 const pdvValue = (Number(NetPrice) * Number(pdv?.id)) / 100;
                 const valueToShow = value
-                  ? {id: value?.id, title: `${value.title}   (${pdvValue.toFixed(2) || 0} €)`}
+                  ? {
+                      id: value?.id,
+                      title: `${value.title}   (${
+                        pdvValue.toLocaleString('sr-RS', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || 0
+                      } €)`,
+                    }
                   : undefined;
                 return (
                   <Dropdown
@@ -156,10 +165,13 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
                 );
               }}
             />
+
             <Input
               {...register('total_price')}
               label="JEDINIČNA CIJENA SA PDV-OM:"
-              leftContent={<div style={{color: Theme?.palette?.gray300}}>€</div>}
+              leftContent={<div>€</div>}
+              value={totalPrice?.toString().replace('.', ',')}
+              isRequired
               disabled
             />
           </Row>

@@ -155,10 +155,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
         <Input
-          value={row.net_value}
+          value={row?.net_value?.toString().replace('.', ',')}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
-          type="price"
         />
       ),
     },
@@ -167,7 +166,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       accessor: 'net_value',
       type: 'custom',
       renderContents: (_, row) => {
-        const netValue = (Number(row.net_value) || 0) * (row.amount || 0);
+        const netValue = row.net_value.toString().replace(',', '.') * (row.amount || 0);
         return (
           <Typography
             content={`${Number(netValue)?.toLocaleString('sr-RS', {
@@ -184,8 +183,9 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
-        const pdvValue = row.net_value && (+row.net_value * +row.public_procurement_article.vat_percentage) / 100;
-        const total = row.net_value && pdvValue && (+row.net_value + +pdvValue) * (row.amount || 0);
+        const netValue = row?.net_value?.toString().replace(',', '.');
+        const pdvValue = netValue && (+netValue * +row.public_procurement_article.vat_percentage) / 100;
+        const total = netValue && pdvValue && (+netValue + +pdvValue) * (row.amount || 0);
 
         return (
           <Typography
@@ -225,15 +225,15 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
   const {mutate: insertContractArticle, loading: isLoadingContractArticleMutate} = useInsertContractArticle();
 
   const totalPrice = filteredArticles?.reduce((sum: any, article: any) => {
-    const pdvValue =
-      article?.net_value && (+article.net_value * +article.public_procurement_article.vat_percentage) / 100;
-    const total = article?.net_value && pdvValue && (+article.net_value + +pdvValue) * (article.amount || 0);
+    const netPrice = article?.net_value.toString().replace(',', '.');
+    const pdvValue = netPrice && (+netPrice * +article.public_procurement_article.vat_percentage) / 100;
+    const total = netPrice && pdvValue && (+netPrice + +pdvValue) * (article.amount || 0);
 
     return sum + total;
   }, 0);
 
   const totalNeto = filteredArticles?.reduce((sum: any, article: any) => {
-    const price = parseFloat(article?.net_value) * article?.amount;
+    const price = parseFloat(article?.net_value.toString().replace(',', '.')) * article?.amount;
 
     return sum + price;
   }, 0);
@@ -284,8 +284,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       serial_number: watch('serial_number').toString() || contract?.serial_number.toString(),
       date_of_signing: parseDateForBackend(watch('date_of_signing')) ?? '',
       date_of_expiry: parseDateForBackend(watch('date_of_expiry')) ?? '',
-      net_value: totalNeto,
-      gross_value: totalPrice,
+      net_value: totalNeto.toString().replace(',', '.'),
+      gross_value: totalPrice.toString().replace(',', '.'),
       vat_value: undefined,
       file: files,
     };
@@ -300,7 +300,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           id: item.id,
           public_procurement_article_id: Number(item?.public_procurement_article.id),
           public_procurement_contract_id: Number(contractID),
-          net_value: item?.net_value || 0,
+          net_value: (item.net_value && parseFloat(item.net_value.toString().replace(',', '.'))) || 0,
           gross_value: +(
             Number(item.amount || 0) *
             (Number(item?.net_value) +
