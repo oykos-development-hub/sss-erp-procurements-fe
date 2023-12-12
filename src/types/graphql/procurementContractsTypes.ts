@@ -40,6 +40,7 @@ export interface GetProcurementContractParams {
   sort_by_date_of_signing?: string;
   sort_by_gross_value?: string;
   sort_by_serial_number?: string;
+  year?: string;
 }
 
 export interface ProcurementContractsGetResponse {

@@ -17,10 +17,12 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
   const [showModal, setShowModal] = useState(false);
   const role = context?.contextMain?.role_id;
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState(undefined);
   const [filters, setFilters] = useState<any>({
     supplier_id: 0,
     id: undefined,
     procurement_id: undefined,
+    year: undefined,
   });
 
   const {data: tableData, refetchData, loading} = useProcurementContracts(filters);
@@ -106,10 +108,11 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
         <TableHeader>
           <ProcurementContractsFilters
             suppliers={suppliers || []}
-            setFilters={({supplier_id}) => {
+            setFilters={({supplier_id, year}) => {
               setFilters({
                 ...filters,
                 supplier_id,
+                year,
               });
             }}
             searchQuery={searchQuery}

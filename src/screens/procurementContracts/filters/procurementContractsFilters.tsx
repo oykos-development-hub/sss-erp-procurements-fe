@@ -8,7 +8,7 @@ import {yearsForDropdown} from '../../../services/constants';
 
 const initialValues = {
   supplier_id: {id: 0, title: 'Sve'},
-  year: {id: 0, title: 'Sve'},
+  year: {id: null, title: 'Sve'},
 };
 
 export const ProcurementContractsFilters: React.FC<ProcurementContractFiltersProps> = ({
@@ -18,7 +18,7 @@ export const ProcurementContractsFilters: React.FC<ProcurementContractFiltersPro
   searchQuery,
 }) => {
   const {control, watch} = useForm({defaultValues: initialValues});
-  const years = yearsForDropdown();
+  const years = yearsForDropdown(8, true, 2);
 
   const suppliersOptions = useMemo(() => {
     const options = suppliers.map((supplier: Supplier) => ({

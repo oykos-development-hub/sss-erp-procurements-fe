@@ -16,6 +16,7 @@ const useProcurementContracts = ({
   sort_by_date_of_signing,
   sort_by_gross_value,
   sort_by_serial_number,
+  year,
 }: GetProcurementContractParams) => {
   const [procurementContracts, setProcurementContracts] = useState<ProcurementContract[]>();
   const [loading, setLoading] = useState(true);
@@ -34,6 +35,7 @@ const useProcurementContracts = ({
         sort_by_date_of_signing,
         sort_by_gross_value,
         sort_by_serial_number,
+        year,
       });
 
       if (response.publicProcurementContracts_Overview.status === REQUEST_STATUSES.success) {
@@ -53,6 +55,7 @@ const useProcurementContracts = ({
     sort_by_date_of_signing,
     sort_by_gross_value,
     sort_by_serial_number,
+    year,
   ]);
 
   return {data: procurementContracts, loading, refetchData: fetchProcurementContracts};
