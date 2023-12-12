@@ -5,6 +5,7 @@ import {Controls, DeleteFileIcon, DownloadFileIcon, FileItem as File, FileIconBu
 
 import {useState} from 'react';
 import FileModalView from '../fileModalView/fileModalView';
+import {Link} from 'react-router-dom';
 
 const allowedTypes = ['.pdf', '.jpg', '.png'];
 
@@ -51,7 +52,7 @@ const FileList = ({files, onDelete}: FileListProps) => {
       {files &&
         files.map((file: FileItem) => (
           <File key={file.id} onClick={() => handleViewFile(file)} viewable={allowedTypes.includes(file.type)}>
-            <Typography content={file.name} />
+            <Typography content={file.name} style={{borderBottom: '1px solid black'}} />
             <Controls>
               <FileIconButton
                 onClick={(e: React.MouseEvent) => {
