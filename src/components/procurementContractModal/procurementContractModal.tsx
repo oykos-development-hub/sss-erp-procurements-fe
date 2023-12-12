@@ -9,6 +9,7 @@ import {parseDate, parseDateForBackend} from '../../utils/dateUtils';
 import useGetSuppliers from '../../services/graphql/suppliers/hooks/useGetSuppliers';
 import {Column} from '../../screens/procurementContracts/contractDetails/styles';
 import {Controller, useForm} from 'react-hook-form';
+import {ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 
 const initialValues = {
   plan: {id: 0, title: ''},
@@ -46,7 +47,7 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
   const {data: plansData} = useGetPlansOverview({
     page: 1,
     size: 1000,
-    status: undefined,
+    status: ProcurementStatus.PostProcurementStatusCompleted,
     is_pre_budget: false,
     year: '',
     contract: false,
