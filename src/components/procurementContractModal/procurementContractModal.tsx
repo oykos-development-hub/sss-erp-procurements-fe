@@ -54,12 +54,13 @@ export const ProcurementContractModal: React.FC<ProcurementContractModalProps> =
   });
 
   const plansOptions = useMemo(() => {
-    return plansData?.map(item => {
-      return {
+    const plans = plansData
+      ?.filter(item => item.status === ProcurementStatus.PostProcurementStatusCompleted && item.items.length > 0)
+      ?.map(item => ({
         id: item.id,
         title: item.title,
-      };
-    });
+      }));
+    return plans || [];
   }, [plansData]);
 
   const procurementsOptions = useMemo(() => {
