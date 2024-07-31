@@ -418,36 +418,41 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
             }}
             tableActions={[
               {
-                name: 'Izmeni',
+                name: 'Izmijeni',
                 onClick: (item: PlanItem) => {
                   handleEdit(item.id);
                 },
                 icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
                 shouldRender: (item: any) => item.is_pre_budget === true && item.status === 'U toku',
+                tooltip: () => 'Izmijeni',
               },
               {
                 name: 'Obriši',
                 onClick: (item: any) => handleDeleteIconClick(item.id),
                 icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
                 shouldRender: (item: any) => item.status == 'U toku',
+                tooltip: () => 'Obriši',
               },
               {
                 name: 'Podijeli',
                 onClick: (item: any) => handleShareIconClick(item.id),
                 icon: <SendIcon stroke={Theme?.palette?.gray800} />,
                 shouldRender: (item: any) => !item.date_of_publishing,
+                tooltip: () => 'Podijeli',
               },
               {
                 name: 'Konvertuj',
                 onClick: (item: any) => handleConvertModal(item.id),
                 icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
                 shouldRender: (item: any) => item.status === 'Objavljen' && role !== UserRole.MANAGER_OJ,
+                tooltip: () => 'Konvertuj',
               },
               {
                 name: 'Vrati',
                 onClick: (item: any) => handleRevertIconClick(item.id),
                 icon: <ArrowLeftCircleIcon stroke={Theme?.palette?.gray800} />,
                 shouldRender: (item: any) => item.status === 'Poslat',
+                tooltip: () => 'Vrati',
               },
             ]}></Table>
         </div>
