@@ -2,7 +2,7 @@ import {Button, EditIconTwo, MicroserviceProps, TableHead, Theme, TrashIconTwo, 
 import React, {useMemo, useState} from 'react';
 import {ArticleModal} from '../../components/articleModal/articleModal';
 import {LimitsModal} from '../../components/limitsModal/limitsModal';
-import {UserPermission, checkPermission, isEditProcurementAndPlanDisabled} from '../../constants';
+import {isEditProcurementAndPlanDisabled} from '../../constants';
 import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import useProcurementArticleDelete from '../../services/graphql/procurementArticles/hooks/useProcurementArticleDelete';
@@ -23,6 +23,7 @@ import {PublicProcurement} from '../../types/graphql/publicProcurementTypes';
 import {Column, FormControls, FormFooter, Plan, Price} from './styles';
 import ImportArticlesModal, {staticFileNameMap} from '../../components/importArticles/importArticlesModal';
 import {VisibilityType, getVisibilityTypeName} from '../../types/graphql/publicProcurementArticlesTypes';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -38,6 +39,10 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
   const url = context.navigation.location.pathname;
   const planID = context.navigation.location.pathname.split('/').at(-3);
   const {organizationUnits} = useGetOrganizationUnits();
+  const createPermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/plans');
+  const deletePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/procurements/plans');
 
   const pathname = url.substring(0, url.lastIndexOf('/', url.lastIndexOf('/') - 1));
 
@@ -206,8 +211,6 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
     }
     setSelectedItemId(0);
   };
-  const role = context?.contextMain?.role_id;
-
   const isEditProcurementDisabled =
     publicProcurement?.is_open_procurement === false
       ? false
@@ -249,11 +252,23 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           </Filters>
 
           <Controls>
-            {publicProcurement?.is_open_procurement && (
+            {publicProcurement?.is_open_procurement && createPermission && (
               <Button content="Limit" onClick={handleAddLimit} disabled={isEditProcurementDisabled} />
             )}
-            <Button content="Novi artikal" onClick={handleAddArticle} disabled={isEditProcurementDisabled} />
-            <Button content="Uvezi artikle" onClick={() => setImportModal(true)} disabled={isEditProcurementDisabled} />
+            {createPermission && [
+              <Button
+                content="Novi artikal"
+                onClick={handleAddArticle}
+                disabled={isEditProcurementDisabled}
+                key="new-article"
+              />,
+              <Button
+                content="Uvezi artikle"
+                key="import-articles"
+                onClick={() => setImportModal(true)}
+                disabled={isEditProcurementDisabled}
+              />,
+            ]}
           </Controls>
         </Header>
 
@@ -266,11 +281,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
         </Plan>
         <TableContainer
           isLoading={isLoadingProcurementDetails}
-          tableHeads={
-            checkPermission(role, UserPermission.EDIT_PROCUREMENTS)
-              ? tableHeads
-              : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')
-          }
+          tableHeads={createPermission ? tableHeads : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')}
           data={publicProcurement?.articles || []}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -279,7 +290,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
               name: 'edit',
               onClick: (item: any) => handleEdit(item.id),
               icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: () => true,
+              shouldRender: () => createPermission,
               disabled: _ => isEditProcurementDisabled,
               tooltip: _ => (isEditProcurementDisabled ? `Status plana je "${planDetails?.status}"` : ''),
             },
@@ -287,18 +298,20 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
               name: 'delete',
               onClick: (item: PublicProcurement) => handleDeleteIconClick(item.id),
               icon: <TrashIconTwo stroke={Theme?.palette?.gray800} />,
-              shouldRender: () => true,
+              shouldRender: () => deletePermission,
               disabled: _ => isEditProcurementDisabled,
               tooltip: _ => (isEditProcurementDisabled ? `Status plana je "${planDetails?.status}"` : ''),
             },
           ]}
         />
-        <NotificationsModal
-          open={!!showDeleteModal}
-          onClose={handleCloseDeleteModal}
-          handleLeftButtomClick={deleteArticle}
-          subTitle={'Ovaj fajl ce biti trajno izbrisan iz sistema'}
-        />
+        {deletePermission && (
+          <NotificationsModal
+            open={!!showDeleteModal}
+            onClose={handleCloseDeleteModal}
+            handleLeftButtomClick={deleteArticle}
+            subTitle={'Ovaj fajl ce biti trajno izbrisan iz sistema'}
+          />
+        )}
       </SectionBox>
 
       <FormFooter>
@@ -313,7 +326,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           />
         </FormControls>
       </FormFooter>
-      {showArticleModal && (
+      {showArticleModal && createPermission && (
         <ArticleModal
           open={showArticleModal}
           onClose={refetch => handleCloseArticleModal(refetch)}
@@ -323,21 +336,25 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
           alert={context?.alert}
         />
       )}
-      <LimitsModal
-        alert={context?.alert}
-        open={showLimitModal}
-        onClose={refetch => handleCloseLimitModal(refetch)}
-        procurementId={procurementID}
-        navigate={context?.navigation.navigate}
-        organizationUnitList={organizationUnits}
-      />
-      <ImportArticlesModal
-        onClose={() => setImportModal(false)}
-        open={importModal}
-        procurementId={procurementID}
-        refetch={refetchData}
-        type={publicProcurement?.is_open_procurement === false ? 'simple_procurement_table' : 'article_table'}
-      />
+      {createPermission && (
+        <LimitsModal
+          alert={context?.alert}
+          open={showLimitModal}
+          onClose={refetch => handleCloseLimitModal(refetch)}
+          procurementId={procurementID}
+          navigate={context?.navigation.navigate}
+          organizationUnitList={organizationUnits}
+        />
+      )}
+      {createPermission && (
+        <ImportArticlesModal
+          onClose={() => setImportModal(false)}
+          open={importModal}
+          procurementId={procurementID}
+          refetch={refetchData}
+          type={publicProcurement?.is_open_procurement === false ? 'simple_procurement_table' : 'article_table'}
+        />
+      )}
     </ScreenWrapper>
   );
 };

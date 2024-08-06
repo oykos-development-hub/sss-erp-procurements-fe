@@ -14,8 +14,6 @@ import {
 } from 'client-library';
 import {useEffect, useMemo, useState} from 'react';
 import {ProcurementsPlanModal} from '../../components/procurementsPlanModal/procurementsPlanModal';
-
-import {UserPermission, UserRole, checkPermission} from '../../constants';
 import {yearsForDropdown} from '../../services/constants';
 import useDeletePublicProcurementPlan from '../../services/graphql/plans/hooks/useDeletePublicProcurementPlan';
 import useGetPlansOverview from '../../services/graphql/plans/hooks/useGetPlans';
@@ -39,11 +37,8 @@ import {
   TableHeader,
 } from './styles';
 import {ConvertModal} from '../../components/convertModal/convertModal';
-import {
-  ProcurementItem,
-  ProcurementStatus,
-  isProcurementFinished,
-} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {ProcurementItem, isProcurementFinished} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [selectedItemId, setSelectedItemId] = useState(0);
@@ -54,9 +49,11 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
 
-  const role = context?.contextMain?.role_id; // Get the role from context
-  const planStatuses = getPlanStatuses(role);
-  const canCreatePlan = checkPermission(role, UserPermission.CREATE_PLANS);
+  const createPermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/plans');
+  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/plans');
+  const planStatuses = getPlanStatuses(createPermission, updatePermission);
 
   const tableHeads: TableHead[] = [
     {title: 'Godina', accessor: 'year', type: 'text', sortable: true},
@@ -126,7 +123,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       title: 'Zahtjevi',
       accessor: 'requests',
       type: 'text',
-      shouldRender: checkPermission(role, UserPermission.VIEW_PLANS_REQUESTS),
+      shouldRender: createPermission,
     },
     {title: '', accessor: 'TABLE_ACTIONS', type: 'tableActions'},
   ];
@@ -388,7 +385,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
               />
             </Filters>
           </DropdownsWrapper>
-          {canCreatePlan && (
+          {createPermission && (
             <ButtonWrapper>
               <Button
                 variant="secondary"
@@ -401,11 +398,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
 
         <div>
           <Table
-            tableHeads={
-              role === UserRole.ADMIN || role === UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS
-                ? tableHeads
-                : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')
-            }
+            tableHeads={createPermission ? tableHeads : tableHeads.filter(item => item?.accessor !== 'TABLE_ACTIONS')}
             isLoading={loading}
             data={tableData || []}
             onSort={handleSort}
@@ -437,21 +430,21 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
                 name: 'Podijeli',
                 onClick: (item: any) => handleShareIconClick(item.id),
                 icon: <SendIcon stroke={Theme?.palette?.gray800} />,
-                shouldRender: (item: any) => !item.date_of_publishing,
+                shouldRender: (item: any) => !item.date_of_publishing && createPermission,
                 tooltip: () => 'Podijeli',
               },
               {
                 name: 'Konvertuj',
                 onClick: (item: any) => handleConvertModal(item.id),
                 icon: <RotateCWIcon stroke={Theme?.palette?.gray800} />,
-                shouldRender: (item: any) => item.status === 'Objavljen' && role !== UserRole.MANAGER_OJ,
+                shouldRender: (item: any) => item.status === 'Objavljen' && createPermission,
                 tooltip: () => 'Konvertuj',
               },
               {
                 name: 'Vrati',
                 onClick: (item: any) => handleRevertIconClick(item.id),
                 icon: <ArrowLeftCircleIcon stroke={Theme?.palette?.gray800} />,
-                shouldRender: (item: any) => item.status === 'Poslat',
+                shouldRender: (item: any) => item.status === 'Poslat' && createPermission,
                 tooltip: () => 'Vrati',
               },
             ]}></Table>

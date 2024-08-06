@@ -4,13 +4,13 @@ import {CustomDivider, MainTitle, SectionBox, SubTitle} from '../../shared/style
 import ScreenWrapper from '../../shared/screenWrapper';
 import {tableHeadsOrganizationUnitProcurements} from './constants';
 import {MicroserviceProps} from '../../types/micro-service-props';
-import {OrganizationUnit} from '../../types/graphql/organizationUnitsTypes';
 import useGetOrganizationUnitPublicProcurements from '../../services/graphql/organizationUnitPublicProcurements/hooks/useGetOrganizationUnitPublicProcurements';
 import {Column, FormControls, FormFooter, Price, StatusForm, TotalValues} from './styles';
 import {dropdownProcurementStatusOptions} from '../../constants';
 import {calculateStatus} from '../../utils/getStatus';
 import useProcurementOrganizationUnitArticleInsert from '../../services/graphql/organizationUnitPublicProcurements/hooks/usePublicProcurementOrganizationUnitArticleInsert';
 import {RequestStatus} from './types';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 interface OrganizationUnitPublicProcurementsPageProps {
   context?: MicroserviceProps;
@@ -22,6 +22,8 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   const url = context?.navigation.location.pathname;
   const planId = +url?.split('/').at(-3);
   const organizationUnitId = +url?.split('/').at(-1);
+  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/plans');
 
   const {procurements, loading: isLoadingOUProcurements} = useGetOrganizationUnitPublicProcurements(
     planId,
@@ -153,13 +155,15 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
       <FormFooter>
         <FormControls>
           <Button content="Nazad" variant="secondary" onClick={goBack} />
-          <Button
-            content="Promijeni status"
-            variant="primary"
-            onClick={changeStatus}
-            disabled={form?.status?.id === 1}
-            isLoading={isLoadingArticleStatusMutate}
-          />
+          {updatePermission && (
+            <Button
+              content="Promijeni status"
+              variant="primary"
+              onClick={changeStatus}
+              disabled={form?.status?.id === 1}
+              isLoading={isLoadingArticleStatusMutate}
+            />
+          )}
         </FormControls>
       </FormFooter>
     </ScreenWrapper>

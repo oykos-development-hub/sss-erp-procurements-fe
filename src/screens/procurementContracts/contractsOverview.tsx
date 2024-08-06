@@ -11,19 +11,23 @@ import {ProcurementContractsFilters} from './filters/procurementContractsFilters
 import useGetSuppliers from '../../services/graphql/suppliers/hooks/useGetSuppliers';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
 import useContractDelete from '../../services/graphql/procurementContractsOverview/hooks/useContractDelete';
-import {UserRole} from '../../constants';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) => {
   const [showModal, setShowModal] = useState(false);
-  const role = context?.contextMain?.role_id;
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedYear, setSelectedYear] = useState(undefined);
   const [filters, setFilters] = useState<any>({
     supplier_id: 0,
     id: undefined,
     procurement_id: undefined,
     year: undefined,
   });
+  const createPermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/contracts');
+  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/contracts');
+  const deletePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'delete');
+  const deletePermission = deletePermittedRoutes.includes('/procurements/contracts');
 
   const {data: tableData, refetchData, loading} = useProcurementContracts(filters);
 
@@ -120,7 +124,7 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
             context={context}
           />
 
-          {role !== UserRole.MANAGER_OJ && (
+          {createPermission && (
             <ButtonWrapper>
               <Button
                 variant="secondary"
@@ -144,23 +148,20 @@ export const ProcurementContractsMainPage: React.FC<ScreenProps> = ({context}) =
                 to: `/procurements/contracts/${row.id.toString()}/signed`,
               });
             }}
-            tableActions={
-              role === UserRole.MANAGER_OJ
-                ? undefined
-                : [
-                    {
-                      name: 'edit',
-                      onClick: (item: any) =>
-                        context.navigation.navigate(`/procurements/contracts/${item.id.toString()}`),
-                      icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
-                    },
-                    {
-                      name: 'delete',
-                      onClick: (item: ProcurementContract) => handleDeleteIconClick(item.id),
-                      icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
-                    },
-                  ]
-            }
+            tableActions={[
+              {
+                name: 'edit',
+                onClick: (item: any) => context.navigation.navigate(`/procurements/contracts/${item.id.toString()}`),
+                icon: <EditIconTwo stroke={Theme?.palette?.gray800} />,
+                shouldRender: () => updatePermission,
+              },
+              {
+                name: 'delete',
+                onClick: (item: ProcurementContract) => handleDeleteIconClick(item.id),
+                icon: <TrashIcon stroke={Theme?.palette?.gray800} />,
+                shouldRender: () => deletePermission,
+              },
+            ]}
           />
         </div>
         {showModal && (

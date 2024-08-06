@@ -12,6 +12,7 @@ import {ProcurementsPlan} from './screens/procurementsPlan/procurementsPlan';
 import {PublicProcurementsMainPage} from './screens/publicProcurement/plansOverview';
 import {Reports} from './screens/reports/reports';
 import {MicroserviceProps} from './types/micro-service-props';
+import {checkRoutePermissions} from './services/checkRoutePermissions.ts';
 
 const ProcurementPlanDetailsRegex = /^\/procurements\/plans\/\d+/;
 const OrganizationUnitPublicProcurementsRegex = /^\/procurements\/plans\/\d+\/requests\/\d+$/;
@@ -26,21 +27,30 @@ export const Router: React.FC<MicroserviceProps> = props => {
   const context = Object.freeze({
     ...props,
   });
+  const allowedRoutes = checkRoutePermissions(context?.contextMain?.permissions);
 
   const renderScreen = () => {
-    if (pathname === '/procurements') return <LandingPage />;
-    if (pathname === '/procurements/plans') return <PublicProcurementsMainPage context={context} />;
-    if (OrganizationUnitPublicProcurementsRegex.test(pathname)) {
+    if (pathname === '/procurements' && allowedRoutes.includes('/procurements')) return <LandingPage />;
+    if (pathname === '/procurements/plans' && allowedRoutes.includes('/procurements/plans'))
+      return <PublicProcurementsMainPage context={context} />;
+    if (OrganizationUnitPublicProcurementsRegex.test(pathname) && allowedRoutes.includes('/procurements/plans')) {
       return <OrganizationUnitPublicProcurements context={context} />;
     }
-    if (pathname === '/procurements/reports') return <Reports />;
-    if (ProcurementDetailsRequestsRegex.test(pathname)) return <ProcurementDetailsRequests context={context} />;
-    if (ProcurementDetailsRegex.test(pathname)) return <ProcurementDetails context={context} />;
-    if (ProcurementDetailsManagerRegex.test(pathname)) return <ProcurementDetailsManager context={context} />;
-    if (ProcurementPlanDetailsRegex.test(pathname)) return <ProcurementsPlan context={context} />;
-    if (pathname === '/procurements/contracts') return <ProcurementContractsMainPage context={context} />;
-    if (ContractDetailsRegex.test(pathname)) return <ContractDetails context={context} />;
-    if (ContractDetailsSignedRegex.test(pathname)) return <ContractDetailsSigned context={context} />;
+    if (ProcurementDetailsRequestsRegex.test(pathname) && allowedRoutes.includes('/procurements/plans'))
+      return <ProcurementDetailsRequests context={context} />;
+    if (ProcurementDetailsRegex.test(pathname) && allowedRoutes.includes('/procurements/plans'))
+      return <ProcurementDetails context={context} />;
+    if (ProcurementDetailsManagerRegex.test(pathname) && allowedRoutes.includes('/procurements/plans'))
+      return <ProcurementDetailsManager context={context} />;
+    if (ProcurementPlanDetailsRegex.test(pathname) && allowedRoutes.includes('/procurements/plans'))
+      return <ProcurementsPlan context={context} />;
+    if (pathname === '/procurements/contracts' && allowedRoutes.includes('/procurements/contracts'))
+      return <ProcurementContractsMainPage context={context} />;
+    if (ContractDetailsRegex.test(pathname) && allowedRoutes.includes('/procurements/contracts'))
+      return <ContractDetails context={context} />;
+    if (ContractDetailsSignedRegex.test(pathname) && allowedRoutes.includes('/procurements/contracts'))
+      return <ContractDetailsSigned context={context} />;
+    if (pathname === '/procurements/reports' && allowedRoutes.includes('/procurements/reports')) return <Reports />;
 
     return <NotFound404 context={context} />;
   };

@@ -2,7 +2,6 @@ import {Badge, TableHead, Typography} from 'client-library';
 import {InlineText} from '../../shared/styles';
 import {parseDate} from '../../utils/dateUtils';
 import {StatusTextWrapper} from '../publicProcurement/styles';
-import {UserRole} from '../../constants';
 import {
   ProcurementItem,
   ProcurementItemForOrganizationUnit,
@@ -201,7 +200,7 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
   },
 ];
 
-export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
+export const getTableHeadsPlanDetails = (createPermission: boolean, updatePermission: boolean): TableHead[] => [
   {
     title: 'Konto',
     accessor: 'budget_indent',
@@ -236,7 +235,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     title: 'Vrijednost bez pdv-a',
     accessor: 'articles',
     type: 'custom',
-    shouldRender: role !== UserRole.MANAGER_OJ,
+    shouldRender: createPermission,
     renderContents: (articles: PublicProcurementArticle[], row: ProcurementItem) => {
       if (!isProcurementFinished(row.status)) return 0;
       const totalPrice =
@@ -261,7 +260,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     title: 'PDV',
     accessor: 'articles',
     type: 'custom',
-    shouldRender: role !== UserRole.MANAGER_OJ,
+    shouldRender: createPermission,
     renderContents: (articles: PublicProcurementArticle[], row: ProcurementItem) => {
       if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =
@@ -289,7 +288,7 @@ export const getTableHeadsPlanDetails = (role: number): TableHead[] => [
     title: 'Vrijednost sa pdv-om',
     accessor: '',
     type: 'custom',
-    shouldRender: role !== UserRole.MANAGER_OJ,
+    shouldRender: createPermission,
     renderContents: (_, row: ProcurementItem) => {
       if (!isProcurementFinished(row.status)) return 0;
       const totalPdv =

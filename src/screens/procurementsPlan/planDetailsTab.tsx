@@ -3,7 +3,7 @@ import {Controls, Filters, Header, SubTitle, TableContainer} from '../../shared/
 import React, {useMemo, useState} from 'react';
 import {PublicProcurementModal} from '../../components/pocurementsModal/newPublicProcurementModal';
 import {ProcurementContractModal} from '../../components/procurementContractModal/procurementContractModal';
-import {checkPermission, isEditProcurementAndPlanDisabled, UserPermission, UserRole} from '../../constants';
+import {isEditProcurementAndPlanDisabled} from '../../constants';
 import {NotificationsModal} from '../../shared/notifications/notificationsModal';
 import {ProcurementItem, isProcurementFinished} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {Column, Price} from './styles';
@@ -12,6 +12,7 @@ import useDeletePublicProcurementPlanItem from '../../services/graphql/procureme
 import {getTableHeadsPlanDetails} from './constants';
 import {PublicProcurementSimpleModal} from '../../components/pocurementsModal/newPublicProcurementSimpleModal';
 import useAppContext from '../../context/useAppContext';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
   planDetails,
@@ -22,9 +23,13 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
   const {
     navigation,
     alert,
-    contextMain: {role_id},
+    contextMain: {permissions},
     breadcrumbs,
   } = useAppContext();
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/plans');
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/plans');
 
   const [selectedItemId, setSelectedItemId] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -121,7 +126,7 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
   };
 
   const navigateToDetailsScreen = (row: ProcurementItem) => {
-    if ([UserRole.ADMIN, UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS].includes(role_id)) {
+    if (createPermission) {
       navigation.navigate(`/procurements/plans/${planID}/procurement-details/${row.id.toString()}`);
       breadcrumbs.add({
         name: `Nabavka Broj. ${row.title || ''} / Konto: ${row.budget_indent?.title || ''}`,
@@ -161,7 +166,7 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
             />
           </Column>
         </Filters>
-        {checkPermission(role_id, UserPermission.CREATE_PROCUREMENT) && (
+        {createPermission && (
           <Controls>
             <Button content="Nova nabavka" onClick={handleAdd} disabled={isEditPlanDisabled && !isSimpleProcurement} />
           </Controls>
@@ -170,9 +175,11 @@ export const PlanDetailsTab: React.FC<PlanDetailsTabProps> = ({
       <TableContainer
         isLoading={isLoadingPlanDetails}
         tableHeads={
-          checkPermission(role_id, UserPermission.EDIT_PROCUREMENTS)
-            ? getTableHeadsPlanDetails(role_id)
-            : getTableHeadsPlanDetails(role_id).filter(item => item.accessor !== 'TABLE_ACTIONS')
+          createPermission
+            ? getTableHeadsPlanDetails(createPermission, updatePermission)
+            : getTableHeadsPlanDetails(createPermission, updatePermission).filter(
+                item => item.accessor !== 'TABLE_ACTIONS',
+              )
         }
         data={procurements || []}
         onRowClick={row => navigateToDetailsScreen(row)}

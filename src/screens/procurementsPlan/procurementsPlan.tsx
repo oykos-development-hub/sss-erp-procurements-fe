@@ -1,8 +1,7 @@
 import {Tab} from '@oykos-development/devkit-react-ts-styled-components';
 import {Button} from 'client-library';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {RejectedProcurementModal} from '../../components/rejectedProcurementModal/rejectedProcurementModal';
-import {UserPermission, UserRole, checkPermission} from '../../constants';
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import useInsertPublicProcurementPlan from '../../services/graphql/plans/hooks/useInsertPublicProcurementPlan';
 import useSendProcurementOnRevision from '../../services/graphql/plans/hooks/useSendProcurementOnRevision';
@@ -18,11 +17,11 @@ import {PlanDetailsTab} from './planDetailsTab';
 import {ProcurementStatus} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import useAppContext from '../../context/useAppContext';
 import useGetPlanPDFUrl from '../../services/graphql/planPDF/useGetPlanPDFUrl';
-import {downloadPDF} from '../../services/constants';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   const {
-    contextMain: {role_id},
+    contextMain: {permissions},
     navigation,
     alert,
     breadcrumbs,
@@ -31,6 +30,10 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   const url = navigation.location.pathname;
   const location = navigation?.location;
   const searchParams = location?.search;
+  const createPermittedRoutes = checkActionRoutePermissions(permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/plans');
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/plans');
 
   const planID = +url.split('/').pop();
   const pathname = url.substring(0, url.lastIndexOf('/'));
@@ -63,7 +66,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
   ];
 
   const buttonSendEnable = planDetails?.items
-    ?.filter(item => item.is_open_procurement === true)
+    ?.filter(item => item.is_open_procurement)
     .every(item => item.status === ProcurementStatus.ProcurementStatusProcessed);
 
   const onTabChange = (tab: Tab) => {
@@ -124,9 +127,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
       <SectionBox>
         <TitleTabsWrapper>
           <MainTitle variant="bodyMedium" content={getTitle()} style={{marginBottom: 0}} />
-          {checkPermission(role_id, UserPermission.VIEW_PLANS_REQUESTS) && (
-            <StyledTabs tabs={planTabs} activeTab={activeTab} onChange={onTabChange} />
-          )}
+          {createPermission && <StyledTabs tabs={planTabs} activeTab={activeTab} onChange={onTabChange} />}
         </TitleTabsWrapper>
         <CustomDivider style={{marginTop: 0}} />
         {(activeTab === TabsEnum.Overview || activeTab === TabsEnum.SimpleProcurement) && (
@@ -141,16 +142,14 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
           <RequestsPage plan={planDetails} handleDateOfClosing={(date: string) => setDateOfClosing(date)} />
         )}
       </SectionBox>
-      {planDetails?.status === 'Obradi' &&
-        planDetails.rejected_description !== null &&
-        checkPermission(role_id, UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT) && (
-          <MessageBox>{`Razlog odbijanja: ${planDetails.rejected_description}`}</MessageBox>
-        )}
+      {planDetails?.status === 'Obradi' && planDetails.rejected_description !== null && (
+        <MessageBox>{`Razlog odbijanja: ${planDetails.rejected_description}`}</MessageBox>
+      )}
 
       <FormFooter>
         <FormControls>
           <>
-            {role_id !== UserRole.MANAGER_OJ && planDetails?.status === 'Objavljen' && (
+            {createPermission && planDetails?.status === 'Objavljen' && (
               <Button
                 content="Generiši izvještaj"
                 variant="secondary"
@@ -166,26 +165,23 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
                 breadcrumbs.remove();
               }}
             />
-            {checkPermission(role_id, UserPermission.SEND_PROCUREMENTS) &&
-              planDetails?.rejected_description === null && (
-                <Button
-                  content="Pošalji"
-                  variant="primary"
-                  onClick={() => setIsNotificationModalActive(true)}
-                  disabled={!buttonSendEnable || planDetails?.status === 'Na čekanju'}
-                />
-              )}
+            {updatePermission && planDetails?.rejected_description === null && (
+              <Button
+                content="Pošalji"
+                variant="primary"
+                onClick={() => setIsNotificationModalActive(true)}
+                disabled={!buttonSendEnable || planDetails?.status === 'Na čekanju'}
+              />
+            )}
 
-            {checkPermission(role_id, UserPermission.SEND_PROCUREMENTS) &&
-              planDetails?.status === 'Obradi' &&
-              planDetails.rejected_description !== null && (
-                <Button
-                  content="Pošalji"
-                  variant="primary"
-                  onClick={() => setIsRejectedModalActive(true)}
-                  disabled={!buttonSendEnable}
-                />
-              )}
+            {updatePermission && planDetails?.status === 'Obradi' && planDetails.rejected_description !== null && (
+              <Button
+                content="Pošalji"
+                variant="primary"
+                onClick={() => setIsRejectedModalActive(true)}
+                disabled={!buttonSendEnable}
+              />
+            )}
 
             <NotificationsModal
               open={!!isNotificationModalActive}
@@ -200,7 +196,7 @@ export const ProcurementsPlan: React.FC<ProcurementsPlanPageProps> = () => {
               handleRightButtonClick={handleUpdatePlan}
             />
           </>
-          {activeTab === 2 && (
+          {createPermission && activeTab === 2 && (
             <Button
               content={planDetails?.is_pre_budget ? 'Zaključi' : 'Objavi'}
               variant="primary"

@@ -28,28 +28,19 @@ import {ContractArticleGet, ContractArticleInsert} from '../../../types/graphql/
 import {FileItem} from '../../../types/graphql/procurementContractsTypes';
 import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
 import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
 }
-
-type ContractForm = {
-  serial_number: string;
-  date_of_signing: Date | null;
-  date_of_expiry: Date | null;
-  supplier: {id: number; title: string};
-  vat_value: string;
-  net_value: string;
-  gross_value: string;
-  file: FileItem[];
-};
 
 export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
   const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
   const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
   const [files, setFiles] = useState<FileList | null>(null);
   const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
-  // const [importModal, setImportModal] = useState(false);
+  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/contracts');
 
   const {
     fileService: {uploadFile, batchDeleteFiles},
@@ -402,6 +393,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             <Input
               {...register('serial_number', {required: 'Ovo polje je obavezno'})}
               label={'ŠIFRA UGOVORA:'}
+              disabled={!updatePermission}
               error={errors?.serial_number?.message as string}
               isRequired
             />
@@ -410,6 +402,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             <Controller
               name="date_of_signing"
               control={control}
+              disabled={!updatePermission}
               rules={{
                 required: 'Ovo polje je obavezno',
                 // validate: value =>
@@ -422,6 +415,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                   onChange={onChange}
                   label="DATUM ZAKLJUČENJA UGOVORA:"
                   name={name}
+                  isDisabled={!updatePermission}
                   selected={value ? new Date(value) : ''}
                   error={errors.date_of_signing?.message}
                   isRequired
@@ -445,6 +439,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                   onChange={onChange}
                   label="DATUM ZAVRŠETKA UGOVORA:"
                   name={name}
+                  isDisabled={!updatePermission}
                   selected={value ? new Date(value) : ''}
                   error={errors.date_of_expiry?.message}
                   isRequired
@@ -463,6 +458,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                     onChange={onChange}
                     value={value}
                     name={name}
+                    isDisabled={!updatePermission}
                     label="DOBAVLJAČ:"
                     options={supplierOptions || []}
                     error={errors?.supplier?.message as string}
@@ -513,6 +509,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             files={files}
             variant="secondary"
             onUpload={handleUpload}
+            disabled={!updatePermission}
             note={<Typography variant="bodySmall" content="Ugovor" />}
             hint="Fajlovi neće biti učitani dok ne sačuvate ugovor"
             buttonText="Učitaj"
@@ -523,7 +520,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         <FileList files={watch('file')} onDelete={onDeleteFile} />
 
         <Controls>
-          <Button content="Dodaj jedinične cijene" onClick={onAddPricesClick} />
+          <Button disabled={!updatePermission} content="Dodaj jedinične cijene" onClick={onAddPricesClick} />
         </Controls>
         <Plan>
           <Typography content="POSTBUDŽETSKO" variant="bodyMedium" style={{fontWeight: 600}} />
@@ -545,12 +542,14 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               context.breadcrumbs.remove();
             }}
           />
-          <Button
-            content="Sačuvaj ugovor"
-            variant="primary"
-            onClick={handleSubmit(handleSave)}
-            isLoading={isLoadingContractMutate || isLoadingContractArticleMutate}
-          />
+          {updatePermission && (
+            <Button
+              content="Sačuvaj ugovor"
+              variant="primary"
+              onClick={handleSubmit(handleSave)}
+              isLoading={isLoadingContractMutate || isLoadingContractArticleMutate}
+            />
+          )}
         </FormControls>
       </FormFooter>
     </ScreenWrapper>

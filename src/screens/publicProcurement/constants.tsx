@@ -1,18 +1,3 @@
-import {ReactNode} from 'react';
-import {UserRole} from '../../constants';
-import {DropdownDataString} from '../../types/dropdownData';
-
-export interface ValueType {
-  id: number | string | boolean;
-  title: ReactNode;
-}
-
-export const TypeForPP = [
-  {id: true, title: 'Predbudžetsko'},
-  {id: false, title: 'Postbudžetsko'},
-  {id: null, title: 'Sve'},
-];
-
 export const PlanStatusesForAdmin: any[] = [
   {id: undefined, title: 'Sve'},
   {id: 'U toku', title: 'U toku'},
@@ -32,14 +17,8 @@ export const PlanStatusesForManager: any[] = [
   {id: 'Objavljen', title: 'Objavljen'},
 ];
 
-export const getPlanStatuses = (role: UserRole) => {
-  switch (role) {
-    case UserRole.ADMIN:
-    case UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS:
-      return PlanStatusesForAdmin;
-    case UserRole.MANAGER_OJ:
-      return PlanStatusesForManager;
-    default:
-      return []; // Default case, if role does not match any of the above
-  }
+export const getPlanStatuses = (createPermission: boolean, updatePermission: boolean) => {
+  if (createPermission) return PlanStatusesForAdmin;
+  if (updatePermission) return PlanStatusesForManager;
+  return [];
 };

@@ -1,65 +1,8 @@
-import {DropdownDataNumber, DropdownDataString} from './types/dropdownData';
+import {DropdownDataNumber} from './types/dropdownData';
 import {Count} from './types/graphql/countType';
-
-export enum UserRole {
-  ADMIN = 1,
-  MANAGER_OJ = 2,
-  OFFICIAL_FOR_PUBLIC_PROCUREMENTS = 3,
-}
-
-export enum UserPermission {
-  VIEW_PLANS = 'VIEW_PLANS',
-  VIEW_PLANS_REQUESTS = 'VIEW_PLANS_REQUESTS',
-  FILL_PLANS = 'FILL_PLANS',
-  CREATE_PLANS = 'CREATE_PLANS',
-  SEND_PROCUREMENTS = 'SEND_PROCUREMENTS',
-  VIEW_REJECTED_PROCUREMENT_COMMENT = 'VIEW_REJECTED_PROCUREMENT_COMMENT',
-  CREATE_PROCUREMENT = 'CREATE_PROCUREMENT',
-  VIEW_PROCUREMENT_REQUESTS = 'VIEW_PROCUREMENT_REQUESTS',
-  EDIT_PROCUREMENTS = 'EDIT_PROCUREMENTS',
-  EDIT_CONTRACTS = 'EDIT_CONTRACTS',
-  DELETE_CONTRACTS = 'DELETE_CONTRACTS',
-}
 
 export const isEditProcurementAndPlanDisabled = (planStatus: string) =>
   planStatus === 'Poslat' || planStatus === 'Zaključen' || planStatus === 'Objavljen' || planStatus === 'Konvertovan';
-
-const rolePermissionsMap = {
-  [UserRole.ADMIN]: [
-    UserPermission.VIEW_PLANS,
-    UserPermission.FILL_PLANS,
-    UserPermission.CREATE_PLANS,
-    UserPermission.SEND_PROCUREMENTS,
-    UserPermission.VIEW_PLANS_REQUESTS,
-    UserPermission.CREATE_PROCUREMENT,
-    UserPermission.VIEW_PROCUREMENT_REQUESTS,
-    UserPermission.EDIT_PROCUREMENTS,
-    UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT,
-    UserPermission.EDIT_CONTRACTS,
-    UserPermission.DELETE_CONTRACTS,
-  ],
-  [UserRole.OFFICIAL_FOR_PUBLIC_PROCUREMENTS]: [
-    UserPermission.VIEW_PLANS,
-    UserPermission.FILL_PLANS,
-    UserPermission.CREATE_PLANS,
-    UserPermission.VIEW_PLANS_REQUESTS,
-    UserPermission.CREATE_PROCUREMENT,
-    UserPermission.VIEW_PROCUREMENT_REQUESTS,
-    UserPermission.EDIT_PROCUREMENTS,
-    UserPermission.EDIT_CONTRACTS,
-    UserPermission.DELETE_CONTRACTS,
-  ],
-  [UserRole.MANAGER_OJ]: [
-    UserPermission.VIEW_PLANS,
-    UserPermission.FILL_PLANS,
-    UserPermission.SEND_PROCUREMENTS,
-    UserPermission.VIEW_REJECTED_PROCUREMENT_COMMENT,
-  ],
-};
-
-export const checkPermission = (role: UserRole, permission: UserPermission) => {
-  return rolePermissionsMap[role]?.includes(permission) || false;
-};
 
 export const pdvOptions: DropdownDataNumber[] = [
   {id: 0, title: '0 %'},

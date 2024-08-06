@@ -8,6 +8,7 @@ import {AmountInput, Column, FormControls, FormFooter, Plan, Price} from './styl
 import usePublicProcurementPlanDetails from '../../services/graphql/plans/hooks/useGetPlanDetails';
 import usePublicProcurementGetDetails from '../../services/graphql/procurements/hooks/useProcurementDetails';
 import useGetPublicProcurementOUArticles from '../../services/graphql/plansRequests/hooks/useGetProcurementOUArticles';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 interface ProcurementDetailsPageProps {
   context: MicroserviceProps;
@@ -17,6 +18,8 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
   const url = context.navigation.location.pathname;
   const planID = url.split('/').at(-3);
   const organizationUnitId = context?.contextMain?.organization_unit?.id;
+  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/plans');
 
   const procurementID = url.split('/').at(-1);
   let limit = 0;
@@ -285,7 +288,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
               }}
             />
 
-            {planDetails?.status !== 'Odobren' && (
+            {updatePermission && planDetails?.status !== 'Odobren' && (
               <Button
                 content="Sačuvaj"
                 variant="primary"

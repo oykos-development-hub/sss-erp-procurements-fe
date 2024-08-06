@@ -9,9 +9,8 @@ import {
   Theme,
   Typography,
 } from 'client-library';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {OveragesModal} from '../../../components/overagesModal/overagesModal';
-import {UserRole} from '../../../constants';
 import useAppContext from '../../../context/useAppContext';
 import useContractArticles from '../../../services/graphql/contractArticles/hooks/useContractArticles';
 import useGetContractPDFUrl from '../../../services/graphql/contractPDF/useGetContractPDFUrl';
@@ -26,7 +25,7 @@ import {parseDate} from '../../../utils/dateUtils';
 import {Column, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import FileList from '../../../components/fileList/fileList';
 import usePublicProcurementGetDetails from '../../../services/graphql/procurements/hooks/useProcurementDetails';
-import {downloadPDF} from '../../../services/constants';
+import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
 interface ContractDetailsPageProps {
   context: MicroserviceProps;
@@ -36,9 +35,11 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   const contractID = +context.navigation.location.pathname.match(/\/contracts\/(\d+)\/signed/)?.[1];
 
   const {
-    contextMain: {organization_unit, role_id},
+    contextMain: {organization_unit},
     reportService: {generatePdf},
   } = useAppContext();
+  const createPermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'create');
+  const createPermission = createPermittedRoutes.includes('/procurements/contracts');
 
   const {data: contractData} = useProcurementContracts({
     id: contractID,
@@ -56,7 +57,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
   }, [organizationUnits]);
 
   const [selectedOrganizationUnit, setSelectedOrganizationUnit] = useState<DropdownDataNumber>(
-    role_id === UserRole.MANAGER_OJ ? organization_unit : unitsforDropdown[0],
+    !createPermission ? organization_unit : unitsforDropdown[0],
   );
 
   const {pdfData, loading: loadingReport} = useGetContractPDFUrl({
@@ -86,8 +87,6 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
     loading: isLoadingContractArticles,
     refetchData: refetchContractArticles,
   } = useContractArticles(contractID, selectedOrganizationUnit.id);
-
-  const role = context?.contextMain?.role_id;
 
   const tableHeads: TableHead[] = [
     {
@@ -183,7 +182,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       title: '',
       accessor: 'TABLE_ACTIONS',
       type: 'tableActions',
-      shouldRender: role !== UserRole.MANAGER_OJ,
+      shouldRender: createPermission,
     },
   ];
 
@@ -302,7 +301,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         </Plan>
         <Filters style={{marginBlock: '12px', alignItems: 'center', justifyContent: 'space-between'}}>
           <Column>
-            {role !== UserRole.MANAGER_OJ && (
+            {createPermission && (
               <Dropdown
                 label={<Typography variant="bodySmall" content="ORGANIZACIONA JEDINICA:" />}
                 options={unitsforDropdown}
@@ -311,7 +310,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
               />
             )}
           </Column>
-          {role !== UserRole.MANAGER_OJ && (
+          {createPermission && (
             <Button
               content="Generiši izvještaj"
               onClick={() => generatePdf('PROCUREMENT_CONTRACT', pdfData)}
