@@ -59,6 +59,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           id: selectedItem?.visibility_type,
           title: getVisibilityTypeName(selectedItem?.visibility_type),
         },
+        amount: selectedItem?.total_amount || 0,
       });
     }
   }, [selectedItem]);
@@ -106,7 +107,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         onClose();
       }}
       leftButtonText="Otkaži"
-      rightButtonText="Dodaj artikal"
+      rightButtonText={selectedItem ? 'Sačuvaj' : 'Dodaj artikal'}
       rightButtonOnClick={handleSubmit(onSubmit)}
       content={
         <FormWrapper>
@@ -132,6 +133,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               leftContent={<div>€</div>}
               isRequired
               value={netPrice?.toString().replace('.', ',')}
+              type="currency"
             />
           </Row>
           <Row>
@@ -173,6 +175,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               value={totalPrice?.toString().replace('.', ',')}
               isRequired
               disabled
+              type="currency"
             />
           </Row>
           <Row>
@@ -206,7 +209,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </Row>
         </FormWrapper>
       }
-      title={'DODAJTE NOVI ARTIKAL'}
+      title={selectedItem ? 'IZMIJENI ARTIKAL' : 'DODAJTE NOVI ARTIKAL'}
     />
   );
 };

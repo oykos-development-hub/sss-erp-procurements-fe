@@ -75,7 +75,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       type: 'text',
     },
     {
-      title: 'Vrijednost neto',
+      title: 'Vrijednost bez PDV-a',
       accessor: 'net_price',
       type: 'custom',
       renderContents: (net_price: any, row: any) => {
@@ -109,7 +109,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       },
     },
     {
-      title: 'Ukupno',
+      title: 'Vrijednost sa PDV-om',
       accessor: 'total',
       type: 'custom',
       renderContents: (_, row: any) => {
@@ -168,6 +168,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
       context.alert.error('Prekoračili ste limit.');
       return;
     }
+    const articlesArr: any[] = [];
 
     for (const item of filteredArticles) {
       const insertItem = {
@@ -183,24 +184,24 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
           '',
         amount: item?.amount || 0,
       };
-
-      await insertOrganizationUnitArticle(
-        insertItem,
-        () => {
-          fetch();
-          setRequestSuccessCount(prevCount => prevCount + 1);
-          totalPrice > limit || requestErrorCount > 0 ? '' : context.navigation.navigate(pathname);
-          setRequestErrorCount(0);
-          context.navigation.navigate(pathname);
-          context.breadcrumbs.remove();
-        },
-        () => {
-          context.alert.error('Nije uspješno sačuvano');
-          setRequestErrorCount(prevCount => prevCount + 1);
-        },
-      );
-      refetch();
+      articlesArr.push(insertItem);
     }
+    await insertOrganizationUnitArticle(
+      articlesArr,
+      () => {
+        fetch();
+        setRequestSuccessCount(prevCount => prevCount + 1);
+        totalPrice > limit || requestErrorCount > 0 ? '' : context.navigation.navigate(pathname);
+        setRequestErrorCount(0);
+        context.navigation.navigate(pathname);
+        context.breadcrumbs.remove();
+      },
+      () => {
+        context.alert.error('Nije uspješno sačuvano');
+        setRequestErrorCount(prevCount => prevCount + 1);
+      },
+    );
+    refetch();
   };
 
   useEffect(() => {
@@ -228,7 +229,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
         <Header>
           <Filters>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST NABAVKE:" />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE BEZ PDV-A:" />
               <Price
                 variant="bodySmall"
                 content={`€ ${totalNet.toLocaleString('sr-RS', {
@@ -238,7 +239,7 @@ export const ProcurementDetailsManager: React.FC<ProcurementDetailsPageProps> = 
               />
             </Column>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST NABAVKE:" />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE SA PDV-OM:" />
               <Price
                 variant="bodySmall"
                 content={`€ ${totalPrice.toLocaleString('sr-RS', {

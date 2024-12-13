@@ -118,7 +118,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       ),
     },
     {
-      title: 'Ukupno neto',
+      title: 'Ukupno bez PDV-a',
       accessor: 'net_value',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
@@ -135,7 +135,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
       },
     },
     {
-      title: 'Ukupno bruto',
+      title: 'Ukupno sa PDV-om',
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
@@ -250,7 +250,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
         <Filters style={{marginTop: '44px'}}>
           <Column>
             <Input
-              label="UKUPNA NETO VRIJEDNOST"
+              label="VRIJEDNOST UGOVORA BEZ PDV-A"
               value={
                 contractData &&
                 Number(contractData[0]?.net_value).toLocaleString('sr-RS', {
@@ -263,7 +263,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           </Column>
           <Column>
             <Input
-              label="UKUPNA VRIJEDNOST PDV-A"
+              label="PDV"
               disabled={true}
               value={Number(VatValue).toLocaleString('sr-RS', {
                 minimumFractionDigits: 2,
@@ -273,7 +273,7 @@ export const ContractDetailsSigned: React.FC<ContractDetailsPageProps> = ({conte
           </Column>
           <Column>
             <Input
-              label="UKUPNA VRIJEDNOST UGOVORA"
+              label="VRIJEDNOST UGOVORA SA PDV-OM"
               disabled={true}
               value={
                 contractData &&

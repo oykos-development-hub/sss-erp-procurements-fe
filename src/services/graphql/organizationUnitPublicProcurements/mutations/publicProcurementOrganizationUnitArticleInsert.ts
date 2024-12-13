@@ -1,5 +1,5 @@
 const organizationUnitArticleInsertMutation = `
-  mutation($data: PublicProcurementOrganizationUnitArticleInsertMutation!) {
+  mutation($data: [PublicProcurementOrganizationUnitArticleInsertMutation]) {
     publicProcurementOrganizationUnitArticle_Insert(data: $data) {
         status 
         data

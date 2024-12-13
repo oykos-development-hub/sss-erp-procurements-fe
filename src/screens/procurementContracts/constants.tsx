@@ -46,7 +46,7 @@ export const tableHeads: TableHead[] = [
     },
   },
   {
-    title: 'Ukupno',
+    title: 'Vrijednost ugovora sa PDV-om',
     accessor: 'gross_value',
     sortable: true,
     type: 'custom',

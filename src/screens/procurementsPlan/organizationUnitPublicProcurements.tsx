@@ -11,6 +11,8 @@ import {calculateStatus} from '../../utils/getStatus';
 import useProcurementOrganizationUnitArticleInsert from '../../services/graphql/organizationUnitPublicProcurements/hooks/usePublicProcurementOrganizationUnitArticleInsert';
 import {RequestStatus} from './types';
 import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
+import {ProcurementItemForOrganizationUnit} from '../../types/graphql/publicProcurementPlanItemDetailsTypes.ts';
+import {DropdownDataNumber} from '../../types/dropdownData.ts';
 
 interface OrganizationUnitPublicProcurementsPageProps {
   context?: MicroserviceProps;
@@ -30,7 +32,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
     organizationUnitId,
   );
   const [form, setForm] = useState({
-    status: {id: 1, title: 'Na čekanju'},
+    status: {id: 1, title: 'Na čekanju'} as DropdownDataNumber,
     comment: '',
   });
 
@@ -66,7 +68,7 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
   };
 
   const changeStatus = () => {
-    let counter = 0;
+    const articlesArr: any[] = [];
     articles?.forEach(article => {
       const payload = {
         ...article,
@@ -79,13 +81,12 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
       delete payload?.public_procurement_article;
       delete payload?.organization_unit;
 
-      mutate(payload, () => {
-        counter += 1;
-        if (counter === articles.length) {
-          context?.alert.success('Status uspješno promijenjen');
-          goBack();
-        }
-      });
+      articlesArr.push(payload);
+    });
+
+    mutate(articlesArr, () => {
+      context?.alert.success('Status uspješno promijenjen');
+      goBack();
     });
   };
 
@@ -94,10 +95,32 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
     context?.breadcrumbs.remove();
   };
 
+  // there is only one comment but it's saved in every article separately so we need to fetch it
+  const getComment = (procurements: ProcurementItemForOrganizationUnit[]): string => {
+    for (const procurement of procurements) {
+      const rejectedDescription = procurement.articles.find(
+        article => article.rejected_description,
+      )?.rejected_description;
+
+      if (rejectedDescription) {
+        return rejectedDescription;
+      }
+    }
+
+    return '';
+  };
+
   useEffect(() => {
     if (procurements && procurements.length > 0) {
       const status = calculateStatus(articles);
-      setForm(prevState => ({...prevState, status: {id: 0, title: status}}));
+
+      setForm(prevState => ({
+        ...prevState,
+        status:
+          dropdownProcurementStatusOptions.find(option => option.title === status) ??
+          dropdownProcurementStatusOptions[0],
+        comment: getComment(procurements),
+      }));
     }
   }, [procurements]);
 
@@ -108,11 +131,11 @@ export const OrganizationUnitPublicProcurements: React.FC<OrganizationUnitPublic
         <CustomDivider />
         <TotalValues>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST:" />
+            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST BEZ PDV-A:" />
             <Price variant="bodySmall" content={`€ ${totalNet.toFixed(2)}`} />
           </Column>
           <Column>
-            <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST:" />
+            <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST SA PDV-OM:" />
             <Price variant="bodySmall" content={`€ ${totalPrice.toFixed(2)}`} />
           </Column>
         </TotalValues>

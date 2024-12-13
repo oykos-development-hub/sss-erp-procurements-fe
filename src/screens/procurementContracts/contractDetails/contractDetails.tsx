@@ -30,23 +30,22 @@ import {parseDateForBackend, parseToDate} from '../../../utils/dateUtils';
 import {Column, Controls, FileUploadWrapper, FormControls, FormFooter, Plan} from './styles';
 import {checkActionRoutePermissions} from '../../../services/checkRoutePermissions.ts';
 
-interface ContractDetailsPageProps {
-  context: MicroserviceProps;
-}
-
-export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) => {
-  const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
-  const contractID = context.navigation.location.pathname.match(/\d+/)?.[0];
-  const [files, setFiles] = useState<FileList | null>(null);
-  const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
-  const updatePermittedRoutes = checkActionRoutePermissions(context?.contextMain?.permissions, 'update');
-  const updatePermission = updatePermittedRoutes.includes('/procurements/contracts');
-
+export const ContractDetails: React.FC = () => {
   const {
     fileService: {uploadFile, batchDeleteFiles},
     spreadsheetService: {openImportModal},
     alert,
+    breadcrumbs,
+    navigation,
+    contextMain: {token, permissions},
   } = useAppContext();
+
+  const [filteredArticles, setFilteredArticles] = useState<ContractArticleGet[]>([]);
+  const contractID = navigation.location.pathname.match(/\d+/)?.[0];
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [filesToDelete, setFilesToDelete] = useState<number[]>([]);
+  const updatePermittedRoutes = checkActionRoutePermissions(permissions, 'update');
+  const updatePermission = updatePermittedRoutes.includes('/procurements/contracts');
 
   const {data: contractData, loading: isLoadingProcurementContracts} = useProcurementContracts({
     id: contractID,
@@ -69,7 +68,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
     } else {
       setFiles(files);
       clearErrors('file');
-      context.alert.success('Fajlovi uspješno učitani');
+      alert.success('Fajlovi uspješno učitani');
     }
   };
 
@@ -146,14 +145,15 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => (
         <Input
-          value={row?.net_value?.toString().replace('.', ',')}
+          value={row?.net_value}
           onChange={event => handleInputChangeNetValue(event, row)}
           leftContent={<>€</>}
+          type="currency"
         />
       ),
     },
     {
-      title: 'Ukupno neto',
+      title: 'Ukupno bez PDV-a',
       accessor: 'net_value',
       type: 'custom',
       renderContents: (_, row) => {
@@ -170,7 +170,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
       },
     },
     {
-      title: 'Ukupno bruto',
+      title: 'Ukupno sa PDV-om',
       accessor: '',
       type: 'custom',
       renderContents: (_, row: ContractArticleGet) => {
@@ -254,7 +254,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
           handleInsertContract();
         },
         () => {
-          context?.alert.error('Greška pri čuvanju! Fajlovi nisu učitani.');
+          alert.error('Greška pri čuvanju! Fajlovi nisu učitani.');
         },
       );
 
@@ -302,12 +302,12 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
         await insertContractArticle(
           items,
           async () => {
-            context?.alert.success('Uspješno sačuvano');
-            context?.navigation.navigate('/procurements/contracts');
-            context.breadcrumbs.remove();
+            alert.success('Uspješno sačuvano');
+            navigation.navigate('/procurements/contracts');
+            breadcrumbs.remove();
           },
           () => {
-            context?.alert.error('Greška pri čuvanju!');
+            alert.error('Greška pri čuvanju!');
           },
         );
       }
@@ -352,7 +352,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
 
   const handleUploadTable = async (files: FileList) => {
     if (procurementID && contractID) {
-      const response = await uploadContractArticlesXls(files[0], procurementID, contractID);
+      const response = await uploadContractArticlesXls(files[0], procurementID, contractID, token);
       if (response?.status === REQUEST_STATUSES.success) {
         if (response?.data?.length) {
           return response?.data;
@@ -405,10 +405,10 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               disabled={!updatePermission}
               rules={{
                 required: 'Ovo polje je obavezno',
-                // validate: value =>
-                //   !value || new Date(value) >= value
-                //     ? true
-                //     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
+                validate: value =>
+                  !value || !watch('date_of_expiry') || new Date(value) <= new Date(watch('date_of_expiry'))
+                    ? true
+                    : 'Datum zaključenja ugovora ne može biti poslije datuma završetka ugovora.',
               }}
               render={({field: {onChange, name, value}}) => (
                 <Datepicker
@@ -430,7 +430,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
               rules={{
                 required: 'Ovo polje je obavezno',
                 validate: value =>
-                  !value || new Date(value) >= value
+                  !value || !watch('date_of_signing') || new Date(value) >= new Date(watch('date_of_signing'))
                     ? true
                     : 'Datum završetka ugovora ne može biti prije datuma zaključenja ugovora.',
               }}
@@ -477,7 +477,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              label="UKUPNA NETO VRIJEDNOST"
+              label="VRIJEDNOST UGOVORA BEZ PDV-A"
               disabled
             />
           </Column>
@@ -487,7 +487,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              label="UKUPNA VRIJEDNOST PDV-A"
+              label="PDV"
               disabled
             />
           </Column>
@@ -497,7 +497,7 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
-              label="UKUPNA VRIJEDNOST UGOVORA"
+              label="VRIJEDNOST UGOVORA SA PDV-OM"
               disabled
             />
           </Column>
@@ -538,8 +538,8 @@ export const ContractDetails: React.FC<ContractDetailsPageProps> = ({context}) =
             content="Odustani"
             variant="secondary"
             onClick={() => {
-              context.navigation.navigate('/procurements/contracts');
-              context.breadcrumbs.remove();
+              navigation.navigate('/procurements/contracts');
+              breadcrumbs.remove();
             }}
           />
           {updatePermission && (

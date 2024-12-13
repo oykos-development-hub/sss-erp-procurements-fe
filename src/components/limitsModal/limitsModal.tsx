@@ -42,6 +42,7 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
   const {mutate: addLimits} = useInsertProcurementPlanItemLimit();
 
   const handleChange = (unitId: number, value: string) => {
+    const formattedValue = value !== '' ? value : '0.00';
     setUnitsWithLimits(prevUnits => {
       return prevUnits.map(unit => {
         if (unit.id === unitId) {
@@ -49,7 +50,7 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
             ...unit,
             limit: {
               ...unit.limit,
-              limit: value,
+              limit: formattedValue,
             },
           };
         }
@@ -91,21 +92,31 @@ export const LimitsModal: React.FC<LimitsModalProps> = ({
       rightButtonOnClick={onSubmit}
       content={
         <FormWrapper>
-          {unitsWithLimits?.map(unit => (
-            <Row key={`limit.${unit?.id}`}>
-              <LabelWrapper>
-                <Typography variant="bodySmall" content={<b>ORGANIZACIONA JEDINICA:</b>} />
-                <Typography variant="bodySmall" content={unit.title} />
-              </LabelWrapper>
+          {unitsWithLimits?.map(unit => {
+            return (
+              <Row key={`limit.${unit?.id}`}>
+                <LabelWrapper>
+                  <Typography variant="bodySmall" content={<b>ORGANIZACIONA JEDINICA:</b>} />
+                  <Typography variant="bodySmall" content={unit.title} />
+                </LabelWrapper>
 
-              <Input
-                value={unit?.limit?.limit}
-                leftContent={<>&euro;</>}
-                label="LIMIT:"
-                onChange={ev => handleChange(unit.id, ev.target.value)}
-              />
-            </Row>
-          ))}
+                <div style={{display: 'flex', alignContent: 'center'}}>
+                  <Typography
+                    variant="bodySmall"
+                    content={'LIMIT:'}
+                    style={{marginRight: 10, marginTop: 'auto', marginBottom: 'auto'}}
+                  />
+                  <Input
+                    type="currency"
+                    value={unit?.limit?.limit ? unit?.limit?.limit : '0'}
+                    leftContent={<>&euro;</>}
+                    onChange={ev => handleChange(unit.id, ev.target.value)}
+                    style={{width: 200, marginRight: 15}}
+                  />
+                </div>
+              </Row>
+            );
+          })}
         </FormWrapper>
       }
       title={'DODAJTE LIMIT'}

@@ -1,5 +1,5 @@
 import {CheckIcon, Dropdown, Input, Modal, Theme} from 'client-library';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {dropdownArticleTypeOptions, dropdownProcurementTypeOptions, generateDropdownOptions} from '../../constants';
 import useInsertPublicProcurementPlanItem from '../../services/graphql/procurements/hooks/useInsertPublicProcurementPlanItem';
@@ -65,23 +65,13 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     formState: {errors},
     reset,
     register,
-    watch,
   } = useForm({defaultValues: initialValues});
 
   const {mutate} = useInsertPublicProcurementPlanItem();
-  const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
   const {counts} = useGetCounts({level: 3});
-  const dropdowncountsOptions = useMemo(() => {
+  const dropdownCountsOptions = useMemo(() => {
     return generateDropdownOptions(counts);
   }, [counts]);
-
-  const budgetIndentId = watch('budget_indent_id')?.id;
-
-  useEffect(() => {
-    if (budgetIndentId === undefined) return;
-    const selectedItem = dropdowncountsOptions?.find(item => item.id === budgetIndentId);
-    setOrginalTitle(selectedItem?.orginal_title);
-  }, [budgetIndentId, dropdowncountsOptions]);
 
   const onSubmit = async (values: any) => {
     try {
@@ -103,11 +93,12 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         fetch();
         alert.success('Uspješno ste dodali javnu nabavku.');
         onClose();
-        breadcrumbs.add({
-          name: `Nabavka Broj. ${item.title || ''} / Konto: ${item.budget_indent?.title || ''}`,
-          to: `/procurements/plans/${planID}/procurement-details/${item.id.toString()}`,
-        });
-        navigate(`/procurements/plans/${item.plan.id}/procurement-details/${item.id}`);
+        // TODO check if we need this redirection when creating or not at all
+        // breadcrumbs.add({
+        //   name: `Nabavka Broj. ${item.title || ''} / Konto: ${item.budget_indent?.title || ''}`,
+        //   to: `/procurements/plans/${planID}/procurement-details/${item.id.toString()}`,
+        // });
+        // navigate(`/procurements/plans/${item.plan.id}/procurement-details/${item.id}`);
       });
     } catch (e) {
       console.log(e);
@@ -118,7 +109,10 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
     if (selectedItem) {
       reset({
         ...selectedItem,
-        budget_indent_id: {id: selectedItem?.budget_indent?.id, title: selectedItem?.budget_indent?.serial_number},
+        budget_indent_id: {
+          id: selectedItem?.budget_indent?.id,
+          title: `${selectedItem?.budget_indent?.serial_number} - ${selectedItem?.budget_indent?.title}`,
+        },
         is_open_procurement: {
           id: selectedItem?.is_open_procurement === true,
           title: selectedItem?.is_open_procurement === true ? 'Otvoreni postupak' : 'Jednostavna nabavka',
@@ -128,7 +122,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
         title: selectedItem?.title,
       });
     }
-  }, [selectedItem]);
+  }, [selectedItem, dropdownCountsOptions, counts]);
 
   return (
     <Modal
@@ -149,16 +143,13 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
                   value={value}
                   name={name}
                   label="KONTO:"
-                  options={dropdowncountsOptions}
+                  options={dropdownCountsOptions}
                   rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                   error={errors.budget_indent_id?.message as string}
                   isRequired
                 />
               )}
             />
-          </FormGroup>
-          <FormGroup>
-            <Input label="NAZIV KONTA:" name="serial_number" value={orginalTitle} disabled={true} />
           </FormGroup>
           <FormGroup>
             <Input {...register('title')} label="OPIS JAVNE NABAVKE:" isRequired error={errors.title?.message} />
@@ -201,7 +192,7 @@ export const PublicProcurementModal: React.FC<PublicProcurementModalProps> = ({
           </FormGroup>
         </ModalContentWrapper>
       }
-      title={'DODAJTE NOVU JAVNU NABAVKU'}
+      title={selectedItem ? 'IZMIJENI JAVNU NABAVKU' : 'DODAJTE NOVU JAVNU NABAVKU'}
     />
   );
 };

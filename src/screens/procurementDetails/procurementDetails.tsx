@@ -58,7 +58,15 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       type: 'text',
     },
     {
-      title: 'Vrijednost bez pdv-a',
+      title: 'Količina',
+      accessor: 'total_amount',
+      type: 'custom',
+      renderContents: (total_amount: any) => {
+        return <Typography content={total_amount} variant="bodySmall" />;
+      },
+    },
+    {
+      title: 'Vrijednost bez PDV-a',
       accessor: 'net_price',
       type: 'custom',
       renderContents: (net_price: any) => {
@@ -91,15 +99,7 @@ export const ProcurementDetails: React.FC<ProcurementDetailsPageProps> = ({conte
       },
     },
     {
-      title: 'Ukupna količina',
-      accessor: 'total_amount',
-      type: 'custom',
-      renderContents: (total_amount: any) => {
-        return <Typography content={total_amount} variant="bodySmall" />;
-      },
-    },
-    {
-      title: 'Vrijednost sa pdv-om',
+      title: 'Vrijednost sa PDV-om',
       accessor: 'total',
       type: 'custom',
       renderContents: (_, row: any) => {

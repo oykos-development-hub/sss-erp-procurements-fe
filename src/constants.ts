@@ -17,10 +17,12 @@ export const dropdownProcurementTypeOptions: DropdownDataNumber[] = [
 
 export function generateDropdownOptions(counts: Count[]) {
   return counts?.map(item => {
+    const dropdownTitle = `${item.serial_number} - ${item.title}`;
+
     return {
       id: item.id,
-      title: item.serial_number,
-      orginal_title: item.title,
+      title: dropdownTitle,
+      original_title: item.title,
     };
   });
 }
@@ -36,5 +38,3 @@ export const dropdownProcurementStatusOptions: DropdownDataNumber[] = [
   {id: 2, title: 'Odobreno'},
   {id: 3, title: 'Odbijeno'},
 ];
-
-export const backendFileUrl = 'https://sss-erp-files-be.oykos.me/api';

@@ -46,7 +46,7 @@ export const tableHeadsRequests: TableHead[] = [
     },
   },
   {
-    title: 'Ukupna vrijednost',
+    title: 'Vrijednost sa PDV-om',
     accessor: 'amount',
     type: 'custom',
     renderContents: (amount: RequestAmountType) => {
@@ -100,7 +100,7 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
     type: 'text',
   },
   {
-    title: 'Vrijednost neto',
+    title: 'Vrijednost bez PDV-a',
     accessor: 'articles',
     type: 'custom',
     renderContents: (articles: PublicProcurementArticleWithAmount[]) => {
@@ -145,7 +145,7 @@ export const tableHeadsOrganizationUnitProcurements: TableHead[] = [
     },
   },
   {
-    title: 'Ukupno',
+    title: 'Vrijednost sa PDV-om',
     accessor: 'total',
     type: 'custom',
     renderContents: (_, row: any) => {
@@ -232,7 +232,7 @@ export const getTableHeadsPlanDetails = (createPermission: boolean, updatePermis
     },
   },
   {
-    title: 'Vrijednost bez pdv-a',
+    title: 'Vrijednost bez PDV-a',
     accessor: 'articles',
     type: 'custom',
     shouldRender: createPermission,
@@ -285,7 +285,7 @@ export const getTableHeadsPlanDetails = (createPermission: boolean, updatePermis
     },
   },
   {
-    title: 'Vrijednost sa pdv-om',
+    title: 'Vrijednost sa PDV-om',
     accessor: '',
     type: 'custom',
     shouldRender: createPermission,

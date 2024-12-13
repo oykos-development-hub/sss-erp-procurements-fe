@@ -1,11 +1,10 @@
 import {Dropdown, Table, Datepicker} from 'client-library';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {OrganizationUnit} from '../../types/graphql/organizationUnitsTypes';
 import {Column, DropdowWrapper, Price, Totals} from './styles';
 import useGetPublicProcurementPlanRequests from '../../services/graphql/plansRequests/hooks/useGetPlanRequests';
 import {ProcurementPlanDetails} from '../../types/graphql/publicProcurementPlanItemDetailsTypes';
 import {parseDate} from '../../utils/dateUtils';
-import {MicroserviceProps} from '../../types/micro-service-props';
 import {SubTitle} from '../../shared/styles';
 import {tableHeadsRequests} from './constants';
 import {RequestArticle} from '../../types/graphql/planRequests';
@@ -14,6 +13,7 @@ import {calculateStatus} from '../../utils/getStatus';
 import useGetOrganizationUnits from '../../services/graphql/organizationUnits/hooks/useGetOrganizationUnits';
 import {RequestStatus, RequestType} from './types';
 import useAppContext from '../../context/useAppContext';
+import {Controller, useForm} from 'react-hook-form';
 
 interface RequestsPageProps {
   plan?: ProcurementPlanDetails;
@@ -88,8 +88,6 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, handleDateOfClo
   const procurementIds = useMemo(() => plan?.items.map(item => item.id) || [], [plan]);
   const {requests, loading: isLoadingPlanRequests} = useGetPublicProcurementPlanRequests(procurementIds);
 
-  const [dateOfClosing, setDateOfClosing] = useState<Date | string>('');
-
   const tableData = useMemo(() => {
     if (!plan) return [];
     return filterTableData(organizationUnits, requests, organizationUnit, plan);
@@ -115,6 +113,15 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, handleDateOfClo
   };
 
   type TableDataRowType = (typeof tableData)[number];
+
+  const {control, watch} = useForm({});
+  const date = watch('date_of_closing');
+
+  useEffect(() => {
+    if (date) {
+      handleDateOfClosing(parseDate(date));
+    }
+  }, [date]);
 
   return (
     <div>
@@ -142,24 +149,28 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({plan, handleDateOfClo
       />
       <Totals>
         <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST:" />
+          <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST BEZ PDV-A:" />
           <Price variant="bodySmall" content={`€ ${priceSums?.netPriceSum.toFixed(2)}`} />
         </Column>
         <Column>
-          <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST:" />
+          <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST SA PDV-OM:" />
           <Price variant="bodySmall" content={`€ ${priceSums?.totalPriceSum.toFixed(2)}`} />
         </Column>
       </Totals>
       <Column>
-        <Datepicker
+        <Controller
           name="date_of_closing"
-          value={dateOfClosing}
-          onChange={(date: any) => {
-            setDateOfClosing(parseDate(date));
-            isAllAccepted && handleDateOfClosing(parseDate(date));
-          }}
-          label={plan?.is_pre_budget ? 'Datum zaključenja:' : 'Datum objave:'}
-          disabled={!isAllAccepted}
+          control={control}
+          render={({field: {onChange, name, value}}) => (
+            <Datepicker
+              onChange={onChange}
+              label={plan?.is_pre_budget ? 'Datum zaključenja:' : 'Datum objave:'}
+              name={name}
+              selected={value ? new Date(value) : null}
+              isRequired
+              disabled={!isAllAccepted}
+            />
+          )}
         />
       </Column>
     </div>

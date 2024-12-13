@@ -1,7 +1,7 @@
 import {Typography, PlanIcon, ContractIcon, ReportIcon} from 'client-library';
 import React from 'react';
-import useAppContext from '../../context/useAppContext';
 import ScreenWrapper from '../../shared/screenWrapper';
+import useAppContext from '../../context/useAppContext';
 import {Container, ContentBox, IconWrapper, LandingPageTitle, Title, TitleWrapper} from './styles';
 
 export const LandingPage: React.FC = () => {

@@ -58,6 +58,8 @@ const ImportArticlesModal = ({
       downloadStaticFile,
       helpers: {download},
     },
+    spreadsheetService: {openImportModal, closeImportModal},
+    contextMain: {token},
   } = useAppContext();
   const {mutate: addArticles, loading} = useProcurementArticleInsert();
   const {mutate: addContractArticles} = useInsertContractArticle();
@@ -71,7 +73,7 @@ const ImportArticlesModal = ({
     // article_table
     if (isContractArticles) {
       if (files.length && procurementId && contractId) {
-        response = await uploadContractArticlesXls(files[0], procurementId, contractId);
+        response = await uploadContractArticlesXls(files[0], procurementId, contractId, token);
         if (response?.status === REQUEST_STATUSES.success) {
           if (response?.data?.length) {
             setFilledContractArticles(response?.data);
@@ -86,7 +88,7 @@ const ImportArticlesModal = ({
       }
     } else {
       if (files.length && procurementId) {
-        response = await uploadArticlesXls(files[0], procurementId, type === 'simple_procurement_table');
+        response = await uploadArticlesXls(files[0], procurementId, token, type === 'simple_procurement_table');
         if (response?.status === REQUEST_STATUSES.success) {
           if (response?.data?.length) {
             setArticles(response?.data);
@@ -104,6 +106,10 @@ const ImportArticlesModal = ({
     setUploadLoading(false);
   };
 
+  function removeTimestamps(items: any[]): any[] {
+    return items.map(({created_at, updated_at, ...rest}) => rest);
+  }
+
   const handleSubmitPlanArticles = async () => {
     if (articles && !articles.length && !error) {
       setError(missingFileError);
@@ -112,7 +118,7 @@ const ImportArticlesModal = ({
 
     if (error) return;
 
-    await addArticles(articles, () => {
+    await addArticles(removeTimestamps(articles), () => {
       alert.success('Artikli uspješno uvezeni');
       refetch();
       handleClose();
@@ -135,7 +141,7 @@ const ImportArticlesModal = ({
       gross_value: item.gross_value,
     }));
 
-    await addContractArticles(articles, () => {
+    await addContractArticles(removeTimestamps(articles), () => {
       alert.success('Artikli uspješno uvezeni');
       refetch();
       handleClose();
@@ -152,17 +158,15 @@ const ImportArticlesModal = ({
     if (isContractArticles) {
       await getContractTable();
     } else {
-      await downloadStaticFile(staticFileNameMap[type], {
-        onSuccess: () => {
-          alert.success('Uspješno preuzet fajl');
-        },
-        onError: () => {
-          alert.error('Došlo je do greške prilikom preuzimanja fajla');
-        },
-        // Do not download the file automatically if this is for contract articles
-        // because in this case there is some editing to be done on the xlsx file
-        download: !isContractArticles,
-      });
+      const link = document.createElement('a');
+      const path =
+        type === 'simple_procurement_table'
+          ? '/sheets/tabela_za_dodavanje_artikala_jednostavna_nabavka.xlsx'
+          : '/sheets/tabela_za_dodavanje_artikala.xlsx';
+      link.href = path;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 

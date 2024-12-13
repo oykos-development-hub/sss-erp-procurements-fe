@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {CheckIcon, Dropdown, Input, Modal, Theme} from 'client-library';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import * as yup from 'yup';
 import {dropdownArticleTypeOptions, dropdownProcurementTypeOptions, generateDropdownOptions} from '../../constants';
@@ -47,27 +47,16 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
   const {mutate: addProcurement} = useInsertPublicProcurementPlanItem();
   const {counts} = useGetCounts({level: 3});
 
-  const [orginalTitle, setOrginalTitle] = useState<string | undefined>('');
-
   const {
     handleSubmit,
     control,
     formState: {errors},
     reset,
-    watch,
   } = useForm({
     resolver: yupResolver(planModalConfirmationSchema),
   });
 
-  const dropdowncountsOptions = generateDropdownOptions(counts);
-
-  const budgetIndentId = watch('budget_indent')?.id;
-
-  useEffect(() => {
-    if (budgetIndentId === undefined) return;
-    const selectedItem = dropdowncountsOptions?.find(item => item.id === budgetIndentId);
-    setOrginalTitle(selectedItem?.orginal_title);
-  }, [budgetIndentId, dropdowncountsOptions]);
+  const dropdownCountsOptions = generateDropdownOptions(counts);
 
   const onSubmit = async (values: any) => {
     try {
@@ -91,11 +80,12 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
           fetch();
           alert.success('Uspješno ste dodali javnu nabavku.');
           onClose();
-          breadcrumbs.add({
-            name: `Nabavka Broj. ${item.title || ''} / Konto: ${item.budget_indent?.title || ''}`,
-            to: `/procurements/plans/${planID}/procurement-details/${item.id.toString()}`,
-          });
-          navigate(`/procurements/plans/${item.plan.id}/procurement-details/${item.id}`);
+          // TODO check if we need this redirection when creating or not at all
+          // breadcrumbs.add({
+          //   name: `Nabavka Broj. ${item.title || ''} / Konto: ${item.budget_indent?.title || ''}`,
+          //   to: `/procurements/plans/${planID}/procurement-details/${item.id.toString()}`,
+          // });
+          // navigate(`/procurements/plans/${item.plan.id}/procurement-details/${item.id}`);
         },
         () => {
           alert.error('Javna nabavka nije uspješno kreirana.');
@@ -110,7 +100,10 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
     if (selectedItem) {
       reset({
         ...selectedItem,
-        budget_indent: {id: selectedItem?.budget_indent?.id, title: selectedItem?.budget_indent?.serial_number},
+        budget_indent: {
+          id: selectedItem?.budget_indent?.id,
+          title: `${selectedItem?.budget_indent?.serial_number} - ${selectedItem?.budget_indent?.title}`,
+        },
         is_open_procurement: {
           id: selectedItem?.is_open_procurement === true,
           title: selectedItem?.is_open_procurement === true ? 'Otvoreni postupak' : 'Jednostavna nabavka',
@@ -142,7 +135,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                     value={value}
                     name={name}
                     label="KONTO:"
-                    options={dropdowncountsOptions}
+                    options={dropdownCountsOptions}
                     rightOptionIcon={<CheckIcon stroke={Theme.palette.primary500} />}
                     error={errors.budget_indent?.message}
                     isRequired
@@ -150,9 +143,6 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
                 );
               }}
             />
-          </FormGroup>
-          <FormGroup>
-            <Input label="NAZIV KONTA:" name="serial_number" value={orginalTitle} disabled={true} />
           </FormGroup>
           <FormGroup>
             <Controller
@@ -209,7 +199,7 @@ export const PublicProcurementSimpleModal: React.FC<PublicProcurementModalProps>
           </FormGroup>
         </ModalContentWrapper>
       }
-      title={'DODAJTE NOVU JAVNU NABAVKU'}
+      title={selectedItem ? 'IZMIJENI JAVNU NABAVKU' : 'DODAJTE NOVU JAVNU NABAVKU'}
     />
   );
 };

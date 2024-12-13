@@ -14,6 +14,7 @@ import ScreenWrapper from '../../shared/screenWrapper';
 import {DropdownDataNumber} from '../../types/dropdownData';
 import {reportTypes} from './constants';
 import {Column, Container, CustomDivider, Filters, Header, MainTitle} from './styles';
+import {checkActionRoutePermissions} from '../../services/checkRoutePermissions.ts';
 
 interface FormData {
   type_of_report: DropdownDataNumber;
@@ -54,6 +55,7 @@ export const Reports = () => {
       location: {state: navigationState},
     },
     reportService: {generatePdf},
+    contextMain,
   } = useAppContext();
 
   const typeOfReport = watch('type_of_report');
@@ -61,6 +63,9 @@ export const Reports = () => {
   const prevYearRef = useRef<DropdownDataNumber | undefined>();
   const procurement = watch('procurement');
   const organizationUnitID = watch('organization_unit_id');
+  const createPermittedRoutes = checkActionRoutePermissions(contextMain?.permissions, 'create');
+
+  const isUserSSS = createPermittedRoutes.includes('/procurements');
 
   const {data} = useGetPlansOverview({page: 1, size: 100000, is_pre_budget: false});
 
@@ -84,6 +89,10 @@ export const Reports = () => {
   const supplierTitle = (procurement?.id && contractData?.[0]?.supplier?.title) || '';
 
   const {organizationUnits} = useGetOrganizationUnits(undefined);
+  useEffect(() => {
+    console.log(isUserSSS, 'isUserSSS');
+    // console.log(contextMain?.organization_unit, 'organization_unit');
+  }, [isUserSSS]);
 
   const {pdfData} = useGetContractPDFUrl({
     id: procurement?.id,
@@ -180,7 +189,11 @@ export const Reports = () => {
                       onChange={onChange}
                       label="Organizaciona jedinica"
                       value={value}
-                      options={[{id: 0, title: 'Sve'}, ...organizationUnits] as any}
+                      options={
+                        isUserSSS
+                          ? ([{id: 0, title: 'Sve'}, ...organizationUnits] as any)
+                          : [contextMain?.organization_unit]
+                      }
                       error={errors.organization_unit_id?.message}
                       isRequired
                     />

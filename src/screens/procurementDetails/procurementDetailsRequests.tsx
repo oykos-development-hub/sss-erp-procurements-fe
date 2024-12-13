@@ -40,7 +40,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
       },
     },
     {
-      title: 'Vrijednost neto',
+      title: 'Vrijednost bez PDV-a',
       accessor: 'public_procurement_article',
       type: 'custom',
       renderContents: (public_procurement_article: any) => {
@@ -75,7 +75,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
       },
     },
     {
-      title: 'Ukupno',
+      title: 'Vrijednost sa PDV-om',
       accessor: 'total',
       type: 'custom',
       renderContents: (_, row: any) => {
@@ -144,7 +144,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
         <Header>
           <Filters>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA NETO VRIJEDNOST NABAVKE:" />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE BEZ PDV-A:" />
               <Price
                 variant="bodySmall"
                 content={`€ ${totalNet.toLocaleString('sr-RS', {
@@ -154,7 +154,7 @@ export const ProcurementDetailsRequests: React.FC<ProcurementDetailsPageProps> =
               />
             </Column>
             <Column>
-              <SubTitle variant="bodySmall" content="UKUPNA BRUTO VRIJEDNOST NABAVKE:" />
+              <SubTitle variant="bodySmall" content="UKUPNA VRIJEDNOST NABAVKE SA PDV-OM:" />
               <Price
                 variant="bodySmall"
                 content={`€ ${totalPrice.toLocaleString('sr-RS', {

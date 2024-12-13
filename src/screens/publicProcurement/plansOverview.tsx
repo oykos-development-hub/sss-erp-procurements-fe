@@ -68,7 +68,7 @@ export const PublicProcurementsMainPage: React.FC<ScreenProps> = ({context}) => 
       },
     },
     {
-      title: 'Ukupna vrijednost',
+      title: 'Ukupna vrijednost sa PDV-om',
       accessor: 'items',
       type: 'custom',
       renderContents: item => {

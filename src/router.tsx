@@ -47,7 +47,7 @@ export const Router: React.FC<MicroserviceProps> = props => {
     if (pathname === '/procurements/contracts' && allowedRoutes.includes('/procurements/contracts'))
       return <ProcurementContractsMainPage context={context} />;
     if (ContractDetailsRegex.test(pathname) && allowedRoutes.includes('/procurements/contracts'))
-      return <ContractDetails context={context} />;
+      return <ContractDetails />;
     if (ContractDetailsSignedRegex.test(pathname) && allowedRoutes.includes('/procurements/contracts'))
       return <ContractDetailsSigned context={context} />;
     if (pathname === '/procurements/reports' && allowedRoutes.includes('/procurements/reports')) return <Reports />;
